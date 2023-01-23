@@ -1,5 +1,6 @@
 """
-H2-adjust, a tool for producing a coherent set of emissions including H2.
+spaemis a tool for generating future emissions for local air quality modelling
+
 See README and docs for more info.
 """
 

@@ -1,9 +1,10 @@
 import glob
 import os
+
 import pandas as pd
+import xarray as xr
 from attrs import define
 
-import xarray as xr
 
 def read_grid():
     nx = 903
@@ -15,7 +16,6 @@ def read_grid():
 
     lats = [y0 + dy * i for i in range(ny)]
     lons = [x0 + dx * i for i in range(nx)]
-
 
 
 def read_vic_inventory():
@@ -32,30 +32,6 @@ class VicEPAInventory:
     y0: float = -39.5402
     dx: float = 0.01059988
     dy: float = 0.01059988
-
-    sectors: list[str] = [
-    "aircraft",
-    "rail",
-    "shipping",
-    "motor_vehicles",
-    "crematoria",
-    "petcrematoria",
-    "industry_diffuse",
-    "woodheater",
-    "architect_coating",
-    "bakery",
-    "charcoal",
-    "cutback_bitumen",
-    "domestic_solvents",
-    "dry_cleaning",
-    "gas_leak",
-    "panel_beaters",
-    "printing",
-    "servos",
-        "pizza",
-        "vicbakery",
-    ]
-
 
     def read_file(self, fname):
         lats = [self.y0 + self.dy * i for i in range(self.ny)]

@@ -1,4 +1,6 @@
 import numpy as np
+import xarray as xr
+
 
 def area_grid(lat, lon):
     """
@@ -76,8 +78,25 @@ def earth_radius(lat):
 
     return r
 
-def clip_region(ds, boundary):
-    return     (ds.rio.set_spatial_dims("lon", "lat")
-    .rio.write_crs("WGS84")
-    .rio.clip(boundary.geometry.values)
-                )
+
+def clip_region(ds: xr.Dataset, boundary: xr.Dataset) -> xr.Dataset:
+    """
+    Clip a region out of a larger DS
+
+    Parameters
+    ----------
+    ds
+    boundary
+        Boundary to cut out
+
+        GeoJSON is expected so it must have a geometry array
+
+    Returns
+    -------
+        Dataset which only includes the selected area
+    """
+    return (
+        ds.rio.set_spatial_dims("lon", "lat")
+        .rio.write_crs("WGS84")
+        .rio.clip(boundary.geometry.values)
+    )
