@@ -1,3 +1,7 @@
+"""
+Description of the configuration
+"""
+
 from typing import Union
 
 from attrs import define
@@ -27,6 +31,10 @@ class VariableConfig:
 
 @define
 class DownscalingScenarioConfig:
+    """
+    Configuration for downscaling a scenario
+    """
+
     inventory_name: str
     inventory_year: int
     timeslices: list[int]
