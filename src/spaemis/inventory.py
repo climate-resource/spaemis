@@ -1,22 +1,25 @@
 import glob
 import os
-from typing import Optional, Union
+from typing import Any, Callable, Optional, Union
 
 import geopandas
 import pandas as pd
 import xarray as xr
-from attrs import define, field
+from attrs import Attribute, define, field
 
 from spaemis.constants import RAW_DATA_DIR
 from spaemis.utils import clip_region
 
 
-def has_dimensions(dimensions: Union[str, list[str]]):
+def has_dimensions(
+    dimensions: Union[str, list[str]]
+) -> Callable[[Any, Attribute, Union[xr.Dataset, xr.DataArray]], None]:
     dimensions: list[str] = [dimensions] if isinstance(dimensions, str) else dimensions
 
-    def _check(instance, attribute, value):
-        if value >= instance.y:
-            raise ValueError("'x' has to be smaller than 'y'!")
+    def _check(instance, attribute, value: Union[xr.Dataset, xr.DataArray]) -> None:
+        for exp_dim in dimensions:
+            if exp_dim not in value.dims:
+                raise ValueError(f"Missing dimension: {exp_dim}")
 
     return _check
 
@@ -27,7 +30,11 @@ class EmissionsInventory:
     An emissions inventory is a set of bottom up
     """
 
-    data: xr.Dataset = field(validator=[has_dimensions(["test"])])
+    data: xr.Dataset = field(
+        validator=[
+            has_dimensions(["lat", "lon", "sector"]),
+        ]
+    )
     border_mask: geopandas.GeoDataFrame
     year: int
 
@@ -39,9 +46,7 @@ class EmissionsInventory:
         pass
 
 
-@define
-class VictoriaEPAInventory(EmissionsInventory):
-
+class VictoriaGrid:
     nx: int = 903
     ny: int = 592
     x0: float = 140.6291
@@ -49,26 +54,29 @@ class VictoriaEPAInventory(EmissionsInventory):
     dx: float = 0.01059988
     dy: float = 0.01059988
 
+    @property
+    def lats(self):
+        return [self.y0 + self.dy * i for i in range(self.ny)]
+
+    @property
+    def lons(self):
+        return [self.x0 + self.dx * i for i in range(self.nx)]
+
+
+@define
+class VictoriaEPAInventory(EmissionsInventory):
     @classmethod
-    def load_from_directory(cls, data_directory) -> "VictoriaEPAInventory":
-        fnames = glob.glob(data_directory + "*.csv")
-        if not fnames:
-            raise ValueError("No data found for Victoria")
-        lats = [
-            VictoriaEPAInventory.y0 + VictoriaEPAInventory.dy * i
-            for i in range(VictoriaEPAInventory.ny)
-        ]
-        lons = [
-            VictoriaEPAInventory.x0 + VictoriaEPAInventory.dx * i
-            for i in range(VictoriaEPAInventory.nx)
-        ]
+    def load_from_directory(cls, data_directory: str) -> "VictoriaEPAInventory":
+        fnames = glob.glob(os.path.join(data_directory, "*.csv"))
+
+        grid = VictoriaGrid()
 
         def read_file(fname):
 
             df = pd.read_csv(fname).set_index(["lat", "lon"])
             ds = xr.Dataset.from_dataframe(df)
-            ds["lat_new"] = lats
-            ds["lon_new"] = lons
+            ds["lat_new"] = grid.lats
+            ds["lon_new"] = grid.lons
 
             del ds["lat"]
             del ds["lon"]
