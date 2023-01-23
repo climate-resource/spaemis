@@ -14,12 +14,13 @@ class ConstantMethod:
 
 @define
 class HarmoniseMethod:
+    source: str  # TODO add real options
     method: str = "harmonise"
 
 
 @define
 class VariableConfig:
-    name: str
+    variable: str
     sector: str
     method: Union[ConstantMethod, HarmoniseMethod]
 
@@ -33,5 +34,5 @@ class DownscalingScenarioConfig:
 
 
 def load_config(config_file: str) -> DownscalingScenarioConfig:
-
-    return DownscalingScenarioConfig()
+    with open(config_file) as fh:
+        return converter.loads(fh.read(), DownscalingScenarioConfig)

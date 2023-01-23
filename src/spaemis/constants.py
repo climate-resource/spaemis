@@ -8,3 +8,6 @@ PROCESSED_DATA_DIR = os.path.join(
     DATA_DIR,
     "processed",
 )
+
+
+COVERED_SECTORS = ["Industrial", ""]
