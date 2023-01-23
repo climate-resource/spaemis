@@ -1,13 +1,9 @@
-inventory:
-  name: victoria
-  year: 2016`
-  options:
-    data_directory:
+inventory_name: victoria
+inventory_year: 2016
 timeslices:
   - 2030
   - 2050
 variables:
-  - name: Emissions|CO
-    sectors:
-      - name: Industrial
-        method: constant
+  - variable: Emissions|CO
+    name: Industrial
+    method: constant
