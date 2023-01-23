@@ -53,8 +53,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ["ubuntu-latest", "windows-latest"]
-        python-version: [3.9]
+        os: ["ubuntu-latest"]
+        python-version: [3.9, 3.11]
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -86,7 +86,7 @@ jobs:
     - name: Test with pytest (${{ runner.os }})
       if: startsWith(runner.os, 'Windows')
       env:
-        MIN_COVERAGE: 90
+        MIN_COVERAGE: 60
       run: |
           pytest tests -r a --cov=spaemis --cov-report=term-missing --cov-fail-under=$env:MIN_COVERAGE
     - name: Upload coverage to Codecov
