@@ -53,7 +53,7 @@ copied to `data/raw/`.
 
 
 Developer Installation
-======================
+++++++++++++++++++++++
 
 .. code:: bash
 
@@ -65,10 +65,8 @@ Developer Installation
 Documentation
 -------------
 
-**Still to write and deploy**
+** Still to write and deploy **
 
-Documentation can be found at our `documentation pages <https://spaemis.readthedocs.io/en/latest/>`_
-(we are thankful to `Read the Docs <https://readthedocs.org/>`_ for hosting us).
 
 Contributing
 ------------
