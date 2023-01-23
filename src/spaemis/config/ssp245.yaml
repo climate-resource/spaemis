@@ -5,5 +5,6 @@ timeslices:
   - 2050
 variables:
   - variable: Emissions|CO
-    name: Industrial
-    method: constant
+    sector: Industrial
+    method:
+      name: constant

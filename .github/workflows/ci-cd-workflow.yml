@@ -67,6 +67,10 @@ jobs:
         pip install --upgrade --user pip wheel
         pip install -e .[tests]
         pip freeze
+    - name: Decrypt inventory files
+      run: ./scripts/decrypt_secrets.sh
+      env:
+        LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
     - name: Test with pytest (${{ runner.os }})
       if: ${{ !startsWith(runner.os, 'Windows') }}
       env:
@@ -91,27 +95,6 @@ jobs:
       with:
         file: ./coverage.xml
 
-  test-install:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.9]
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    - name: Setup python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install
-      run: |
-        pip install --upgrade pip wheel
-        pip install .
-    - name: Test installation
-      run: |
-          python scripts/test_install.py
-
   create-dist:
     runs-on: ubuntu-latest
     strategy:
@@ -135,7 +118,7 @@ jobs:
         twine check dist/*
     - name: Check package files
       run: |
-        for f in README.rst LICENSE CHANGELOG.rst
+        for f in README.rst LICENSE CHANGELOG.md
         do
           if ! tar -tvf dist/spaemis*.tar.gz | grep "$f"
           then
@@ -152,7 +135,7 @@ jobs:
 
   deploy-pypi:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [linting-and-docs,build,test-install,create-dist]
+    needs: [linting-and-docs,build,create-dist]
 
     runs-on: ubuntu-latest
     strategy:

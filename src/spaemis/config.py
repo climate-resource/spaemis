@@ -9,13 +9,13 @@ converter.register_unstructure_hook(str, lambda u: str(u))
 
 @define
 class ConstantMethod:
-    method: str = "constant"
+    name: str = "constant"
 
 
 @define
 class HarmoniseMethod:
     source: str  # TODO add real options
-    method: str = "harmonise"
+    name: str = "harmonise"
 
 
 @define

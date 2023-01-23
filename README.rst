@@ -73,4 +73,4 @@ Documentation can be found at our `documentation pages <https://spaemis.readthed
 Contributing
 ------------
 
-Please see the `Development section of the docs <https://h2-adjust.readthedocs.io/en/latest/development.html>`_.
+Please see the `Development section of the docs <https://spaemis.readthedocs.io/en/latest/development.html>`_.
