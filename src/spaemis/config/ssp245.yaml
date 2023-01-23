@@ -1,0 +1,13 @@
+inventory:
+  name: victoria
+  year: 2016`
+  options:
+    data_directory:
+timeslices:
+  - 2030
+  - 2050
+variables:
+  - name: Emissions|CO
+    sectors:
+      - name: Industrial
+        method: constant
