@@ -1,3 +1,6 @@
+"""
+Common CLI functionality
+"""
 import logging
 
 import click
@@ -18,4 +21,10 @@ def setup_logging() -> None:
 
 @click.group()
 def cli():
+    """
+    Spatial emissions CLI
+
+    Utilities for preparing emissions inventories under a range of different climate
+    futures.
+    """
     setup_logging()

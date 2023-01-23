@@ -7,15 +7,18 @@ import xarray as xr
 def area_grid(lat, lon):
     """
     Calculate the area of each grid cell
+
     Area is in square meters
 
-    Input
-    -----------
-    lat: vector of latitude in degrees
-    lon: vector of longitude in degrees
+    Parameters
+    ----------
+    lat
+        Vector of latitude in degrees
+    lon
+        Vector of longitude in degrees
 
-    Output
-    -----------
+    Returns
+    -------
     area: grid-cell area in square-meters with dimensions, [lat,lon]
 
     Notes
@@ -47,21 +50,21 @@ def area_grid(lat, lon):
     return xda
 
 
-def earth_radius(lat):
+def earth_radius(lat: float):
     """
-    calculate radius of Earth assuming oblate spheroid
+    Calculate radius of Earth assuming oblate spheroid
     defined by WGS84
 
-    Input
-    ---------
+    Parameters
+    ----------
     lat: vector or latitudes in degrees
 
-    Output
-    ----------
-    r: vector of radius in meters
+    Returns
+    -------
+    Vector of radius in meters
 
     Notes
-    -----------
+    -----
     WGS84: https://earth-info.nga.mil/GandG/publications/tr8350.2/tr8350.2-a/Chapter%203.pdf
     """
     # define oblate spheroid from WGS84

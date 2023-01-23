@@ -1,3 +1,6 @@
+"""
+Loading emissions inventories
+"""
 import glob
 import os
 from typing import Any, Callable, Optional, Union
@@ -41,12 +44,16 @@ class EmissionsInventory:
     @classmethod
     def load_from_directory(cls, data_directory) -> "EmissionsInventory":
         """
-        Loads an emissions inventory from a directory
+        Load an emissions inventory from a directory
         """
         pass
 
 
 class VictoriaGrid:
+    """
+    Information about the grid used in Victoria
+    """
+
     nx: int = 903
     ny: int = 592
     x0: float = 140.6291
@@ -65,14 +72,31 @@ class VictoriaGrid:
 
 @define
 class VictoriaEPAInventory(EmissionsInventory):
+    """
+    Victorian EPA data
+
+    CSV files of
+    """
+
     @classmethod
     def load_from_directory(cls, data_directory: str) -> "VictoriaEPAInventory":
+        """
+        Load Victorian EPA inventory data
+
+        Parameters
+        ----------
+        data_directory
+            Folder containing CSV inut files
+
+        Returns
+        -------
+        Loaded data
+        """
         fnames = glob.glob(os.path.join(data_directory, "*.csv"))
 
         grid = VictoriaGrid()
 
         def read_file(fname):
-
             df = pd.read_csv(fname).set_index(["lat", "lon"])
             ds = xr.Dataset.from_dataframe(df)
             ds["lat_new"] = grid.lats

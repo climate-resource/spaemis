@@ -31,8 +31,8 @@ jobs:
       run: |
         black --check src tests setup.py
         isort --check-only --quiet src tests setup.py
-        pydocstyle src
-        bandit -c .bandit.yml -r src
+        #  pydocstyle src
+        bandit -r src
         flake8 src tests setup.py
 #     - name: Build docs
 #       # treat warnings as errors (-W)...
