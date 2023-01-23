@@ -93,6 +93,8 @@ class VictoriaEPAInventory(EmissionsInventory):
         Loaded data
         """
         fnames = glob.glob(os.path.join(data_directory, "*.csv"))
+        if not len(fnames):
+            raise ValueError("No inventory files found for Victoria")
 
         grid = VictoriaGrid()
 
