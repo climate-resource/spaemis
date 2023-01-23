@@ -1,3 +1,4 @@
+import geopandas
 import numpy as np
 import xarray as xr
 
@@ -79,7 +80,7 @@ def earth_radius(lat):
     return r
 
 
-def clip_region(ds: xr.Dataset, boundary: xr.Dataset) -> xr.Dataset:
+def clip_region(ds: xr.Dataset, boundary: geopandas.GeoDataFrame) -> xr.Dataset:
     """
     Clip a region out of a larger DS
 
