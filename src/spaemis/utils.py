@@ -1,5 +1,6 @@
 import geopandas
 import numpy as np
+import rioxarray  # noqa
 import xarray as xr
 
 

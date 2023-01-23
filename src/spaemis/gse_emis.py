@@ -309,7 +309,7 @@ def run_gse(year: int, month: int, day: int, datapath: str, out_dir: str):
     # fmt: on
 
     for i, sector in enumerate(srcList):
-        with open(os.path.join(out_dir, f"{sector.run}")) as fh:
+        with open(os.path.join(out_dir, f"{sector}.run"), "w") as fh:
             myval = (
                 monthly[i][month - 1] / (monthdays[month - 1] / 7.0) * daily[i][dayw]
             )
