@@ -16,3 +16,6 @@ try:
 except Exception:  # pylint: disable=broad-except pragma: no cover
     # Local copy, not installed with setuptools
     __version__ = "unknown"
+
+
+import spaemis.unit_registry  # noqa
