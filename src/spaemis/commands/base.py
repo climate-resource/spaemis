@@ -19,4 +19,3 @@ def setup_logging() -> None:
 @click.group()
 def cli():
     setup_logging()
-

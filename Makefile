@@ -2,8 +2,6 @@
 
 VENV_DIR ?= venv
 
-TESTS_DIR=./tests
-NOTEBOOKS_DIR=./notebooks
 
 define PRINT_HELP_PYSCRIPT
 import re, sys
@@ -55,42 +53,10 @@ isort: $(VENV_DIR)  ## format the code
 		echo Not trying any formatting. Working directory is dirty ... >&2; \
 	fi;
 
-.PHONY: docs
-docs: $(VENV_DIR)  ## build the docs
-	$(VENV_DIR)/bin/sphinx-build -M html docs docs/_build
 
 .PHONY: test
 test:  $(VENV_DIR) ## run the full testsuite
 	$(VENV_DIR)/bin/pytest tests --cov -rfsxEX --cov-report term-missing
-
-.PHONY: test-testpypi-install
-test-testpypi-install: $(VENV_DIR)  ## test whether installing from test PyPI works
-	$(eval TEMPVENV := $(shell mktemp -d))
-	python3 -m venv $(TEMPVENV)
-	$(TEMPVENV)/bin/pip install pip wheel --upgrade
-	# Install dependencies not on testpypi registry
-	$(TEMPVENV)/bin/pip install pandas
-	# Install pymagicc without dependencies.
-	$(TEMPVENV)/bin/pip install \
-		-i https://testpypi.python.org/pypi h2-adjust \
-		--no-dependencies --pre
-	$(TEMPVENV)/bin/python -c "import sys; sys.path.remove(''); import spaemis; print(h2_adjust.__version__)"
-
-.PHONY: test-pypi-install
-test-pypi-install: $(VENV_DIR)  ## test whether installing from PyPI works
-	$(eval TEMPVENV := $(shell mktemp -d))
-	python3 -m venv $(TEMPVENV)
-	$(TEMPVENV)/bin/pip install pip wheel --upgrade
-	$(TEMPVENV)/bin/pip install h2-adjust --pre
-	$(TEMPVENV)/bin/python scripts/test_install.py
-
-.PHONY: test-install
-test-install: $(VENV_DIR)  ## test installing works
-	$(eval TEMPVENV := $(shell mktemp -d))
-	python3 -m venv $(TEMPVENV)
-	$(TEMPVENV)/bin/pip install pip wheel --upgrade
-	$(TEMPVENV)/bin/pip install .
-	$(TEMPVENV)/bin/python scripts/test_install.py
 
 .PHONY: virtual-environment
 virtual-environment: $(VENV_DIR) ## update venv, create a new venv if it doesn't exist
