@@ -8,3 +8,5 @@ gpg --quiet --batch --yes --decrypt --passphrase="$LARGE_SECRET_PASSPHRASE" \
   data/raw/inventories/victoria_2016.zip.gpg
 
 unzip -d data/raw/inventories data/raw/inventories/victoria_2016.zip
+
+ls -al data/raw/inventories
