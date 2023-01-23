@@ -1,0 +1,15 @@
+[run]
+branch = True
+source = spaemis
+omit =
+    src/spaemis/main.py
+
+[report]
+fail_under = 75
+exclude_lines =
+    if self.debug:
+    pragma: no cover
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    pass
+ignore_errors = True
