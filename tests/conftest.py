@@ -1,3 +1,4 @@
+import pkg_resources
 import pytest
 from click.testing import CliRunner
 
@@ -9,3 +10,8 @@ def runner(tmp_path):
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
         runner._temp_dir = td
         yield runner
+
+
+@pytest.fixture()
+def config_file():
+    return pkg_resources.resource_filename("spaemis", "config/scenarios/ssp245.yaml")
