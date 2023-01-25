@@ -8,3 +8,7 @@ variables:
     sector: Industrial
     method:
       name: constant
+  - variable: Emissions|CO
+    sector: Transportation
+    method:
+      name: constant

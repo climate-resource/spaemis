@@ -29,7 +29,7 @@ def scale_inventory(cfg: VariableConfig, inventory: EmissionsInventory):
     required=True,
 )
 @click.option("-o", "--out_dir", help="Directory to write the updated inventory")
-def project_command(config, out_dir):
+def run_project_command(config, out_dir):
     """
     Generate a set of emissions projection using an emissions inventory as a base
     """

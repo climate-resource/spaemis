@@ -2,9 +2,9 @@
 Description of the configuration
 """
 
-from typing import Union
+from typing import Any, ClassVar, Literal, Type, Union, get_args
 
-from attrs import define, field
+from attrs import define
 from cattrs.preconf.pyyaml import make_converter
 
 converter = make_converter()
@@ -13,17 +13,29 @@ converter.register_unstructure_hook(str, lambda u: str(u))
 
 @define
 class ConstantScaleMethod:
-    name: str = "constant"
-    scale_factor: float = field(default=1)
+    scale_factor: float = 1.0
+
+    name: ClassVar[Literal["constant"]] = "constant"
 
 
 @define
 class HarmoniseScaleMethod:
     source: str  # TODO add real options
-    name: str = "harmonise"
+    name: ClassVar[Literal["harmonise"]] = "harmonise"
 
 
 ScalerMethod = Union[ConstantScaleMethod, HarmoniseScaleMethod]
+
+
+def discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
+    name = value.pop("name")
+    for Klass in get_args(_klass):
+        if Klass.name == name:
+            return converter.structure(value, Klass)
+    raise ValueError(f"Could not determine method for {name}")
+
+
+converter.register_structure_hook(ScalerMethod, discriminate_scaler)
 
 
 @define
