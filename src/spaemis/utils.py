@@ -22,7 +22,7 @@ def area_grid(lat, lon):
     area: grid-cell area in square-meters with dimensions, [lat,lon]
 
     Notes
-    -----------
+    -----
     Based on the function in
     https://github.com/chadagreene/CDT/blob/master/cdt/cdtarea.m
     """
@@ -50,7 +50,7 @@ def area_grid(lat, lon):
     return xda
 
 
-def earth_radius(lat: float):
+def earth_radius(lat: np.ndarray) -> np.ndarray:
     """
     Calculate radius of Earth assuming oblate spheroid
     defined by WGS84

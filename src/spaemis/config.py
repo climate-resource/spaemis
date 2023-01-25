@@ -4,7 +4,7 @@ Description of the configuration
 
 from typing import Union
 
-from attrs import define
+from attrs import define, field
 from cattrs.preconf.pyyaml import make_converter
 
 converter = make_converter()
@@ -12,21 +12,25 @@ converter.register_unstructure_hook(str, lambda u: str(u))
 
 
 @define
-class ConstantMethod:
+class ConstantScaleMethod:
     name: str = "constant"
+    scale_factor: float = field(default=1)
 
 
 @define
-class HarmoniseMethod:
+class HarmoniseScaleMethod:
     source: str  # TODO add real options
     name: str = "harmonise"
+
+
+ScalerMethod = Union[ConstantScaleMethod, HarmoniseScaleMethod]
 
 
 @define
 class VariableConfig:
     variable: str
     sector: str
-    method: Union[ConstantMethod, HarmoniseMethod]
+    method: ScalerMethod
 
 
 @define
