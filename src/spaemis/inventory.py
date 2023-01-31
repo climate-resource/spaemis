@@ -17,10 +17,10 @@ from spaemis.utils import clip_region
 def has_dimensions(
     dimensions: Union[str, list[str]]
 ) -> Callable[[Any, Attribute, Union[xr.Dataset, xr.DataArray]], None]:
-    dimensions: list[str] = [dimensions] if isinstance(dimensions, str) else dimensions
+    dims: list[str] = [dimensions] if isinstance(dimensions, str) else dimensions
 
     def _check(instance, attribute, value: Union[xr.Dataset, xr.DataArray]) -> None:
-        for exp_dim in dimensions:
+        for exp_dim in dims:
             if exp_dim not in value.dims:
                 raise ValueError(f"Missing dimension: {exp_dim}")
 
@@ -75,7 +75,8 @@ class VictoriaEPAInventory(EmissionsInventory):
     """
     Victorian EPA data
 
-    CSV files of
+    CSV files of 1D datapoints. Each grid is slightly different so some post-processing
+    is required to get all the variables and sectors on to the same grid.
     """
 
     @classmethod
@@ -86,7 +87,7 @@ class VictoriaEPAInventory(EmissionsInventory):
         Parameters
         ----------
         data_directory
-            Folder containing CSV inut files
+            Folder containing CSV input files
 
         Returns
         -------

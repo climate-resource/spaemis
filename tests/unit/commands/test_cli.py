@@ -1,6 +1,7 @@
 import re
 
 from spaemis.commands import cli
+from spaemis.config import load_config
 
 
 def test_cli_help(runner):
