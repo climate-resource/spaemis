@@ -388,9 +388,11 @@ def run_gse(year: int, month: int, day: int, datapath: str, out_dir: str):
                 + "C* = {0.01, 0.01,0.1,1.0,10,100,1000,10000,100000,1000000} (ug/m3)"
             )
             if srcList[i] == "woodheater":
-                a = [0.0, 0.0, 0.160, 0.224, 0.528, 0.528, 0.160, 0.0, 0.0]
+                a = np.asarray([0.0, 0.0, 0.160, 0.224, 0.528, 0.528, 0.160, 0.0, 0.0])
             else:
-                a = [0.048, 0.096, 0.144, 0.224, 0.288, 0.480, 0.640, 0.800, 1.280]
+                a = np.asarray(
+                    [0.048, 0.096, 0.144, 0.224, 0.288, 0.480, 0.640, 0.800, 1.280]
+                )
             myvol = np.reshape(a, (1, 9))
             np.savetxt(fh, myvol, fmt="%.8f", delimiter=",")
             fh.write(
