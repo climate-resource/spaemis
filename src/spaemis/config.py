@@ -19,12 +19,12 @@ class ConstantScaleMethod:
 
 
 @define
-class HarmoniseScaleMethod:
+class RelativeChangeMethod:
     source: str  # TODO add real options
-    name: ClassVar[Literal["harmonise"]] = "harmonise"
+    name: ClassVar[Literal["harmonise"]] = "relative_change"
 
 
-ScalerMethod = Union[ConstantScaleMethod, HarmoniseScaleMethod]
+ScalerMethod = Union[ConstantScaleMethod, RelativeChangeMethod]
 
 
 def discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
