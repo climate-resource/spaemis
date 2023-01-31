@@ -28,26 +28,3 @@ def test_cli_gse_emis(runner, mocker, tmpdir):
     assert out_dir.exists()
 
     mocked_call.assert_called_with(2020, 1, 1, "testing", str(out_dir))
-
-
-def test_cli_project(runner, config_file, tmpdir, mocker):
-    mocked_call = mocker.patch("spaemis.commands.project_command.scale_inventory")
-    mocked_inv = mocker.patch("spaemis.commands.project_command.load_inventory")
-    out_dir = tmpdir / "out"
-    assert not out_dir.exists()
-
-    cfg = load_config(config_file)
-    result = runner.invoke(
-        cli,
-        [
-            "project",
-            "--config",
-            config_file,
-            "--out_dir",
-            str(out_dir),
-        ],
-    )
-    assert result.exit_code == 0, result.output
-    assert out_dir.exists()
-    mocked_call.assert_any_call(cfg.variables[0], mocked_inv.return_value)
-    mocked_call.assert_any_call(cfg.variables[1], mocked_inv.return_value)

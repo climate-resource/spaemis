@@ -18,5 +18,5 @@ class ConstantScaler(BaseScaler):
         return data * self.scaling_factor
 
     @classmethod
-    def create_from_method(cls, method: ConstantScaleMethod) -> "ConstantScaler":
+    def create_from_config(cls, method: ConstantScaleMethod) -> "ConstantScaler":
         return ConstantScaler(method.scale_factor)

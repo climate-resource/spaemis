@@ -2,6 +2,8 @@ import pkg_resources
 import pytest
 from click.testing import CliRunner
 
+from spaemis.inventory import load_inventory
+
 
 @pytest.fixture()
 def runner(tmp_path):
@@ -15,3 +17,8 @@ def runner(tmp_path):
 @pytest.fixture()
 def config_file():
     return pkg_resources.resource_filename("spaemis", "config/scenarios/ssp245.yaml")
+
+
+@pytest.fixture(scope="module")
+def inventory():
+    return load_inventory("victoria", 2016)

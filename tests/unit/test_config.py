@@ -37,5 +37,5 @@ def test_structuring_constant():
 
 
 def test_structuring_invalid():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Could not determine scaler for unknown"):
         converter.structure({"name": "unknown"}, ScalerMethod)

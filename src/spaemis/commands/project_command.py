@@ -14,10 +14,11 @@ logger = logging.getLogger(__name__)
 def scale_inventory(cfg: VariableConfig, inventory: EmissionsInventory):
     if cfg.variable not in inventory.data.variables:
         raise ValueError(f"Variable {cfg.variable} not available in inventory")
-
+    if cfg.sector not in inventory.data["sector"]:
+        raise ValueError(f"Sector {cfg.sector} not available in inventory")
     field = inventory.data[cfg.variable].sel(sector=cfg.sector)
 
-    scaled_field = get_scaler_by_config(cfg)(field)
+    scaled_field = get_scaler_by_config(cfg.method)(field)
 
     return scaled_field
 
@@ -45,5 +46,4 @@ def run_project_command(config, out_dir):
     for slice_year in config.timeslices:
         logger.info(f"Processing year={slice_year}")
         for projection_config in config.variables:
-
-            scaled_da = scale_inventory(projection_config, inventory)
+            scale_inventory(projection_config, inventory)

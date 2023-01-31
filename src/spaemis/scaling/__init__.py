@@ -30,11 +30,19 @@ def get_scaler(name: str) -> Type[BaseScaler]:
         Options include:
         * "constant": Apply a constant multiplier
 
+    Raises
+    ------
+    ValueError:
+        An unknown scaler is requested
+
     Returns
     -------
     The class of the scaler of interest
     """
-    return _scalers[name]
+    try:
+        return _scalers[name]
+    except KeyError:
+        raise ValueError(f"Unknown scaler: {name}")
 
 
 def get_scaler_by_config(method: ScalerMethod) -> BaseScaler:

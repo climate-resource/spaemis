@@ -32,7 +32,7 @@ def discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
     for Klass in get_args(_klass):
         if Klass.name == name:
             return converter.structure(value, Klass)
-    raise ValueError(f"Could not determine method for {name}")
+    raise ValueError(f"Could not determine scaler for {name}")
 
 
 converter.register_structure_hook(ScalerMethod, discriminate_scaler)
