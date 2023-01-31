@@ -2,6 +2,7 @@ import pkg_resources
 import pytest
 from click.testing import CliRunner
 
+from spaemis.constants import ROOT_DIR
 from spaemis.inventory import load_inventory
 
 
