@@ -273,3 +273,5 @@ cython_debug/
 
 # TODO: verify with Vic EPA that files can be published
 data/raw/inventories/victoria
+notebooks/*.ipynb
+notebooks/**/*.ipynb
