@@ -18,14 +18,17 @@ import scmdata
 import os
 from glob import glob
 import xarray as xr
-
+import numpy as np
 from typing import Optional
 
-from spaemis.constants import PROCESSED_DATA_DIR
+from spaemis.constants import TEST_DATA_DIR
 from spaemis.inventory import load_inventory
+from spaemis.input_data import InputEmissionsDatabase
+
+from spaemis.utils import clip_region
 
 # %%
-INPUT_DATA = os.path.join(PROCESSED_DATA_DIR, "v20221017")
+INPUT_DATA = os.path.join(TEST_DATA_DIR, "input4MIPs")
 
 # %%
 xr.load_dataset(glob(os.path.join(INPUT_DATA, "**", "*.nc"), recursive=True)[0])
@@ -35,43 +38,50 @@ inventory = load_inventory("victoria", 2016)
 inventory
 
 # %%
-inventory.border_mask
+input_emissions = InputEmissionsDatabase([INPUT_DATA])
+input_emissions.available_data
 
 # %%
-
-
-class InputDatabase:
-    paths:
+inp_data = input_emissions.load(variable_id="OC-em-anthro", source_id="IAMC-MESSAGE-GLOBIOM-ssp245-1-1")
+inp_data
 
 
 # %%
-def load_existing_data(variable_id) -> Optional[xr.Dataset]:
-    exp_dir = os.path.join(
-        INPUT4MIPS_PATH,
-        "CMIP6",
-        "ScenarioMIP",
-        "IAMC",
-        f"IAMC-*-{config['scenario'].lower()}-1-1",
-    )
-    found_dirs = glob(exp_dir)
-    if len(found_dirs) == 1 and not os.path.exists(found_dirs[0]):
-        raise ValueError(
-            f"Could not find: {exp_dir}. Download the data from input4MIPs"
-        )
-    matches = glob(
-        os.path.join(
-            exp_dir,
-            f'**/{variable_id.replace("_", "-")}_*.nc',
-        ),
-        recursive=True,
-    )
+def weighted_temporal_mean(ds, var):
+    """
+    weight by days in each month
+    """
+    # Determine the month length
+    month_length = ds.time.dt.days_in_month
+    wgts = month_length.groupby("time.year") / month_length.groupby("time.year").sum()
 
-    if len(matches) > 1:
-        raise ValueError(f"More than one match exists: {matches}")
-    if matches:
-        return xr.load_dataset(matches[0])
+    # Make sure the weights in each year add up to 1
+    np.testing.assert_allclose(wgts.groupby("time.year").sum(xr.ALL_DIMS), 1.0)
+
+    # Subset our dataset for our variable
+    obs = ds[var]
+
+    # Setup our masking for nan values
+    cond = obs.isnull()
+    ones = xr.where(cond, 0.0, 1.0)
+
+    # Calculate the numerator
+    obs_sum = (obs * wgts).resample(time="AS").sum(dim="time")
+
+    # Calculate the denominator
+    ones_out = (ones * wgts).resample(time="AS").sum(dim="time")
+
+    # Return the weighted average
+    return obs_sum / ones_out
+
+annual_mean = weighted_temporal_mean(inp_data, "OC_em_anthro")
+annual_mean
 
 # %%
-# !pip install netcdf4
+clipped = clip_region(annual_mean, inventory.border_mask)
+clipped
+
+# %%
+clipped.sel(time="2015", sector=0).plot()
 
 # %%
