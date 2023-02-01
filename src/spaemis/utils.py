@@ -84,13 +84,13 @@ def earth_radius(lat: np.ndarray) -> np.ndarray:
     return r
 
 
-def clip_region(ds: xr.Dataset, boundary: geopandas.GeoDataFrame) -> xr.Dataset:
+def clip_region(da: xr.DataArray, boundary: geopandas.GeoDataFrame) -> xr.DataArray:
     """
     Clip a region out of a larger DS
 
     Parameters
     ----------
-    ds
+    da
     boundary
         Boundary to cut out
 
@@ -101,7 +101,42 @@ def clip_region(ds: xr.Dataset, boundary: geopandas.GeoDataFrame) -> xr.Dataset:
         Dataset which only includes the selected area
     """
     return (
-        ds.rio.set_spatial_dims("lon", "lat")
+        da.rio.set_spatial_dims("lon", "lat")
         .rio.write_crs("WGS84")
         .rio.clip(boundary.geometry.values)
     )
+
+
+def weighted_annual_mean(ds: xr.Dataset, variable: str) -> xr.DataArray:
+    """
+    Calculate a weighted temporal annual mean
+
+    This method takes into account the different number of days in each month
+
+    Parameters
+    ----------
+    ds
+    variable
+        Variable to calculate the weighted mean of
+
+    Returns
+    -------
+    Weighted annual mean of the target variable
+    """
+    # Determine the month length
+    month_length = ds.time.dt.days_in_month
+    weights = (
+        month_length.groupby("time.year") / month_length.groupby("time.year").sum()
+    )
+
+    # Make sure the weights in each year add up to 1
+    np.testing.assert_allclose(weights.groupby("time.year").sum(xr.ALL_DIMS), 1.0)
+
+    target = ds[variable]
+
+    # Mask out any nan values
+    ones = xr.where(target.isnull(), 0.0, 1.0)
+
+    obs_sum = (target * weights).resample(time="AS").sum(dim="time")
+    ones_out = (ones * weights).resample(time="AS").sum(dim="time")
+    return obs_sum / ones_out

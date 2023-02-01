@@ -1,7 +1,7 @@
 import logging
 import os
 from glob import glob
-from typing import Optional
+from typing import Optional, Union
 
 import pandas as pd
 import xarray as xr
@@ -14,15 +14,33 @@ class InputEmissionsDatabase:
     Database of Input4MIPs emissions data
     """
 
-    def __init__(self, paths: list[str]):
-        available_data = []
+    def __init__(self, paths: Union[str, list[str]] = None):
+        self.available_data = pd.DataFrame(
+            columns=["variable_id", "institute_id" "source_id", "filename"]
+        )
+        self.paths = []
 
-        for p in paths:
-            available_data.extend(self._find_options(p))
+        if paths:
+            if isinstance(paths, str):
+                paths = [paths]
 
-        self.available_data = pd.DataFrame(available_data)
+            for p in paths:
+                self.register_path(p)
 
-    def _find_options(self, root_dir) -> list[dict]:
+    def register_path(self, path: str):
+        extra_options = self._find_options(path)
+
+        already_existing = extra_options.filename.isin(self.available_data.filename)
+        extra_options = extra_options.loc[~already_existing]
+        logger.info(f"Found {len(extra_options)} new entries")
+
+        if len(extra_options):
+            self.available_data = pd.concat(
+                [self.available_data, extra_options]
+            ).sort_values(["variable_id", "institute_id" "source_id"])
+            self.paths.append(path)
+
+    def _find_options(self, root_dir) -> pd.DataFrame:
         files = glob(os.path.join(root_dir, "**", "*.nc"), recursive=True)
 
         def parse_filename(dataset_fname) -> Optional[dict]:
@@ -39,7 +57,7 @@ class InputEmissionsDatabase:
 
         file_info = [parse_filename(fname) for fname in files]
 
-        return list(filter(lambda item: item is not None, file_info))
+        return pd.DataFrame(filter(lambda item: item is not None, file_info))
 
     def load(self, variable_id, source_id) -> Optional[xr.Dataset]:
         subset = self.available_data
@@ -57,3 +75,6 @@ class InputEmissionsDatabase:
 
         data = [xr.open_dataset(fname) for fname in files_to_load]
         return xr.concat(data, dim="time").sortby("time")
+
+
+database = InputEmissionsDatabase()
