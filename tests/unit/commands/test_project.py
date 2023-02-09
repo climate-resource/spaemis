@@ -27,8 +27,8 @@ def test_cli_project(runner, config_file, tmpdir, mocker):
     )
     assert result.exit_code == 0, result.output
     assert out_dir.exists()
-    mocked_call.assert_any_call(cfg.variables[0], mocked_inv.return_value)
-    mocked_call.assert_any_call(cfg.variables[1], mocked_inv.return_value)
+    mocked_call.assert_any_call(cfg.variables[0], mocked_inv.return_value, 2040)
+    mocked_call.assert_any_call(cfg.variables[1], mocked_inv.return_value, 2040)
 
 
 def test_scale_inventory_missing_variable(inventory):

@@ -68,7 +68,10 @@ class RelativeChangeScaler(BaseScaler):
         target_year: int,
     ) -> xr.DataArray:
         source = self.load_source(inventory)
-        assert tuple(sorted(source.dims)) == ("lat", "lon", "year")
+        if tuple(sorted(source.dims)) != ("lat", "lon", "year"):
+            raise AssertionError(
+                f"Excepted only lat, lon and year dims. Got: {source.dims}"
+            )
 
         if not _covers(source, "year", inventory.year):
             logger.warning(

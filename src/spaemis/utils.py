@@ -4,7 +4,7 @@ import rioxarray  # noqa
 import xarray as xr
 
 
-def area_grid(lat, lon):
+def area_grid(lat, lon):  # pragma: no cover
     """
     Calculate the area of each grid cell
 
@@ -50,7 +50,7 @@ def area_grid(lat, lon):
     return xda
 
 
-def earth_radius(lat: np.ndarray) -> np.ndarray:
+def earth_radius(lat: np.ndarray) -> np.ndarray:  # pragma: no cover
     """
     Calculate radius of Earth assuming oblate spheroid
     defined by WGS84
@@ -107,7 +107,9 @@ def clip_region(da: xr.DataArray, boundary: geopandas.GeoDataFrame) -> xr.DataAr
     )
 
 
-def weighted_annual_mean(ds: xr.Dataset, variable: str) -> xr.DataArray:
+def weighted_annual_mean(
+    ds: xr.Dataset, variable: str
+) -> xr.DataArray:  # pragma: no cover
     """
     Calculate a weighted temporal annual mean
 

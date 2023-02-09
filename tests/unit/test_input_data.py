@@ -5,7 +5,7 @@ import pytest
 import xarray as xr
 
 from spaemis.constants import TEST_DATA_DIR
-from spaemis.input_data import InputEmissionsDatabase
+from spaemis.input_data import InputEmissionsDatabase, initialize_database
 
 TEST_INPUT_DATA = os.path.join(TEST_DATA_DIR, "input4MIPs")
 
@@ -38,3 +38,35 @@ def test_database_register_empty():
     database = InputEmissionsDatabase()
     database.register_path("no-data-here")
     assert not len(database.available_data)
+
+
+@pytest.mark.parametrize(
+    "paths",
+    [
+        (
+            os.path.join(
+                TEST_DATA_DIR,
+                "input4MIPs/CMIP6/ScenarioMIP/IAMC/IAMC-MESSAGE-GLOBIOM-ssp245-1-1/atmos/mon/BC_em_anthro",
+            ),
+        ),
+        (
+            os.path.join(
+                TEST_DATA_DIR,
+                "input4MIPs/CMIP6/ScenarioMIP/IAMC/IAMC-MESSAGE-GLOBIOM-ssp245-1-1/atmos/mon/BC_em_anthro",
+            ),
+            os.path.join(
+                TEST_DATA_DIR,
+                "input4MIPs/CMIP6/ScenarioMIP/IAMC/IAMC-MESSAGE-GLOBIOM-ssp245-1-1/atmos/mon/CO2_em_anthro",
+            ),
+        ),
+    ],
+)
+def test_initialize_data(monkeypatch, paths):
+
+    monkeypatch.setenv(
+        "SPAEMIS_INPUT_PATHS",
+        ",".join(paths),
+    )
+
+    res = initialize_database()
+    assert res.paths == list(paths)
