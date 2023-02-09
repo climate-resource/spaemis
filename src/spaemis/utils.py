@@ -103,7 +103,7 @@ def clip_region(da: xr.DataArray, boundary: geopandas.GeoDataFrame) -> xr.DataAr
     return (
         da.rio.set_spatial_dims("lon", "lat")
         .rio.write_crs("WGS84")
-        .rio.clip(boundary.geometry.values)
+        .rio.clip(boundary.geometry.values, all_touched=True)
     )
 
 

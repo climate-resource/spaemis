@@ -43,6 +43,10 @@ class InputEmissionsDatabase:
     def register_path(self, path: str):
         extra_options = self._find_options(path)
 
+        if not len(extra_options):
+            logger.info(f"Did not find any files in {path}")
+            return
+
         already_existing = extra_options.filename.isin(self.available_data.filename)
         extra_options = extra_options.loc[~already_existing]
         logger.info(f"Found {len(extra_options)} new entries")

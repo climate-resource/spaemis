@@ -47,9 +47,9 @@ class TestRelativeScaler:
             )
         )
 
-        assert res.sector_id == "source"
+        assert res.source_id == "source"
         assert res.variable_id == "variable"
-        assert res.sector_id == 4
+        assert res.sector_id == 2
 
     def test_create_missing_sector(self):
         with pytest.raises(ValueError, match="Unknown input4MIPs sector: not-a-sector"):

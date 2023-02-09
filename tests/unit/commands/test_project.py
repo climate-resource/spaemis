@@ -98,5 +98,5 @@ def test_scale_inventory_relative(inventory):
     scale_factor = res / inv_data
 
     # Scale factors are all the same for a given country
-    npt.assert_allclose(scale_factor.max(skipna=True), 0.209021, rtol=1e-5)
-    npt.assert_allclose(scale_factor.min(skipna=True), 0.209021, rtol=1e-5)
+    npt.assert_allclose(scale_factor.max(skipna=True), 1.209021, rtol=1e-5)
+    npt.assert_allclose(scale_factor.min(skipna=True), 1.209021, rtol=1e-5)

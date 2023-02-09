@@ -32,3 +32,9 @@ def test_database_register_overlapping(caplog):
 
     assert "Found 0 new entries" in caplog.text
     assert database.paths == [TEST_INPUT_DATA]
+
+
+def test_database_register_empty():
+    database = InputEmissionsDatabase()
+    database.register_path("no-data-here")
+    assert not len(database.available_data)
