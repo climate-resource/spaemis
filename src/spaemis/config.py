@@ -20,8 +20,11 @@ class ConstantScaleMethod:
 
 @define
 class RelativeChangeMethod:
-    source: str  # TODO add real options
-    name: ClassVar[Literal["harmonise"]] = "relative_change"
+    source_id: str
+    variable_id: str
+    sector: str
+
+    name: ClassVar[Literal["relative_change"]] = "relative_change"
 
 
 ScalerMethod = Union[ConstantScaleMethod, RelativeChangeMethod]

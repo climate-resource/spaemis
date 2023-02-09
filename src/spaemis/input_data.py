@@ -8,6 +8,19 @@ import xarray as xr
 
 logger = logging.getLogger(__name__)
 
+# The sector map used for the input4MIPs emissions data
+SECTOR_MAP = [
+    "Agriculture",
+    "Energy Sector",
+    "Industrial Sector",
+    "Transportation Sector",
+    "Residential, Commercial, Other",
+    "Solvents production and application",
+    "Waste",
+    "International Shipping",
+    # "Negative CO2 Emissions", # CO2 also includes this additional sector, but we aren't dealing with that here
+]
+
 
 class InputEmissionsDatabase:
     """
@@ -77,4 +90,25 @@ class InputEmissionsDatabase:
         return xr.concat(data, dim="time").sortby("time")
 
 
-database = InputEmissionsDatabase()
+def initialize_database(options: Optional[list[str]] = None) -> InputEmissionsDatabase:
+    """
+    Initialise the global database of input emissions
+
+    Uses the `SPAEMIS_INPUT_PATHS` environment to provide a set of paths to search
+    for input emissions. This enviornment can contain a comma-separated list of
+    paths if multiple paths are used.
+
+    Returns
+    -------
+
+    """
+    if not options:
+        options_from_env: str = os.environ.get("SPAEMIS_INPUT_PATHS")
+        if options_from_env:
+            options = [s.strip() for s in options_from_env.split(",")]
+        else:
+            options = None
+    return InputEmissionsDatabase(options)
+
+
+database = initialize_database()

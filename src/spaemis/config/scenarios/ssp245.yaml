@@ -3,12 +3,17 @@ inventory_year: 2016
 timeslices:
   - 2030
   - 2050
-variables:
-  - variable: Emissions|CO
+sector_map:
+  - source: Dkdsjf
+    target: Transportation
+
+scaler:
+  name: relative_change
+  source_type: CEDS
+  scenario: ''
+
+overrides:
+  - variable: Emissions|H2
     sector: Industrial
-    method:
-      name: constant
-  - variable: Emissions|CO
-    sector: Transportation
-    method:
+    scaler:
       name: constant
