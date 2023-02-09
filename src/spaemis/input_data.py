@@ -1,5 +1,6 @@
 import logging
 import os
+from functools import lru_cache
 from glob import glob
 from typing import Optional, Union
 
@@ -76,6 +77,7 @@ class InputEmissionsDatabase:
 
         return pd.DataFrame(filter(lambda item: item is not None, file_info))
 
+    @lru_cache(maxsize=15)
     def load(self, variable_id, source_id) -> Optional[xr.Dataset]:
         subset = self.available_data
 

@@ -13,19 +13,20 @@
 #     name: python3
 # ---
 
+
 # %%
-import dotenv
 import logging
+
+import dotenv
 
 dotenv.load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 # %%
-import os
+import xarray as xr
 
-from spaemis.constants import TEST_DATA_DIR
+from spaemis.input_data import SECTOR_MAP, database
 from spaemis.inventory import load_inventory
-from spaemis.input_data import database, SECTOR_MAP
 from spaemis.scaling import RelativeChangeScaler
 
 # %%
@@ -74,8 +75,14 @@ scaler_source = scaler.load_source(inventory)
 scaler_source.plot(col="year", col_wrap=3, robust=True)
 
 # %%
-scaled_data = scaler(inv_data, inventory=inventory, target_year=2060)
-scaled_data.plot(robust=True)
+data = [
+    scaler(inv_data, inventory=inventory, target_year=y)
+    for y in [2015, 2020, 2040, 2060, 2080, 2100]
+]
+scaled_data = xr.concat(data, dim="year")
+
+# %%
+scaled_data.plot(robust=True, col="year", col_wrap=3)
 
 # %%
 scaled_data.max()
@@ -90,5 +97,7 @@ for inv_variable, input4mips_variable in variable_mapping:
         variable_id=input4mips_variable, source_id=scenario, sector_id=sector_id
     )
     data = inventory.data[inv_variable].sel(sector="motor_vehicles")
-    
+
     da = scaler(data, inventory=inventory, target_year=2060)
+
+# %%

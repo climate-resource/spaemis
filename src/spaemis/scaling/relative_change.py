@@ -94,7 +94,10 @@ class RelativeChangeScaler(BaseScaler):
         # Regrid using linear interpolation
         scale_factor = scale_factor.interp(lat=data.lat, lon=data.lon)
 
-        return data * (1 + scale_factor)
+        scaled = data * (1 + scale_factor)
+        scaled["year"] = target_year
+
+        return scaled
 
     @classmethod
     def create_from_config(cls, method: RelativeChangeMethod) -> "RelativeChangeScaler":

@@ -68,9 +68,11 @@ def test_scale_inventory_constant(inventory):
     )
     res = scale_inventory(config, inventory, 2040)
     assert isinstance(res, xr.DataArray)
+    assert res.year == 2040
 
     # Check that data is constant
     inv_data = inventory.data[config.variable].sel(sector=config.sector)
+    inv_data["year"] = 2040
     xr.testing.assert_allclose(inv_data, res)
 
 
@@ -90,6 +92,7 @@ def test_scale_inventory_relative(inventory):
     )
     res = scale_inventory(config, inventory, 2040)
     assert isinstance(res, xr.DataArray)
+    assert res.year == 2040
 
     inv_data = inventory.data[config.variable].sel(sector=config.sector)
     npt.assert_allclose(res.lat, inv_data.lat)
