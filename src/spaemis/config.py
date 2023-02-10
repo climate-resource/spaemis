@@ -19,12 +19,15 @@ class ConstantScaleMethod:
 
 
 @define
-class HarmoniseScaleMethod:
-    source: str  # TODO add real options
-    name: ClassVar[Literal["harmonise"]] = "harmonise"
+class RelativeChangeMethod:
+    source_id: str
+    variable_id: str
+    sector: str
+
+    name: ClassVar[Literal["relative_change"]] = "relative_change"
 
 
-ScalerMethod = Union[ConstantScaleMethod, HarmoniseScaleMethod]
+ScalerMethod = Union[ConstantScaleMethod, RelativeChangeMethod]
 
 
 def discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
@@ -58,5 +61,17 @@ class DownscalingScenarioConfig:
 
 
 def load_config(config_file: str) -> DownscalingScenarioConfig:
+    """
+    Load and parse configuration from a file
+
+    Parameters
+    ----------
+    config_file
+        File to read
+
+    Returns
+    -------
+        Validated configuration
+    """
     with open(config_file) as fh:
         return converter.loads(fh.read(), DownscalingScenarioConfig)

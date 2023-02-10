@@ -1,14 +1,23 @@
 inventory_name: victoria
 inventory_year: 2016
+
 timeslices:
-  - 2030
-  - 2050
+  - 2020
+  - 2040
+  - 2060
+
 variables:
-  - variable: Emissions|CO
-    sector: Industrial
+  - variable: NOx
+    sector: industrial
     method:
-      name: constant
-  - variable: Emissions|CO
-    sector: Transportation
+      name: relative_change
+      source_id: CR-MESSAGE-GLOBIOM-ssp245-high
+      variable_id: NOx-em-anthro
+      sector: Industrial Sector
+  - variable: NOx
+    sector: motor_vehicles
     method:
-      name: constant
+      name: relative_change
+      source_id: CR-MESSAGE-GLOBIOM-ssp245-high
+      variable_id: NOx-em-anthro
+      sector: Transportation Sector

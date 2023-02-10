@@ -1,6 +1,7 @@
 import xarray as xr
 
 from spaemis.config import ScalerMethod
+from spaemis.inventory import EmissionsInventory
 
 
 class BaseScaler:
@@ -10,7 +11,12 @@ class BaseScaler:
     Used to modify a dataset using a scaling method
     """
 
-    def __call__(self, data: xr.DataArray, **kwargs) -> xr.DataArray:
+    def __call__(
+        self,
+        data: xr.DataArray,
+        inventory: EmissionsInventory,
+        target_year: int,
+    ) -> xr.DataArray:
         # TODO figure out call format
         raise NotImplementedError
 

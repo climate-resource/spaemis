@@ -1,7 +1,11 @@
+import os
+
 import pkg_resources
 import pytest
 from click.testing import CliRunner
 
+from spaemis.constants import TEST_DATA_DIR
+from spaemis.input_data import database
 from spaemis.inventory import load_inventory
 
 
@@ -22,3 +26,8 @@ def config_file():
 @pytest.fixture(scope="module")
 def inventory():
     return load_inventory("victoria", 2016)
+
+
+@pytest.fixture(autouse=True, scope="session")
+def setup_database():
+    database.register_path(os.path.join(TEST_DATA_DIR, "input4MIPs"))

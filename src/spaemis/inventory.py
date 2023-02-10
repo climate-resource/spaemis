@@ -62,11 +62,17 @@ class VictoriaGrid:
     dy: float = 0.01059988
 
     @property
-    def lats(self):
+    def lats(self) -> list[float]:
+        """
+        Latitudes of the grid
+        """
         return [self.y0 + self.dy * i for i in range(self.ny)]
 
     @property
-    def lons(self):
+    def lons(self) -> list[float]:
+        """
+        Longitudes of the grid
+        """
         return [self.x0 + self.dx * i for i in range(self.nx)]
 
 
