@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def _covers(da: xr.DataArray, dim: str, value: float) -> bool:
     """
-    Checks if a dimension of a DataArray can be interpolated for a given value
+    Check if a dimension of a DataArray can be interpolated for a given value
 
     If this check fails an extrapolation will be required
     Parameters
@@ -31,7 +31,6 @@ def _covers(da: xr.DataArray, dim: str, value: float) -> bool:
     -------
     True if `value` could be interpolated in `DataArray`'s dimension `dim`
     """
-
     return bool((da[dim].min() <= value) and (value <= da[dim].max()))
 
 

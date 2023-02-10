@@ -38,7 +38,6 @@ def run_project_command(config, out_dir):
     """
     Generate a set of emissions projection using an emissions inventory as a base
     """
-
     config = load_config(config)
 
     inventory = load_inventory(config.inventory_name, year=config.inventory_year)

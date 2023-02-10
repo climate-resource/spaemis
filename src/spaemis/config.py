@@ -61,5 +61,17 @@ class DownscalingScenarioConfig:
 
 
 def load_config(config_file: str) -> DownscalingScenarioConfig:
+    """
+    Load and parse configuration from a file
+
+    Parameters
+    ----------
+    config_file
+        File to read
+
+    Returns
+    -------
+        Validated configuration
+    """
     with open(config_file) as fh:
         return converter.loads(fh.read(), DownscalingScenarioConfig)

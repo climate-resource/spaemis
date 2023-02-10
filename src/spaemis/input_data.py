@@ -19,7 +19,8 @@ SECTOR_MAP = [
     "Solvents production and application",
     "Waste",
     "International Shipping",
-    # "Negative CO2 Emissions", # CO2 also includes this additional sector, but we aren't dealing with that here
+    # CO2 also includes this additional sector, but we aren't dealing with that here
+    # "Negative CO2 Emissions",
 ]
 
 
