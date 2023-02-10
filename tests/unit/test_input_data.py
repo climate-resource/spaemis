@@ -62,7 +62,6 @@ def test_database_register_empty():
     ],
 )
 def test_initialize_data(monkeypatch, paths):
-
     monkeypatch.setenv(
         "SPAEMIS_INPUT_PATHS",
         ",".join(paths),
