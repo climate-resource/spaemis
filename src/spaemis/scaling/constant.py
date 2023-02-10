@@ -14,8 +14,11 @@ class ConstantScaler(BaseScaler):
 
     scaling_factor: float
 
-    def __call__(self, data: xr.DataArray, **kwargs) -> xr.DataArray:
-        return data * self.scaling_factor
+    def __call__(self, data: xr.DataArray, target_year: int, **kwargs) -> xr.DataArray:
+        scaled = data * self.scaling_factor
+        scaled["year"] = target_year
+
+        return scaled
 
     @classmethod
     def create_from_config(cls, method: ConstantScaleMethod) -> "ConstantScaler":

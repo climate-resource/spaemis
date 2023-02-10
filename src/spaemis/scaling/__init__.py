@@ -14,8 +14,9 @@ from spaemis.config import ScalerMethod
 
 from .base import BaseScaler
 from .constant import ConstantScaler
+from .relative_change import RelativeChangeScaler
 
-_scalers = {"constant": ConstantScaler}
+_scalers = {"constant": ConstantScaler, "relative_change": RelativeChangeScaler}
 
 
 def get_scaler(name: str) -> Type[BaseScaler]:
