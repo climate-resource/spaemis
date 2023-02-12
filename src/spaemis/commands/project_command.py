@@ -2,6 +2,7 @@ import logging
 import os.path
 
 import click
+import xarray as xr
 
 from spaemis.commands.base import cli
 from spaemis.config import VariableConfig, load_config
@@ -46,7 +47,12 @@ def run_project_command(config, out_dir):
         logger.info(f"Creating output directory: {out_dir}")
         os.makedirs(out_dir, exist_ok=True)
 
+    projections = []
+
     for slice_year in config.timeslices:
         logger.info(f"Processing year={slice_year}")
         for projection_config in config.variables:
-            scale_inventory(projection_config, inventory, slice_year)
+            projections.append(
+                scale_inventory(projection_config, inventory, slice_year)
+            )
+    xr.concat()

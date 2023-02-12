@@ -8,16 +8,16 @@ timeslices:
 
 variables:
   - variable: NOx
-    sector: industrial
+    sector: industry
     method:
       name: relative_change
-      source_id: CR-MESSAGE-GLOBIOM-ssp245-high
+      source_id: IAMC-MESSAGE-GLOBIOM-ssp245-1-1
       variable_id: NOx-em-anthro
       sector: Industrial Sector
   - variable: NOx
     sector: motor_vehicles
     method:
       name: relative_change
-      source_id: CR-MESSAGE-GLOBIOM-ssp245-high
+      source_id: IAMC-MESSAGE-GLOBIOM-ssp245-1-1
       variable_id: NOx-em-anthro
       sector: Transportation Sector
