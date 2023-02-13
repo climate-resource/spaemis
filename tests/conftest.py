@@ -1,7 +1,6 @@
 import os
 
 import geopandas
-import pkg_resources
 import pytest
 import xarray as xr
 from click.testing import CliRunner
@@ -23,7 +22,7 @@ def runner(tmp_path):
 
 @pytest.fixture()
 def config_file():
-    return pkg_resources.resource_filename("spaemis", "config/scenarios/ssp245.yaml")
+    return os.path.join(TEST_DATA_DIR, "config", "test-config.yaml")
 
 
 @pytest.fixture()

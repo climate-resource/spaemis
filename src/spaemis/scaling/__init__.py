@@ -42,8 +42,8 @@ def get_scaler(name: str) -> Type[BaseScaler]:
     """
     try:
         return _scalers[name]
-    except KeyError:
-        raise ValueError(f"Unknown scaler: {name}")
+    except KeyError as exc:
+        raise ValueError(f"Unknown scaler: {name}") from exc
 
 
 def get_scaler_by_config(method: ScalerMethod) -> BaseScaler:

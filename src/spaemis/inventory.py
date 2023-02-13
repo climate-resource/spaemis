@@ -20,6 +20,19 @@ logger = logging.getLogger(__name__)
 def has_dimensions(
     dimensions: Union[str, list[str]]
 ) -> Callable[[Any, Attribute, Union[xr.Dataset, xr.DataArray]], None]:
+    """
+    Check if a xarray Dataset or DataArray has the expected dimensions
+
+    Parameters
+    ----------
+    dimensions
+        Dimensions to checks
+
+    Raises
+    ------
+    ValueError
+        If any of the requested dimensions are not present in the data array
+    """
     dims: list[str] = [dimensions] if isinstance(dimensions, str) else dimensions
 
     def _check(instance, attribute, value: Union[xr.Dataset, xr.DataArray]) -> None:
@@ -144,6 +157,29 @@ class VictoriaEPAInventory(EmissionsInventory):
 def load_inventory(
     inventory: str, year: Optional[int] = None, data_directory: Optional[str] = None
 ) -> EmissionsInventory:
+    """
+    Load an emissions inventory
+
+    Parameters
+    ----------
+    inventory
+        Inventory name
+    year
+        Year of inventory to load
+
+    data_directory
+        If provided, override the default directory to load data from
+
+    Returns
+    -------
+        EmissionsInventory with loaded data
+
+    Raises
+    ------
+    KeyError
+        Could not determine the appropriate inventory to load
+
+    """
     data_directory = data_directory or os.path.join(
         RAW_DATA_DIR, "inventories", inventory, str(year)
     )

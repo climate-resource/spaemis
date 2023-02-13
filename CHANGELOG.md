@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Move test configuration to `test-data` directory  [#8](https://github.com/climate-resource/spaemis/pull/8)
 - Add functionality to write out an xarray dataset as a set of CSVs that are formatted the same as the input emissions inventory data  [#7](https://github.com/climate-resource/spaemis/pull/7)
 - Add relative_change scaler and reading of Input4MIPs data [#3](https://github.com/climate-resource/spaemis/pull/3)
 - Added CLI command `project` and a framework for scalers [#2](https://github.com/climate-resource/spaemis/pull/2)

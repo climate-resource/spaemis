@@ -17,9 +17,36 @@ class BaseScaler:
         inventory: EmissionsInventory,
         target_year: int,
     ) -> xr.DataArray:
-        # TODO figure out call format
+        """
+        Run a scaler
+
+        Parameters
+        ----------
+        data
+            Data to scale
+        inventory
+            Emissions inventory
+        target_year
+            Year to scale to
+
+        Returns
+        -------
+            Scaled data
+        """
         raise NotImplementedError
 
     @classmethod
     def create_from_config(cls, method: ScalerMethod) -> "BaseScaler":
+        """
+        Factory for creating a new scaler
+
+        Parameters
+        ----------
+        method
+            Configuration to create the scaler
+
+        Returns
+        -------
+            New scaler instance configured according to the configuration
+        """
         raise NotImplementedError
