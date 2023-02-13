@@ -1,3 +1,9 @@
+"""
+General utility functions
+"""
+
+from typing import Union
+
 import geopandas
 import numpy as np
 import rioxarray  # noqa
@@ -84,7 +90,9 @@ def earth_radius(lat: np.ndarray) -> np.ndarray:  # pragma: no cover
     return r
 
 
-def clip_region(da: xr.DataArray, boundary: geopandas.GeoDataFrame) -> xr.DataArray:
+def clip_region(
+    da: Union[xr.DataArray, xr.Dataset], boundary: geopandas.GeoDataFrame
+) -> Union[xr.DataArray, xr.Dataset]:
     """
     Clip a region out of a larger DS
 
