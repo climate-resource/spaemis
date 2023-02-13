@@ -39,8 +39,8 @@ class InputEmissionsDatabase:
             if isinstance(paths, str):
                 paths = [paths]
 
-            for p in paths:
-                self.register_path(p)
+            for path in paths:
+                self.register_path(path)
 
     def register_path(self, path: str):
         extra_options = self._find_options(path)
@@ -107,6 +107,7 @@ def initialize_database(options: Optional[list[str]] = None) -> InputEmissionsDa
 
     Returns
     -------
+        Emissions database initialised with a list of input directories
 
     """
     if not options:

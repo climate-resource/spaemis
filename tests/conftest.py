@@ -1,7 +1,6 @@
 import os
 
 import geopandas
-import pkg_resources
 import pytest
 import xarray as xr
 from click.testing import CliRunner

@@ -98,11 +98,11 @@ def run_project_command(config, out_dir):
         logger.info(f"Creating output directory: {out_dir}")
         os.makedirs(out_dir, exist_ok=True)
 
-    ds = calculate_projections(config, inventory)
+    dataset = calculate_projections(config, inventory)
 
     for year in config.timeslices:
         target_dir = os.path.join(out_dir, str(year))
-        data_to_write = ds.sel(year=year)
+        data_to_write = dataset.sel(year=year)
 
         os.makedirs(target_dir, exist_ok=True)
 

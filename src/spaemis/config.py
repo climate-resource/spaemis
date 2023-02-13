@@ -30,7 +30,7 @@ class RelativeChangeMethod:
 ScalerMethod = Union[ConstantScaleMethod, RelativeChangeMethod]
 
 
-def discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
+def _discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
     name = value.pop("name")
     for Klass in get_args(_klass):
         if Klass.name == name:
@@ -38,7 +38,7 @@ def discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
     raise ValueError(f"Could not determine scaler for {name}")
 
 
-converter.register_structure_hook(ScalerMethod, discriminate_scaler)
+converter.register_structure_hook(ScalerMethod, _discriminate_scaler)
 
 
 @define
@@ -73,5 +73,5 @@ def load_config(config_file: str) -> DownscalingScenarioConfig:
     -------
         Validated configuration
     """
-    with open(config_file) as fh:
-        return converter.loads(fh.read(), DownscalingScenarioConfig)
+    with open(config_file) as handle:
+        return converter.loads(handle.read(), DownscalingScenarioConfig)
