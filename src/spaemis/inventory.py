@@ -223,7 +223,7 @@ def write_inventory_csvs(ds: xr.Dataset, output_dir: str):
 
         output_fname = f"{sector}_projected.csv"
 
-        logger.info(f"Writing output file: {output_fname}")
+        logger.info(f"Writing output file: {os.path.join(output_dir, output_fname)}")
 
         df = sector_data.fillna(0).to_dataframe(["lon", "lat"]).reset_index()
         # Round to be similar to the input inventory files

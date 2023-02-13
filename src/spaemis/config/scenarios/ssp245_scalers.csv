@@ -1,0 +1,97 @@
+variable,sector,scaler_name,scaler_variable_id,scaler_source_id,scaler_sector
+CO,architect_coating,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+CO,bakery,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+CO,crematoria,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+CO,cutback_bitumen,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+CO,domestic_solvents,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Solvents production and application
+CO,dry_cleaning,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+CO,gas_leak,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Energy Sector
+CO,industry_diffuse,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Waste
+CO,industry,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Industrial Sector
+CO,motor_vehicles,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+CO,panel_beaters,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+CO,petcrematoria,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+CO,pizza,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+CO,printing,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+CO,rail,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+CO,servos,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+CO,shipping,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,International Shipping
+CO,vicbakery,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+CO,woodheater,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,architect_coating,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,bakery,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,crematoria,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,cutback_bitumen,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+NOx,domestic_solvents,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Solvents production and application
+NOx,dry_cleaning,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,gas_leak,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Energy Sector
+NOx,industry_diffuse,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Waste
+NOx,industry,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Industrial Sector
+NOx,motor_vehicles,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+NOx,panel_beaters,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,petcrematoria,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,pizza,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,printing,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,rail,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+NOx,servos,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,shipping,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,International Shipping
+NOx,vicbakery,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+NOx,woodheater,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,architect_coating,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,bakery,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,crematoria,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,cutback_bitumen,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+SO2,domestic_solvents,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Solvents production and application
+SO2,dry_cleaning,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,gas_leak,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Energy Sector
+SO2,industry_diffuse,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Waste
+SO2,industry,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Industrial Sector
+SO2,motor_vehicles,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+SO2,panel_beaters,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,petcrematoria,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,pizza,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,printing,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,rail,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+SO2,servos,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,shipping,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,International Shipping
+SO2,vicbakery,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+SO2,woodheater,relative_change,SO2-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,architect_coating,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,bakery,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,crematoria,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,cutback_bitumen,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+PM10,domestic_solvents,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Solvents production and application
+PM10,dry_cleaning,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,gas_leak,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Energy Sector
+PM10,industry_diffuse,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Waste
+PM10,industry,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Industrial Sector
+PM10,motor_vehicles,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+PM10,panel_beaters,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,petcrematoria,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,pizza,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,printing,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,rail,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+PM10,servos,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,shipping,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,International Shipping
+PM10,vicbakery,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+PM10,woodheater,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,architect_coating,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,bakery,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,crematoria,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,cutback_bitumen,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+VOC,domestic_solvents,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Solvents production and application
+VOC,dry_cleaning,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,gas_leak,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Energy Sector
+VOC,industry_diffuse,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Waste
+VOC,industry,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Industrial Sector
+VOC,motor_vehicles,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+VOC,panel_beaters,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,petcrematoria,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,pizza,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,printing,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,rail,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+VOC,servos,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,shipping,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,International Shipping
+VOC,vicbakery,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+VOC,woodheater,relative_change,BC-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,"Residential, Commercial, Other"
+
