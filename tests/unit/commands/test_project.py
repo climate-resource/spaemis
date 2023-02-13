@@ -43,7 +43,7 @@ def test_cli_project(runner, config_file, tmpdir, mocker, inventory):
             "project",
             "--config",
             config_file,
-            "--out_dir",
+            "--out-dir",
             str(out_dir),
         ],
     )

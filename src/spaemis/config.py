@@ -5,7 +5,7 @@ import os.path
 from typing import Any, ClassVar, Literal, Optional, Type, Union, get_args
 
 import pandas as pd
-from attrs import define, field
+from attrs import define
 from cattrs.preconf.pyyaml import make_converter
 
 from spaemis.utils import chdir
@@ -51,23 +51,25 @@ class VariableScalerConfig:
     method: ScalerMethod
 
 
-def _convert_filename_to_scalers(filename):
-    if not isinstance(filename, str):
-        return filename
+def _convert_filename_to_scalers(
+    value: Union[dict, str], _
+) -> list[VariableScalerConfig]:
+    if isinstance(value, str):
+        # load_config updates the current working directory to match the
+        # directory of a loaded config files otherwise a absolute filename is required
+        data = pd.read_csv(value).to_dict(orient="records")
 
-    # load_config updates the current working directory to match the
-    # directory of a loaded config files otherwise a absolute filename is required
-    data = pd.read_csv(filename).to_dict(orient="records")
+        def extract_scaler_info(data_item):
+            sector_info = {}
+            for key, value in data_item.copy().items():
+                if key.startswith("scaler_"):
+                    sector_info[key[7:]] = value
+                    data_item.pop(key)
+            return {**data_item, "method": sector_info}
 
-    def extract_scaler_info(data_item):
-        sector_info = {}
-        for key, value in data_item.copy().items():
-            if key.startswith("scaler_"):
-                sector_info[key[7:]] = value
-                data_item.pop(key)
-        return {**data_item, "method": sector_info}
+        value = [extract_scaler_info(item) for item in data]
 
-    return [extract_scaler_info(item) for item in data]
+    return [converter.structure(item, VariableScalerConfig) for item in value]
 
 
 @define
@@ -79,10 +81,13 @@ class DownscalingScenarioConfig:
     inventory_name: str
     inventory_year: int
     timeslices: list[int]
-    scalers: Union[list[VariableScalerConfig], str] = field(
-        converter=_convert_filename_to_scalers
-    )
+    scalers: list[VariableScalerConfig]
     default_scaler: Optional[ScalerMethod] = None
+
+
+converter.register_structure_hook(
+    list[VariableScalerConfig], _convert_filename_to_scalers
+)
 
 
 def load_config(config_file: str) -> DownscalingScenarioConfig:
@@ -101,6 +106,6 @@ def load_config(config_file: str) -> DownscalingScenarioConfig:
     -------
         Validated configuration
     """
-    with chdir(os.path.dirname(config_file)):
-        with open(config_file) as handle:
+    with open(config_file) as handle:
+        with chdir(os.path.dirname(config_file)):
             return converter.loads(handle.read(), DownscalingScenarioConfig)
