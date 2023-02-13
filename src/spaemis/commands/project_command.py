@@ -1,11 +1,16 @@
+"""
+Project CLI command
+"""
+
 import logging
 import os.path
 
 import click
+import xarray as xr
 
 from spaemis.commands.base import cli
-from spaemis.config import VariableConfig, load_config
-from spaemis.inventory import EmissionsInventory, load_inventory
+from spaemis.config import DownscalingScenarioConfig, VariableConfig, load_config
+from spaemis.inventory import EmissionsInventory, load_inventory, write_inventory_csvs
 from spaemis.scaling import get_scaler_by_config
 
 logger = logging.getLogger(__name__)
@@ -13,7 +18,23 @@ logger = logging.getLogger(__name__)
 
 def scale_inventory(
     cfg: VariableConfig, inventory: EmissionsInventory, target_year: int
-):
+) -> xr.Dataset:
+    """
+    Scale a given variable/sector
+
+    Parameters
+    ----------
+    cfg
+        Configuration used to determine how the scaling is performed
+    inventory
+        Emissions inventory
+    target_year
+        Year the data will be scaled according to
+
+    Returns
+    -------
+        Dataset with a single variable with dimensions of (sector, year, lat, lon)
+    """
     if cfg.variable not in inventory.data.variables:
         raise ValueError(f"Variable {cfg.variable} not available in inventory")
     if cfg.sector not in inventory.data["sector"]:
@@ -24,7 +45,38 @@ def scale_inventory(
         field, inventory=inventory, target_year=target_year
     )
 
-    return scaled_field
+    scaled_field["sector"] = cfg.sector
+    scaled_field["year"] = target_year
+
+    return scaled_field.expand_dims(["sector", "year"]).to_dataset(name=cfg.variable)
+
+
+def calculate_projections(
+    config: DownscalingScenarioConfig, inventory: EmissionsInventory
+) -> xr.Dataset:
+    """
+    Calculate a projected set of emissions according to some configuration
+
+    Parameters
+    ----------
+    config
+    inventory
+
+    Returns
+    -------
+        Dataset containing the requested projections.
+
+        The dimensionality of the output variables is (sector, year, lat, lon)
+    """
+    projections = []
+    for variable_config in config.variables:
+        for slice_year in config.timeslices:
+            logger.info(f"Processing year={slice_year}")
+            res = scale_inventory(variable_config, inventory, slice_year)
+            projections.append(res)
+
+    # Align dims and then merge
+    return xr.merge(xr.align(*projections, join="outer"))
 
 
 @cli.command(name="project")
@@ -46,7 +98,12 @@ def run_project_command(config, out_dir):
         logger.info(f"Creating output directory: {out_dir}")
         os.makedirs(out_dir, exist_ok=True)
 
-    for slice_year in config.timeslices:
-        logger.info(f"Processing year={slice_year}")
-        for projection_config in config.variables:
-            scale_inventory(projection_config, inventory, slice_year)
+    ds = calculate_projections(config, inventory)
+
+    for year in config.timeslices:
+        target_dir = os.path.join(out_dir, str(year))
+        data_to_write = ds.sel(year=year)
+
+        os.makedirs(target_dir, exist_ok=True)
+
+        write_inventory_csvs(data_to_write, target_dir)

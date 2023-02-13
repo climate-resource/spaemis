@@ -1,12 +1,15 @@
 import os
 
+import geopandas
 import pkg_resources
 import pytest
+import xarray as xr
 from click.testing import CliRunner
 
-from spaemis.constants import TEST_DATA_DIR
+from spaemis.config import DownscalingScenarioConfig, load_config
+from spaemis.constants import RAW_DATA_DIR, TEST_DATA_DIR
 from spaemis.input_data import database
-from spaemis.inventory import load_inventory
+from spaemis.inventory import EmissionsInventory
 
 
 @pytest.fixture()
@@ -23,9 +26,28 @@ def config_file():
     return pkg_resources.resource_filename("spaemis", "config/scenarios/ssp245.yaml")
 
 
+@pytest.fixture()
+def config(config_file) -> DownscalingScenarioConfig:
+    return load_config(config_file)
+
+
 @pytest.fixture(scope="module")
-def inventory():
-    return load_inventory("victoria", 2016)
+def inventory() -> EmissionsInventory:
+    # For testing we use a decimated version of the vic inventory generated using
+    # scripts/downsample_inventory.py
+    vic_border = geopandas.read_file(
+        os.path.join(RAW_DATA_DIR, "masks", "victoria_border_mask.gpkg")
+    )
+    data = xr.load_dataset(
+        os.path.join(
+            TEST_DATA_DIR,
+            "inventory",
+            "decimated",
+            "inventory_decimated.nc",
+        )
+    )
+
+    return EmissionsInventory(data, border_mask=vic_border, year=2016)
 
 
 @pytest.fixture(autouse=True, scope="session")
