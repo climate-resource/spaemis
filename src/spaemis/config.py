@@ -2,7 +2,7 @@
 Description of the configuration
 """
 
-from typing import Any, ClassVar, Literal, Type, Union, get_args
+from typing import Any, ClassVar, Literal, Optional, Type, Union, get_args
 
 from attrs import define
 from cattrs.preconf.pyyaml import make_converter
@@ -42,7 +42,7 @@ converter.register_structure_hook(ScalerMethod, _discriminate_scaler)
 
 
 @define
-class VariableConfig:
+class VariableScalerConfig:
     variable: str
     sector: str
     method: ScalerMethod
@@ -57,7 +57,8 @@ class DownscalingScenarioConfig:
     inventory_name: str
     inventory_year: int
     timeslices: list[int]
-    variables: list[VariableConfig]
+    scalers: list[VariableScalerConfig]
+    default_scaler: Optional[ScalerMethod] = None
 
 
 def load_config(config_file: str) -> DownscalingScenarioConfig:
