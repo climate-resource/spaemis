@@ -1,7 +1,8 @@
 """
 General utility functions
 """
-
+import os
+from contextlib import contextmanager
 from typing import Union
 
 import geopandas
@@ -150,3 +151,23 @@ def weighted_annual_mean(
     obs_sum = (target * weights).resample(time="AS").sum(dim="time")
     ones_out = (ones * weights).resample(time="AS").sum(dim="time")
     return obs_sum / ones_out
+
+
+@contextmanager
+def chdir(current_directory: str) -> None:
+    """
+    Context manager to temporarily change the current working directory
+
+    Should not be used in async or parallel methods as it changes
+    the global state
+
+    Parameters
+    ----------
+    current_directory
+    """
+    previous = os.getcwd()
+    try:
+        os.chdir(current_directory)
+        yield
+    finally:
+        os.chdir(previous)

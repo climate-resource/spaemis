@@ -1,0 +1,9 @@
+inventory_name: victoria
+inventory_year: 2016
+
+timeslices:
+  - 2020
+  - 2040
+  - 2060
+
+scalers: test_scalers.csv
