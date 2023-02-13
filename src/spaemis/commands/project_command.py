@@ -77,7 +77,7 @@ def calculate_projections(
     if config.default_scaler:
         # Add in additional scalers for each missing variable/sector
         variables = inventory.data.data_vars.keys()
-        sectors = inventory.data["sector"]
+        sectors = inventory.data["sector"].values
 
         for variable, sector in product(variables, sectors):
             scaling_configs.setdefault(
@@ -94,7 +94,7 @@ def calculate_projections(
     for variable_config in scaling_configs.values():
         for slice_year in config.timeslices:
             logger.info(
-                f"Processing variable=%s sector=%s year=%i",
+                "Processing variable=%s sector=%s year=%i",
                 variable_config.variable,
                 variable_config.sector,
                 slice_year,
