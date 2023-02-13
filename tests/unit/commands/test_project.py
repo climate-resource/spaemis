@@ -12,8 +12,8 @@ from spaemis.config import VariableConfig, converter, load_config
 def test_cli_project(runner, config_file, tmpdir, mocker, inventory):
     exp_dataset = xr.concat(
         [
-            inventory.data.expand_dims({"year": 2040}, axis=1),
-            inventory.data.expand_dims({"year": 2060}, axis=1),
+            inventory.data.assign_coords(year=2040).expand_dims("year", axis=1),
+            inventory.data.assign_coords(year=2060).expand_dims("year", axis=1),
         ],
         dim="year",
     )
