@@ -85,8 +85,10 @@ class DownscalingScenarioConfig:
     default_scaler: Optional[ScalerMethod] = None
 
 
-converter.register_structure_hook(
-    List[VariableScalerConfig], _convert_filename_to_scalers
+# Ideally we could use converter.register_structure_hook. See
+# https://github.com/python-attrs/cattrs/issues/206#issuecomment-1013714386
+converter.register_structure_hook_func(
+    lambda t: t == List[VariableScalerConfig], _convert_filename_to_scalers
 )
 
 
