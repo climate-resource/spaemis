@@ -4,12 +4,14 @@ Project CLI command
 
 import logging
 import os.path
+from itertools import product
+from typing import Dict, Tuple
 
 import click
 import xarray as xr
 
 from spaemis.commands.base import cli
-from spaemis.config import DownscalingScenarioConfig, VariableConfig, load_config
+from spaemis.config import DownscalingScenarioConfig, VariableScalerConfig, load_config
 from spaemis.inventory import EmissionsInventory, load_inventory, write_inventory_csvs
 from spaemis.scaling import get_scaler_by_config
 
@@ -17,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def scale_inventory(
-    cfg: VariableConfig, inventory: EmissionsInventory, target_year: int
+    cfg: VariableScalerConfig, inventory: EmissionsInventory, target_year: int
 ) -> xr.Dataset:
     """
     Scale a given variable/sector
@@ -68,10 +70,35 @@ def calculate_projections(
 
         The dimensionality of the output variables is (sector, year, lat, lon)
     """
+    scaling_configs: Dict[Tuple[str, str], VariableScalerConfig] = {
+        (cfg.variable, cfg.sector): cfg for cfg in config.scalers
+    }
+
+    if config.default_scaler:
+        # Add in additional scalers for each missing variable/sector
+        variables = inventory.data.data_vars.keys()
+        sectors = inventory.data["sector"]
+
+        for variable, sector in product(variables, sectors):
+            scaling_configs.setdefault(
+                (variable, sector),
+                VariableScalerConfig(
+                    variable=variable,
+                    sector=sector,
+                    method=config.default_scaler,
+                ),
+            )
+
     projections = []
-    for variable_config in config.variables:
+
+    for variable_config in scaling_configs.values():
         for slice_year in config.timeslices:
-            logger.info(f"Processing year={slice_year}")
+            logger.info(
+                f"Processing variable=%s sector=%s year=%i",
+                variable_config.variable,
+                variable_config.sector,
+                slice_year,
+            )
             res = scale_inventory(variable_config, inventory, slice_year)
             projections.append(res)
 

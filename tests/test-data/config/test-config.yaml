@@ -6,7 +6,7 @@ timeslices:
   - 2040
   - 2060
 
-variables:
+scalers:
   - variable: NOx
     sector: industry
     method:

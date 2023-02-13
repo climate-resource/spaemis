@@ -6,7 +6,7 @@ import xarray as xr
 
 from spaemis.commands import cli
 from spaemis.commands.project_command import calculate_projections, scale_inventory
-from spaemis.config import VariableConfig, converter, load_config
+from spaemis.config import VariableScalerConfig, converter, load_config
 
 
 def test_cli_project(runner, config_file, tmpdir, mocker, inventory):
@@ -59,7 +59,7 @@ def test_scale_inventory_missing_variable(inventory):
             "sector": "Industrial",
             "method": {"name": "constant"},
         },
-        VariableConfig,
+        VariableScalerConfig,
     )
     with pytest.raises(ValueError, match="Variable missing not available in inventory"):
         scale_inventory(config, inventory, 2040)
@@ -72,7 +72,7 @@ def test_scale_inventory_missing_sector(inventory):
             "sector": "unknown",
             "method": {"name": "constant"},
         },
-        VariableConfig,
+        VariableScalerConfig,
     )
     with pytest.raises(ValueError, match="Sector unknown not available in inventory"):
         scale_inventory(config, inventory, 2040)
@@ -85,7 +85,7 @@ def test_scale_inventory_constant(inventory):
             "sector": "rail",
             "method": {"name": "constant"},
         },
-        VariableConfig,
+        VariableScalerConfig,
     )
     res = scale_inventory(config, inventory, 2040)
     assert isinstance(res, xr.Dataset)
@@ -111,7 +111,7 @@ def test_scale_inventory_relative(inventory):
                 "sector": "Transportation Sector",
             },
         },
-        VariableConfig,
+        VariableScalerConfig,
     )
     res = scale_inventory(config, inventory, 2040)
     assert isinstance(res, xr.Dataset)
