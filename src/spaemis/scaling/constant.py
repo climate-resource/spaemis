@@ -16,7 +16,6 @@ class ConstantScaler(BaseScaler):
 
     def __call__(self, data: xr.DataArray, target_year: int, **kwargs) -> xr.DataArray:
         scaled = data * self.scaling_factor
-        scaled["year"] = target_year
 
         return scaled
 

@@ -13,14 +13,14 @@ from .base import BaseScaler
 logger = logging.getLogger(__name__)
 
 
-def _covers(da: xr.DataArray, dim: str, value: float) -> bool:
+def _covers(dataarray: xr.DataArray, dim: str, value: float) -> bool:
     """
     Check if a dimension of a DataArray can be interpolated for a given value
 
     If this check fails an extrapolation will be required
     Parameters
     ----------
-    da
+    dataarray
         DataArray to check
     dim
         Dimension of interest
@@ -31,7 +31,7 @@ def _covers(da: xr.DataArray, dim: str, value: float) -> bool:
     -------
     True if `value` could be interpolated in `DataArray`'s dimension `dim`
     """
-    return bool((da[dim].min() <= value) and (value <= da[dim].max()))
+    return bool(dataarray[dim].min() <= value <= dataarray[dim].max())
 
 
 @define
@@ -46,16 +46,31 @@ class RelativeChangeScaler(BaseScaler):
     source_id: str
     sector_id: int
 
-    def load_source(self, inventory, weighed_temporal_mean=False) -> xr.DataArray:
-        ds = database.load(source_id=self.source_id, variable_id=self.variable_id)
-        ds = ds.sel(sector=self.sector_id)
+    def load_source(self, inventory, weighted_temporal_mean=False) -> xr.DataArray:
+        """
+        Load and preprocess the appropriate input4MIPs data
+
+
+        Parameters
+        ----------
+        inventory
+        weighted_temporal_mean
+            IF True, temporally weight the annual mean to capture the varying number
+            of days in each month
+
+        Returns
+        -------
+            Annual mean values over the same domain as the inventory data
+        """
+        dataset = database.load(source_id=self.source_id, variable_id=self.variable_id)
+        dataset = dataset.sel(sector=self.sector_id)
 
         # The input4MIPS emissions are all in kg/m2/s so we take means rather than sums
         variable_name = self.variable_id.replace("-", "_")
-        if weighed_temporal_mean:
-            annual_mean = weighted_annual_mean(ds, variable_name)
+        if weighted_temporal_mean:
+            annual_mean = weighted_annual_mean(dataset, variable_name)
         else:
-            annual_mean = ds[variable_name].groupby("time.year").mean()
+            annual_mean = dataset[variable_name].groupby("time.year").mean()
 
         clipped = clip_region(annual_mean, inventory.border_mask)
         return clipped
@@ -97,7 +112,6 @@ class RelativeChangeScaler(BaseScaler):
         scale_factor = scale_factor.interp(lat=data.lat, lon=data.lon)
 
         scaled = data * (1 + scale_factor)
-        scaled["year"] = target_year
 
         return scaled
 

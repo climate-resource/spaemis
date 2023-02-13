@@ -1,3 +1,8 @@
+"""
+Unit Registry
+
+Adds H2 related units if they haven't been previously registered
+"""
 from openscm_units import unit_registry
 
 if not hasattr(unit_registry, "hydrogen"):  # pragma: no branch
