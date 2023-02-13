@@ -5,10 +5,5 @@ timeslices:
   - 2020
   - 2040
   - 2060
-  - 2080
-  - 2100
 
-default_scaler:
-  name: constant
-
-scalers: ssp245_scalers.csv
+scalers: test_scalers.csv

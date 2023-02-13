@@ -8,10 +8,16 @@ from itertools import product
 from typing import Dict, Tuple
 
 import click
+import numpy as np
 import xarray as xr
 
 from spaemis.commands.base import cli
-from spaemis.config import DownscalingScenarioConfig, VariableScalerConfig, load_config
+from spaemis.config import (
+    DownscalingScenarioConfig,
+    VariableScalerConfig,
+    converter,
+    load_config,
+)
 from spaemis.inventory import EmissionsInventory, load_inventory, write_inventory_csvs
 from spaemis.scaling import get_scaler_by_config
 
@@ -53,6 +59,29 @@ def scale_inventory(
     return scaled_field.expand_dims(["sector", "year"]).to_dataset(name=cfg.variable)
 
 
+def _create_output_data(options, config, template: xr.Dataset):
+    unique_variables = sorted(set([variable for variable, _ in options]))
+    unique_sectors = sorted(set([sector for _, sector in options]))
+    unique_years = sorted(config.timeslices)
+
+    coords = dict(
+        sector=unique_sectors,
+        year=unique_years,
+        lat=template.lat,
+        lon=template.lon,
+    )
+
+    return xr.Dataset(
+        data_vars={
+            variable: xr.DataArray(
+                np.nan, coords=coords, dims=("sector", "year", "lat", "lon")
+            )
+            for variable in unique_variables
+        },
+        coords=coords,
+    )
+
+
 def calculate_projections(
     config: DownscalingScenarioConfig, inventory: EmissionsInventory
 ) -> xr.Dataset:
@@ -89,7 +118,7 @@ def calculate_projections(
                 ),
             )
 
-    projections = []
+    output_ds = None
 
     for variable_config in scaling_configs.values():
         for slice_year in config.timeslices:
@@ -99,11 +128,14 @@ def calculate_projections(
                 variable_config.sector,
                 slice_year,
             )
-            res = scale_inventory(variable_config, inventory, slice_year)
-            projections.append(res)
 
-    # Align dims and then merge
-    return xr.merge(xr.align(*projections, join="outer"))
+            res = scale_inventory(variable_config, inventory, slice_year)
+
+            if output_ds is None:
+                output_ds = _create_output_data(scaling_configs.keys(), config, res)
+            output_ds.update(res)
+
+    return output_ds
 
 
 @cli.command(name="project")
@@ -112,7 +144,7 @@ def calculate_projections(
     help="Path to a configuration file for the scenario of interest",
     required=True,
 )
-@click.option("-o", "--out_dir", help="Directory to write the updated inventory")
+@click.option("-o", "--out-dir", help="Directory to write the updated inventory")
 def run_project_command(config, out_dir):
     """
     Generate a set of emissions projection using an emissions inventory as a base
@@ -125,8 +157,16 @@ def run_project_command(config, out_dir):
         logger.info(f"Creating output directory: {out_dir}")
         os.makedirs(out_dir, exist_ok=True)
 
+    logger.info("Saving loaded configuration to output directory")
+    with open(os.path.join(out_dir, "config.yaml"), "w") as handle:
+        handle.write(converter.dumps(config, DownscalingScenarioConfig))
+
     dataset = calculate_projections(config, inventory)
 
+    logger.info("Writing output dataset as netcdf")
+    dataset.to_netcdf(os.path.join(out_dir, "projections.nc"))
+
+    logger.info("Writing CSV files")
     for year in config.timeslices:
         target_dir = os.path.join(out_dir, str(year))
         data_to_write = dataset.sel(year=year)

@@ -1,3 +1,4 @@
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -17,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add `ssp119`, `ssp126` and `ssp245` scenario configurations [#10](https://github.com/climate-resource/spaemis/pull/10)
 - Add `default_scaler` to the configuration for the scaler to be used if no specific scaler configuration is provided [#9](https://github.com/climate-resource/spaemis/pull/9)
 - Move test configuration to `test-data` directory  [#8](https://github.com/climate-resource/spaemis/pull/8)
 - Add functionality to write out a xarray dataset as a set of CSVs that are formatted the same as the input emissions inventory data  [#7](https://github.com/climate-resource/spaemis/pull/7)

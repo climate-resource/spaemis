@@ -12,12 +12,15 @@ from spaemis.config import (
 from spaemis.constants import TEST_DATA_DIR
 
 
-def test_load_config():
-    res = load_config(os.path.join(TEST_DATA_DIR, "config", "test-config.yaml"))
+@pytest.mark.parametrize("fname", ["test-config.yaml", "test-config-with-csv.yaml"])
+def test_load_config(fname, config):
+    res = load_config(os.path.join(TEST_DATA_DIR, "config", fname))
 
     assert isinstance(res, DownscalingScenarioConfig)
     assert res.inventory_name == "victoria"
     assert res.inventory_year == 2016
+
+    assert res == config
 
 
 def test_structuring_constant():

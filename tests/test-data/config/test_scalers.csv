@@ -1,0 +1,4 @@
+variable,sector,scaler_name,scaler_variable_id,scaler_source_id,scaler_sector
+NOx,industry,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Industrial Sector
+NOx,motor_vehicles,relative_change,NOx-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Transportation Sector
+CO,industry,relative_change,CO-em-anthro,IAMC-MESSAGE-GLOBIOM-ssp245-1-1,Industrial Sector

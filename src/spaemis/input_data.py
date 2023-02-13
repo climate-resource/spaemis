@@ -82,6 +82,9 @@ class InputEmissionsDatabase:
     def load(self, variable_id, source_id) -> Optional[xr.Dataset]:
         subset = self.available_data
 
+        if not len(self.available_data):
+            raise ValueError("No input data has been found")
+
         subset = subset[subset.source_id == source_id]
         subset = subset[subset.variable_id == variable_id]
 

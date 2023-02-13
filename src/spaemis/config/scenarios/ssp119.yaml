@@ -11,4 +11,4 @@ timeslices:
 default_scaler:
   name: constant
 
-scalers: ssp245_scalers.csv
+scalers: ssp119_scalers.csv
