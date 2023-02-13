@@ -1,4 +1,5 @@
-import pkg_resources
+import os
+
 import pytest
 
 from spaemis.config import (
@@ -8,12 +9,11 @@ from spaemis.config import (
     converter,
     load_config,
 )
+from spaemis.constants import TEST_DATA_DIR
 
 
 def test_load_config():
-    res = load_config(
-        pkg_resources.resource_filename("spaemis", "config/scenarios/ssp245.yaml")
-    )
+    res = load_config(os.path.join(TEST_DATA_DIR, "config", "test-config.yaml"))
 
     assert isinstance(res, DownscalingScenarioConfig)
     assert res.inventory_name == "victoria"

@@ -23,7 +23,7 @@ def runner(tmp_path):
 
 @pytest.fixture()
 def config_file():
-    return pkg_resources.resource_filename("spaemis", "config/scenarios/ssp245.yaml")
+    return os.path.join(TEST_DATA_DIR, "config", "test-config.yaml")
 
 
 @pytest.fixture()
