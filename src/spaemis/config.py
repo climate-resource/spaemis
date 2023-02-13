@@ -2,7 +2,7 @@
 Description of the configuration
 """
 import os.path
-from typing import Any, ClassVar, Literal, Optional, Type, Union, get_args
+from typing import Any, ClassVar, List, Literal, Optional, Type, Union, get_args
 
 import pandas as pd
 from attrs import define
@@ -53,7 +53,7 @@ class VariableScalerConfig:
 
 def _convert_filename_to_scalers(
     value: Union[dict, str], _
-) -> list[VariableScalerConfig]:
+) -> List[VariableScalerConfig]:
     if isinstance(value, str):
         # load_config updates the current working directory to match the
         # directory of a loaded config files otherwise a absolute filename is required
@@ -80,13 +80,13 @@ class DownscalingScenarioConfig:
 
     inventory_name: str
     inventory_year: int
-    timeslices: list[int]
-    scalers: list[VariableScalerConfig]
+    timeslices: List[int]
+    scalers: List[VariableScalerConfig]
     default_scaler: Optional[ScalerMethod] = None
 
 
 converter.register_structure_hook(
-    list[VariableScalerConfig], _convert_filename_to_scalers
+    List[VariableScalerConfig], _convert_filename_to_scalers
 )
 
 
