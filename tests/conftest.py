@@ -9,7 +9,7 @@ from click.testing import CliRunner
 from spaemis.config import DownscalingScenarioConfig, load_config
 from spaemis.constants import RAW_DATA_DIR, TEST_DATA_DIR
 from spaemis.input_data import database
-from spaemis.inventory import EmissionsInventory, load_inventory
+from spaemis.inventory import EmissionsInventory
 
 
 @pytest.fixture()

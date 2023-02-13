@@ -1,3 +1,7 @@
+"""
+Project CLI command
+"""
+
 import logging
 import os.path
 
@@ -15,6 +19,22 @@ logger = logging.getLogger(__name__)
 def scale_inventory(
     cfg: VariableConfig, inventory: EmissionsInventory, target_year: int
 ) -> xr.Dataset:
+    """
+    Scale a given variable/sector
+
+    Parameters
+    ----------
+    cfg
+        Configuration used to determine how the scaling is performed
+    inventory
+        Emissions inventory
+    target_year
+        Year the data will be scaled according to
+
+    Returns
+    -------
+        Dataset with a single variable with dimensions of (sector, year, lat, lon)
+    """
     if cfg.variable not in inventory.data.variables:
         raise ValueError(f"Variable {cfg.variable} not available in inventory")
     if cfg.sector not in inventory.data["sector"]:
@@ -34,6 +54,20 @@ def scale_inventory(
 def calculate_projections(
     config: DownscalingScenarioConfig, inventory: EmissionsInventory
 ) -> xr.Dataset:
+    """
+    Calculate a projected set of emissions according to some configuration
+
+    Parameters
+    ----------
+    config
+    inventory
+
+    Returns
+    -------
+        Dataset containing the requested projections.
+
+        The dimensionality of the output variables is (sector, year, lat, lon)
+    """
     projections = []
     for variable_config in config.variables:
         for slice_year in config.timeslices:

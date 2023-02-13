@@ -4,7 +4,7 @@ Loading emissions inventories
 import glob
 import logging
 import os
-from typing import Any, Callable, Optional, Type, Union
+from typing import Any, Callable, Optional, Union
 
 import geopandas
 import pandas as pd
@@ -111,22 +111,22 @@ class VictoriaEPAInventory(EmissionsInventory):
         Loaded data
         """
         fnames = sorted(glob.glob(os.path.join(data_directory, "*.csv")))
-        if not len(fnames):
+        if not fnames:
             raise ValueError("No inventory files found for Victoria")
 
         if grid is None:
             grid = VictoriaGrid()
 
         def read_file(fname):
-            df = pd.read_csv(fname).set_index(["lat", "lon"])
-            ds = xr.Dataset.from_dataframe(df)
-            ds["lat_new"] = grid.lats
-            ds["lon_new"] = grid.lons
+            dataframe = pd.read_csv(fname).set_index(["lat", "lon"])
+            dataset = xr.Dataset.from_dataframe(dataframe)
+            dataset["lat_new"] = grid.lats
+            dataset["lon_new"] = grid.lons
 
-            del ds["lat"]
-            del ds["lon"]
+            del dataset["lat"]
+            del dataset["lon"]
 
-            return ds.rename({"lat_new": "lat", "lon_new": "lon"}).assign_coords(
+            return dataset.rename({"lat_new": "lat", "lon_new": "lon"}).assign_coords(
                 {"sector": os.path.basename(fname).replace(file_suffix, "")}
             )
 
@@ -177,7 +177,6 @@ def write_inventory_csvs(ds: xr.Dataset, output_dir: str):
     output_dir
         Output directory for the
     """
-
     sectors = ds["sector"].values
 
     for sector in sectors:
