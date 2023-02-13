@@ -10,25 +10,4 @@ timeslices:
 default_scaler:
   name: constant
 
-scalers:
-  - variable: NOx
-    sector: industry
-    method:
-      name: relative_change
-      source_id: &source IAMC-MESSAGE-GLOBIOM-ssp245-1-1
-      variable_id: NOx-em-anthro
-      sector: Industrial Sector
-  - variable: NOx
-    sector: motor_vehicles
-    method:
-      name: relative_change
-      source_id: *source
-      variable_id: NOx-em-anthro
-      sector: Transportation Sector
-  - variable: CO
-    sector: industry
-    method:
-      name: relative_change
-      source_id: *source
-      variable_id: CO-em-anthro
-      sector: Industrial Sector
+scalers: ssp245_scalers.csv
