@@ -97,7 +97,6 @@ class RelativeChangeScaler(BaseScaler):
         scale_factor = scale_factor.interp(lat=data.lat, lon=data.lon)
 
         scaled = data * (1 + scale_factor)
-        scaled["year"] = target_year
 
         return scaled
 

@@ -6,7 +6,7 @@ import xarray as xr
 
 from spaemis.commands.base import cli
 from spaemis.config import DownscalingScenarioConfig, VariableConfig, load_config
-from spaemis.inventory import EmissionsInventory, load_inventory
+from spaemis.inventory import EmissionsInventory, load_inventory, write_inventory_csvs
 from spaemis.scaling import get_scaler_by_config
 
 logger = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def scale_inventory(
     cfg: VariableConfig, inventory: EmissionsInventory, target_year: int
-) -> xr.DataArray:
+) -> xr.Dataset:
     if cfg.variable not in inventory.data.variables:
         raise ValueError(f"Variable {cfg.variable} not available in inventory")
     if cfg.sector not in inventory.data["sector"]:
@@ -26,6 +26,7 @@ def scale_inventory(
     )
 
     scaled_field["sector"] = cfg.sector
+    scaled_field["year"] = target_year
 
     return scaled_field.expand_dims(["sector", "year"]).to_dataset(name=cfg.variable)
 
@@ -63,7 +64,12 @@ def run_project_command(config, out_dir):
         logger.info(f"Creating output directory: {out_dir}")
         os.makedirs(out_dir, exist_ok=True)
 
-    da = calculate_projections(config, inventory)
+    ds = calculate_projections(config, inventory)
 
-    # TODO: Write out CSV files
-    pass
+    for year in config.timeslices:
+        target_dir = os.path.join(out_dir, str(year))
+        data_to_write = ds.sel(year=year)
+
+        os.makedirs(target_dir, exist_ok=True)
+
+        write_inventory_csvs(data_to_write, target_dir)

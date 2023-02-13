@@ -18,22 +18,17 @@ def test_load_unknown_inventory(name, year):
         load_inventory(name, year)
 
 
-def test_write_inventory(inventory, tmpdir):
-    # Decimate inventory for testing
-    data = inventory.data.coarsen(
-        {"lat": 10, "lon": 10},
-        boundary="trim",
-    ).sum()
-
-    data = data.where(data > 0)
+def test_write_inventory(
+    inventory,
+    tmpdir,
+):
+    write_inventory_csvs(inventory.data, tmpdir)
 
     class TestVicGrid:
-        lats = data["lat"].values.tolist()
-        lons = data["lon"].values.tolist()
+        lats = inventory.data["lat"].values.tolist()
+        lons = inventory.data["lon"].values.tolist()
 
-    write_inventory_csvs(data, tmpdir)
-
-    assert len(os.listdir(tmpdir)) == len(data["sector"])
+    assert len(os.listdir(tmpdir)) == len(inventory.data["sector"])
 
     # We should be able to read these inventory files back as EmissionsInventory
     new_inv = VictoriaEPAInventory.load_from_directory(
@@ -41,4 +36,4 @@ def test_write_inventory(inventory, tmpdir):
         file_suffix="_projected.csv",
         grid=TestVicGrid(),
     )
-    xrt.assert_allclose(new_inv.data, data)
+    xrt.assert_allclose(new_inv.data, inventory.data)

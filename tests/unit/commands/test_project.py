@@ -1,3 +1,5 @@
+import os
+
 import numpy.testing as npt
 import pytest
 import xarray as xr
@@ -7,16 +9,29 @@ from spaemis.commands.project_command import calculate_projections, scale_invent
 from spaemis.config import VariableConfig, converter, load_config
 
 
-def test_cli_project(runner, config_file, tmpdir, mocker):
+def test_cli_project(runner, config_file, tmpdir, mocker, inventory):
+    exp_dataset = xr.concat(
+        [
+            inventory.data.expand_dims({"year": 2040}, axis=1),
+            inventory.data.expand_dims({"year": 2060}, axis=1),
+        ],
+        dim="year",
+    )
+    exp_cfg = load_config(config_file)
+    exp_cfg.timeslices = [2040, 2060]
+
     mocked_call = mocker.patch(
         "spaemis.commands.project_command.calculate_projections",
-        return_value=xr.Dataset(),
+        return_value=exp_dataset,
     )
     mocked_inv = mocker.patch("spaemis.commands.project_command.load_inventory")
+    mocker.patch(
+        "spaemis.commands.project_command.load_config",
+        return_value=exp_cfg,
+    )
     out_dir = tmpdir / "out"
     assert not out_dir.exists()
 
-    cfg = load_config(config_file)
     result = runner.invoke(
         cli,
         [
@@ -29,8 +44,12 @@ def test_cli_project(runner, config_file, tmpdir, mocker):
     )
     assert result.exit_code == 0, result.output
     assert out_dir.exists()
+    assert (out_dir / "2040").exists()
+    assert (out_dir / "2060").exists()
 
-    mocked_call.assert_called_with(cfg, mocked_inv.return_value)
+    assert len(os.listdir((out_dir / "2040"))) == len(exp_dataset["sector"])
+
+    mocked_call.assert_called_with(exp_cfg, mocked_inv.return_value)
 
 
 def test_scale_inventory_missing_variable(inventory):
@@ -69,13 +88,15 @@ def test_scale_inventory_constant(inventory):
         VariableConfig,
     )
     res = scale_inventory(config, inventory, 2040)
-    assert isinstance(res, xr.DataArray)
+    assert isinstance(res, xr.Dataset)
     assert res.year == 2040
 
     # Check that data is constant
-    inv_data = inventory.data[config.variable].sel(sector=config.sector)
-    inv_data["year"] = 2040
-    xr.testing.assert_allclose(inv_data, res)
+    exp_data = inventory.data[config.variable].sel(sector=[config.sector])
+    exp_data["year"] = 2040
+    exp_data = exp_data.expand_dims("year", axis=1)
+
+    xr.testing.assert_allclose(exp_data.to_dataset(name=config.variable), res)
 
 
 def test_scale_inventory_relative(inventory):
@@ -93,14 +114,14 @@ def test_scale_inventory_relative(inventory):
         VariableConfig,
     )
     res = scale_inventory(config, inventory, 2040)
-    assert isinstance(res, xr.DataArray)
+    assert isinstance(res, xr.Dataset)
     assert res.year == 2040
 
     inv_data = inventory.data[config.variable].sel(sector=config.sector)
     npt.assert_allclose(res.lat, inv_data.lat)
     npt.assert_allclose(res.lon, inv_data.lon)
 
-    scale_factor = res / inv_data
+    scale_factor = res[config.variable] / inv_data
 
     # Scale factors are all the same for a given country
     npt.assert_allclose(scale_factor.max(skipna=True), 1.209021, rtol=1e-5)
@@ -121,4 +142,4 @@ def test_calculate_projections(config, inventory):
     # CO|motor_vehicles should be all nans as it wasn't included in the downscaling config
     assert res["CO"].sel(sector="motor_vehicles").isnull().all()
     # but CO|industry should have data
-    assert res["CO"].sel(sector="industry").isnull().all()
+    assert not res["CO"].sel(sector="industry").isnull().all()
