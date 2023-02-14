@@ -21,7 +21,7 @@ import xarray as xr
 from spaemis.constants import PROCESSED_DATA_DIR
 
 # %%
-DATA_DIR = os.path.join(PROCESSED_DATA_DIR, "20220214b")
+DATA_DIR = os.path.join(PROCESSED_DATA_DIR, "20230214b")
 
 scenarios = ["ssp119", "ssp126", "ssp245"]
 

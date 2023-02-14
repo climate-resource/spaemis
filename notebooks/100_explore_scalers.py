@@ -103,11 +103,6 @@ scaled_data
 scaled_data[scaler_config.variable].plot(robust=True, col="year", col_wrap=3)
 
 # %%
-(scaled_data[scaler_config.variable] / inventory.data[scaler_config.variable]).sel(
-    sector=scaler_config.sector
-)
-
-# %%
 # Scale factors
 scale_factor = (
     scaled_data[scaler_config.variable] / inventory.data[scaler_config.variable]
