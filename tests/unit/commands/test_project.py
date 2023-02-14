@@ -157,16 +157,18 @@ def test_calculate_projections_with_default(config, inventory):
 
     assert (res["sector"] == inventory.data["sector"]).all()
 
+    exp = inventory.data["CO"].reset_coords("spatial_ref", drop=True)
+
     # CO|architect_coating should be held constant
     xr.testing.assert_allclose(
         res["CO"]
         .sel(sector="architect_coating", year=2040)
         .reset_coords("year", drop=True),
-        inventory.data["CO"].sel(sector="architect_coating"),
+        exp.sel(sector="architect_coating"),
     )
     # CO|industry should be scaled
     with pytest.raises(AssertionError):
         xr.testing.assert_allclose(
             res["CO"].sel(sector="industry", year=2040).reset_coords("year", drop=True),
-            inventory.data["CO"].sel(sector="industry"),
+            exp.sel(sector="industry"),
         )
