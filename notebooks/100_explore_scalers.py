@@ -31,10 +31,10 @@ logging.basicConfig(level=logging.INFO)
 # %%
 import xarray as xr
 
-from spaemis.commands.project_command import scale_inventory
 from spaemis.config import RelativeChangeMethod, VariableScalerConfig
-from spaemis.input_data import SECTOR_MAP, database
+from spaemis.input_data import database
 from spaemis.inventory import load_inventory
+from spaemis.project import scale_inventory
 from spaemis.scaling import RelativeChangeScaler
 
 # %%
