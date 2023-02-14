@@ -13,6 +13,12 @@
 #     name: python3
 # ---
 
+# %% [markdown]
+# # Scalers
+#
+# A Scaler is used to project inventory data into the future.
+#
+# These scalers can be configured to use information from different sources to perform the projections.
 
 # %%
 import logging
@@ -25,6 +31,8 @@ logging.basicConfig(level=logging.INFO)
 # %%
 import xarray as xr
 
+from spaemis.commands.project_command import scale_inventory
+from spaemis.config import RelativeChangeMethod, VariableScalerConfig
 from spaemis.input_data import SECTOR_MAP, database
 from spaemis.inventory import load_inventory
 from spaemis.scaling import RelativeChangeScaler
@@ -58,49 +66,53 @@ variable_mapping = [
     ("VOC", "NOx-em-anthro"),
 ]
 
-scenario = "CR-MESSAGE-GLOBIOM-ssp245-high"
+scenario = "IAMC-MESSAGE-GLOBIOM-ssp245-1-1"
 
-
-# %%
-# input4MIPs uses integer values to represent sectors
-sector_id = SECTOR_MAP.index("Transportation Sector")
-
-# %%
-scaler = RelativeChangeScaler(
-    variable_id="NOx-em-anthro", source_id=scenario, sector_id=sector_id
+scaler_config = VariableScalerConfig(
+    variable="NOx",
+    sector="motor_vehicles",
+    method=RelativeChangeMethod(
+        variable_id="NOx-em-anthro", source_id=scenario, sector="Transportation Sector"
+    ),
 )
-inv_data = inventory.data["NOx"].sel(sector="motor_vehicles")
+
+
+# %%
+inv_data = inventory.data[scaler_config.variable].sel(sector=scaler_config.sector)
 inv_data.plot(robust=True)
 
 # %%
+
+# %%
 # Fetch the data used for scaling
+scaler = RelativeChangeScaler.create_from_config(scaler_config.method)
+
 scaler_source = scaler.load_source(inventory)
 scaler_source.plot(col="year", col_wrap=3, robust=True)
 
+
 # %%
 data = [
-    scaler(inv_data, inventory=inventory, target_year=y)
+    scale_inventory(scaler_config, inventory=inventory, target_year=y)
     for y in [2015, 2020, 2040, 2060, 2080, 2100]
 ]
 scaled_data = xr.concat(data, dim="year")
+scaled_data
 
 # %%
-scaled_data.plot(robust=True, col="year", col_wrap=3)
+scaled_data[scaler_config.variable].plot(robust=True, col="year", col_wrap=3)
 
 # %%
-scaled_data.max()
+(scaled_data[scaler_config.variable] / inventory.data[scaler_config.variable]).sel(
+    sector=scaler_config.sector
+)
 
 # %%
-scaled_data.min()
+# Scale factors
+scale_factor = (
+    scaled_data[scaler_config.variable] / inventory.data[scaler_config.variable]
+).sel(sector=scaler_config.sector)
 
-# %%
-
-for inv_variable, input4mips_variable in variable_mapping:
-    scaler = RelativeChangeScaler(
-        variable_id=input4mips_variable, source_id=scenario, sector_id=sector_id
-    )
-    data = inventory.data[inv_variable].sel(sector="motor_vehicles")
-
-    da = scaler(data, inventory=inventory, target_year=2060)
+scale_factor.plot(robust=True, col="year", col_wrap=3)
 
 # %%

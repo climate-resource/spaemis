@@ -21,7 +21,7 @@ import xarray as xr
 from spaemis.constants import PROCESSED_DATA_DIR
 
 # %%
-DATA_DIR = os.path.join(PROCESSED_DATA_DIR, "20230214b")
+DATA_DIR = os.path.join(PROCESSED_DATA_DIR, "20220214b")
 
 scenarios = ["ssp119", "ssp126", "ssp245"]
 
@@ -41,6 +41,12 @@ data
 # %%
 for year in [2020, 2040, 2060]:
     data["NOx"].sel(year=year).sum(dim="sector").plot(
+        col="scenario", vmin=0.0001, vmax=1000
+    )
+
+# %%
+for year in [2020, 2040, 2060]:
+    data["CO"].sel(year=year).sum(dim="sector").plot(
         col="scenario", vmin=0.0001, vmax=1000
     )
 
