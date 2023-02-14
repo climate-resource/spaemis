@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.14.1
+#       jupytext_version: 1.14.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -35,6 +35,9 @@ inventory
 
 # %%
 inventory.data.sector
+
+# %%
+inventory.data["CO"].plot(col="sector", col_wrap=3)
 
 # %%
 # What input4MIPs variables do we have available
