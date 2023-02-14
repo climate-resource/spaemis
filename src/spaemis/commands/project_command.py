@@ -133,7 +133,18 @@ def calculate_projections(
 
             if output_ds is None:
                 output_ds = _create_output_data(scaling_configs.keys(), config, res)
-            output_ds.update(res)
+
+            output_ds[variable_config.variable].loc[
+                dict(sector=variable_config.sector, year=slice_year)
+            ] = (
+                res[variable_config.variable]
+                .sel(sector=variable_config.sector, year=slice_year)
+                .values
+            )
+
+            logger.info(
+                f"Sum: {output_ds[variable_config.variable].sel(sector=variable_config.sector, year=slice_year).sum().values}"
+            )
 
     return output_ds
 
@@ -164,6 +175,7 @@ def run_project_command(config, out_dir):
     dataset = calculate_projections(config, inventory)
 
     logger.info("Writing output dataset as netcdf")
+    logger.warning(dataset["CO"].sum())
     dataset.to_netcdf(os.path.join(out_dir, "projections.nc"))
 
     logger.info("Writing CSV files")
