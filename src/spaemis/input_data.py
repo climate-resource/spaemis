@@ -2,7 +2,7 @@ import logging
 import os
 from functools import lru_cache
 from glob import glob
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import scmdata
@@ -125,14 +125,24 @@ def initialize_database(options: Optional[list[str]] = None) -> InputEmissionsDa
     return InputEmissionsDatabase(options)
 
 
+def _apply_filters(ts: scmdata.ScmRun, filters: List[Dict[str, Any]]) -> scmdata.ScmRun:
+    for filters in filters:
+        ts = ts.filter(**filters)
+    return ts
+
+
 def load_timeseries(
     options: List[InputTimeseries], root_dir: Optional[str] = None
 ) -> Dict[str, scmdata.ScmRun]:
     data = {}
     for ts_config in options:
-        ts = scmdata.ScmRun(os.path.join(root_dir or ".", ts_config.path))
-        for filter in ts_config.filters:
-            ts = ts.filter(**filter)
+        if ts_config.name in data:
+            raise ValueError(f"Duplicate input timeseries found: {ts_config.name}")
+        ts = _apply_filters(
+            scmdata.ScmRun(os.path.join(root_dir or ".", ts_config.path)),
+            ts_config.filters,
+        )
+
         data[ts_config.name] = ts
 
     return data

@@ -1,10 +1,13 @@
-from typing import Any, Dict
+import os
+from typing import Any, Dict, List
 
 import scmdata
 import xarray as xr
 from attrs import define
 
 from spaemis.config import ProxyMethod
+from spaemis.constants import PROCESSED_DATA_DIR
+from spaemis.input_data import _apply_filters
 from spaemis.inventory import EmissionsInventory
 from spaemis.utils import clip_region
 
@@ -12,17 +15,25 @@ from .base import BaseScaler
 
 
 def get_proxy(proxy_name: str) -> xr.DataArray:
-    pass
+    root_dir = os.path.join(PROCESSED_DATA_DIR, "proxies")
+    proxies = {
+        "Population": os.path.join(
+            root_dir,
+            "sedacs",
+            "gpw_v4_population_density_adjusted_to_2015_unwpp_country_totals_rev11_2020_2pt5_aus.nc",
+        )
+    }
+    return xr.load_dataarray(proxies[proxy_name])
 
 
 def _get_timeseries(timeseries, source, filters, target_year) -> scmdata.ScmRun:
     try:
         ts = timeseries[source]
     except KeyError as exc:
-        raise KeyError(f"Source dataset is not loaded: {source}") from exc
+        raise ValueError(f"Source dataset is not loaded: {source}") from exc
 
     # This linearly interpolates the timeseries
-    ts = ts.filter(**filters).resample("AS")
+    ts = _apply_filters(ts, filters).resample("AS")
 
     if len(ts) == 0:
         raise ValueError(f"No data matching {filters} was found in {source} input data")
@@ -32,7 +43,7 @@ def _get_timeseries(timeseries, source, filters, target_year) -> scmdata.ScmRun:
             f"More than one match was found for {filters} in {source} input data"
         )
 
-    if target_year not in ts["year"]:
+    if target_year not in ts["year"].values:
         raise ValueError(f"No timeseries data for year={target_year} available")
 
     ts = ts.filter(year=target_year)
@@ -50,7 +61,7 @@ class ProxyScaler(BaseScaler):
 
     proxy: str
     source_timeseries: str
-    source_filters: Dict[str, Any]
+    source_filters: List[Dict[str, Any]]
 
     def __call__(
         self,
@@ -87,10 +98,18 @@ class ProxyScaler(BaseScaler):
         lat = inventory.data.lat
         lon = inventory.data.lon
 
-        proxy = clip_region(get_proxy(self.proxy), inventory.border_mask)
-        proxy_scaled = proxy.interp(lat=lat, lon=lon)
+        proxy = get_proxy(self.proxy)
+        total = proxy.sum()
+        proxy_clipped = clip_region(proxy, inventory.border_mask)
+        region_total = proxy_clipped.sum()
 
-        scaled = ts.values.squeeze() * proxy_scaled
+        region_share = region_total / total
+
+        # Calculate density o
+        proxy_scaled = proxy.interp(lat=lat, lon=lon)
+        proxy_density = proxy_scaled / proxy_scaled.sum()
+
+        scaled = ts.values.squeeze() * region_share * proxy_density
 
         return scaled
 

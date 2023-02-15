@@ -1,7 +1,9 @@
 import os
+from typing import Dict
 
 import geopandas
 import pytest
+import scmdata
 import xarray as xr
 from click.testing import CliRunner
 
@@ -52,3 +54,21 @@ def inventory() -> EmissionsInventory:
 @pytest.fixture(autouse=True, scope="session")
 def setup_database():
     database.register_path(os.path.join(TEST_DATA_DIR, "input4MIPs"))
+
+
+@pytest.fixture()
+def loaded_timeseries() -> Dict[str, scmdata.ScmRun]:
+    return {
+        "emissions": scmdata.ScmRun(
+            os.path.join(TEST_DATA_DIR, "config", "emissions_total.csv")
+        )
+    }
+
+
+@pytest.fixture()
+def selected_timeseries(loaded_timeseries) -> scmdata.ScmRun:
+    res = loaded_timeseries["emissions"].filter(
+        variable="Emissions|H2|Transportation Sector", region="R5.2OECD"
+    )
+    assert res.shape == (1, 1)
+    return res

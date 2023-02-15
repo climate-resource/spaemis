@@ -33,7 +33,7 @@ def extract_sedac():
         .dropna("lat", how="all")
         .dropna("lon", how="all")
     )
-    return da_clipped
+    return da_clipped.reset_coords(["band", "spatial_ref"], drop=True)
 
 
 if __name__ == "__main__":
