@@ -117,7 +117,7 @@ def _convert_filename_to_scalers(
 class InputTimeseries:
     name: str
     path: str
-    filters: List[Any]
+    filters: List[Dict[str, Any]]
 
 
 @define

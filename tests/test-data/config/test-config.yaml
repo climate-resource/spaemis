@@ -1,6 +1,13 @@
 inventory_name: victoria
 inventory_year: 2016
 
+input_timeseries:
+  - name: test
+    path: emissions_total.csv
+    filters:
+      - variable: Emissions|H2|Industrial Sector
+        region: R2.OECD
+
 timeslices:
   - 2020
   - 2040

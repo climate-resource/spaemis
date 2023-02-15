@@ -3,6 +3,7 @@ from itertools import product
 from typing import Dict, Tuple
 
 import numpy as np
+import scmdata
 import xarray as xr
 
 from spaemis.config import DownscalingScenarioConfig, VariableScalerConfig
@@ -13,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 def scale_inventory(
-    cfg: VariableScalerConfig, inventory: EmissionsInventory, target_year: int
+    cfg: VariableScalerConfig,
+    inventory: EmissionsInventory,
+    target_year: int,
+    timeseries: scmdata.ScmRun,
 ) -> xr.Dataset:
     """
     Scale a given variable/sector
@@ -26,6 +30,8 @@ def scale_inventory(
         Emissions inventory
     target_year
         Year the data will be scaled according to
+    timeseries
+        Timeseries for use by proxies
 
     Returns
     -------
@@ -38,7 +44,7 @@ def scale_inventory(
     field = inventory.data[cfg.variable].sel(sector=cfg.sector)
 
     scaled_field = get_scaler_by_config(cfg.method)(
-        field, inventory=inventory, target_year=target_year
+        data=field, inventory=inventory, target_year=target_year, timeseries=timeseries
     )
 
     scaled_field["sector"] = cfg.sector
@@ -71,7 +77,9 @@ def _create_output_data(options, config, template: xr.Dataset):
 
 
 def calculate_projections(
-    config: DownscalingScenarioConfig, inventory: EmissionsInventory
+    config: DownscalingScenarioConfig,
+    inventory: EmissionsInventory,
+    timeseries: Dict[str, scmdata.ScmRun],
 ) -> xr.Dataset:
     """
     Calculate a projected set of emissions according to some configuration
@@ -80,6 +88,8 @@ def calculate_projections(
     ----------
     config
     inventory
+    timeseries
+        Optional timeseries
 
     Returns
     -------
@@ -117,7 +127,7 @@ def calculate_projections(
                 slice_year,
             )
 
-            res = scale_inventory(variable_config, inventory, slice_year)
+            res = scale_inventory(variable_config, inventory, slice_year, timeseries)
 
             if output_ds is None:
                 output_ds = _create_output_data(scaling_configs.keys(), config, res)

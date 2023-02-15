@@ -2,10 +2,13 @@ import logging
 import os
 from functools import lru_cache
 from glob import glob
-from typing import Optional, Union
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
+import scmdata
 import xarray as xr
+
+from spaemis.config import InputTimeseries
 
 logger = logging.getLogger(__name__)
 
@@ -120,6 +123,19 @@ def initialize_database(options: Optional[list[str]] = None) -> InputEmissionsDa
         else:
             options = None
     return InputEmissionsDatabase(options)
+
+
+def load_timeseries(
+    options: List[InputTimeseries], root_dir: Optional[str] = None
+) -> Dict[str, scmdata.ScmRun]:
+    data = {}
+    for ts_config in options:
+        ts = scmdata.ScmRun(os.path.join(root_dir or ".", ts_config.path))
+        for filter in ts_config.filters:
+            ts = ts.filter(**filter)
+        data[ts_config.name] = ts
+
+    return data
 
 
 database = initialize_database()

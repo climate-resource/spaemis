@@ -26,6 +26,7 @@ def test_cli_project(runner, config_file, tmpdir, mocker, inventory):
         "spaemis.commands.project_command.load_config",
         return_value=exp_cfg,
     )
+    mocked_timeseries = mocker.patch("spaemis.commands.project_command.load_timeseries")
     out_dir = tmpdir / "out"
     assert not out_dir.exists()
 
@@ -46,4 +47,6 @@ def test_cli_project(runner, config_file, tmpdir, mocker, inventory):
 
     assert len(os.listdir((out_dir / "2040"))) == len(exp_dataset["sector"])
 
-    mocked_call.assert_called_with(exp_cfg, mocked_inv.return_value)
+    mocked_call.assert_called_with(
+        exp_cfg, mocked_inv.return_value, mocked_timeseries.return_value
+    )
