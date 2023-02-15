@@ -1,8 +1,22 @@
 """
-Description of the configuration
+Configuration
+
+The configuration is stored as YAML files and can be loaded and validated using
+:func:`load_config`.
 """
 import os.path
-from typing import Any, ClassVar, List, Literal, Optional, Type, Union, get_args
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Type,
+    Union,
+    get_args,
+)
 
 import pandas as pd
 from attrs import define
@@ -30,7 +44,17 @@ class RelativeChangeMethod:
     name: ClassVar[Literal["relative_change"]] = "relative_change"
 
 
-ScalerMethod = Union[ConstantScaleMethod, RelativeChangeMethod]
+@define
+class ProxyMethod:
+    proxy: str
+
+    source_timeseries: str
+    source_filters: Dict[str, Any]
+
+    name: ClassVar[Literal["proxy"]] = "proxy"
+
+
+ScalerMethod = Union[ProxyMethod, RelativeChangeMethod, ConstantScaleMethod]
 
 
 def _discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
@@ -46,9 +70,26 @@ converter.register_structure_hook(ScalerMethod, _discriminate_scaler)
 
 @define
 class VariableScalerConfig:
+    """
+    Represents a mapping between a variable/sector and a scaler
+
+    In some cases, the target data may not exist in an inventory. In that case the
+    scaler should be configured correctly to be able to handle that situation.
+
+    Attributes
+    ----------
+    variable
+        Name of the target variable in the inventory
+    sector
+        Name of the target sector in the inventory
+    allow_missing
+        If True, the data may not be present in an inventory
+    """
+
     variable: str
     sector: str
     method: ScalerMethod
+    allow_missing: bool = False
 
 
 def _convert_filename_to_scalers(
@@ -73,6 +114,22 @@ def _convert_filename_to_scalers(
 
 
 @define
+class InputTimeseries:
+    name: str
+    path: str
+    filters: List[Any]
+
+
+@define
+class PointSource:
+    variable: str
+    sector: str
+    location: Tuple[float, float]  # Lat, lon
+    quantity: float
+    unit: str = "kt"
+
+
+@define
 class DownscalingScenarioConfig:
     """
     Configuration for downscaling a scenario
@@ -82,7 +139,9 @@ class DownscalingScenarioConfig:
     inventory_year: int
     timeslices: List[int]
     scalers: List[VariableScalerConfig]
+    input_timeseries: Optional[List[InputTimeseries]] = None
     default_scaler: Optional[ScalerMethod] = None
+    point_source: Optional[List[PointSource]] = None
 
 
 # Ideally we could use converter.register_structure_hook. See

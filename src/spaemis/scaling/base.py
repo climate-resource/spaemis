@@ -1,3 +1,6 @@
+from typing import Dict
+
+import scmdata
 import xarray as xr
 
 from spaemis.config import ScalerMethod
@@ -13,9 +16,11 @@ class BaseScaler:
 
     def __call__(
         self,
+        *,
         data: xr.DataArray,
         inventory: EmissionsInventory,
         target_year: int,
+        timeseries: Dict[str, scmdata.ScmRun],
     ) -> xr.DataArray:
         """
         Run a scaler
@@ -28,6 +33,8 @@ class BaseScaler:
             Emissions inventory
         target_year
             Year to scale to
+        timeseries
+            Additional timeseries for use by the scaler if needed
 
         Returns
         -------

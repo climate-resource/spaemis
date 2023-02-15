@@ -1,8 +1,10 @@
 import pytest
+import xarray as xr
 
-from spaemis.config import ConstantScaleMethod, RelativeChangeMethod
+from spaemis.config import ConstantScaleMethod, ProxyMethod, RelativeChangeMethod
 from spaemis.scaling import (
     ConstantScaler,
+    ProxyScaler,
     RelativeChangeScaler,
     get_scaler,
     get_scaler_by_config,
@@ -58,3 +60,29 @@ class TestRelativeScaler:
                     source_id="source", variable_id="variable", sector="not-a-sector"
                 )
             )
+
+
+class TestProxyScaler:
+    def test_create(self):
+        res = ProxyScaler.create_from_config(
+            ProxyMethod(
+                proxy="Population",
+                source_timeseries="inputs",
+                source_filters={"variable": "H2"},
+            )
+        )
+
+        assert res.proxy == "source"
+        assert res.source_timeseries == "variable"
+        assert res.source_filters == {"variable": "H2"}
+
+    def test_run(self, inventory):
+        scaler = ProxyScaler(
+            proxy="Population",
+            source_timeseries="inputs",
+            source_filters={"variable": "H2"},
+        )
+
+        data = xr.DataArray(0, coords=dict(lat=range()))
+
+        res = scaler(data=data, inventory=inventory, target_year=2020, timeseries={})
