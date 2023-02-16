@@ -21,7 +21,7 @@ def get_proxy(proxy_name: str) -> xr.DataArray:
         "population": os.path.join(
             root_dir,
             "sedacs",
-            "gpw_v4_population_density_adjusted_to_2015_unwpp_country_totals_rev11_2020_2pt5_aus.nc",
+            "popdynamics-base_year-2000-rev01-byr.nc",
         ),
         "residential_density": os.path.join(
             root_dir,

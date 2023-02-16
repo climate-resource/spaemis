@@ -98,6 +98,9 @@ def test_calculate_projections(config, inventory, loaded_timeseries):
     # but CO|industry should have data
     assert not res["CO"].sel(sector="industry").isnull().all()
 
+    assert "H2" in res.data_vars
+    assert res["H2"].shape == res["CO"].shape
+
 
 def test_calculate_projections_with_default(config, inventory, loaded_timeseries):
     config.default_scaler = ConstantScaleMethod()

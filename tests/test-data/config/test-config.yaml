@@ -2,7 +2,7 @@ inventory_name: victoria
 inventory_year: 2016
 
 input_timeseries:
-  - name: country_emissions
+  - name: emissions
     path: emissions_country.csv
     filters:
       - region: AUS
@@ -40,6 +40,6 @@ scalers:
     method:
       name: proxy
       proxy: population
-      source_timeseries: country_emissions
+      source_timeseries: emissions
       source_filters:
         - variable: Emissions|H2|Industrial Sector
