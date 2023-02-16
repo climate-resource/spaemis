@@ -1,16 +1,16 @@
 import os
 from typing import Dict
 
-import geopandas
 import pytest
 import scmdata
 import xarray as xr
 from click.testing import CliRunner
 
 from spaemis.config import DownscalingScenarioConfig, load_config
-from spaemis.constants import RAW_DATA_DIR, TEST_DATA_DIR
+from spaemis.constants import TEST_DATA_DIR
 from spaemis.input_data import database
 from spaemis.inventory import EmissionsInventory
+from spaemis.utils import load_australia_boundary
 
 
 @pytest.fixture()
@@ -36,9 +36,8 @@ def config(config_file) -> DownscalingScenarioConfig:
 def inventory() -> EmissionsInventory:
     # For testing we use a decimated version of the vic inventory generated using
     # scripts/downsample_inventory.py
-    vic_border = geopandas.read_file(
-        os.path.join(RAW_DATA_DIR, "masks", "victoria_border_mask.gpkg")
-    )
+    vic_border = load_australia_boundary()
+    vic_border = vic_border[vic_border.shapeName == "Victoria"]
     data = xr.load_dataset(
         os.path.join(
             TEST_DATA_DIR,
@@ -60,15 +59,15 @@ def setup_database():
 def loaded_timeseries() -> Dict[str, scmdata.ScmRun]:
     return {
         "emissions": scmdata.ScmRun(
-            os.path.join(TEST_DATA_DIR, "config", "emissions_total.csv")
-        )
+            os.path.join(TEST_DATA_DIR, "config", "emissions_country.csv")
+        ).filter(region="AUS")
     }
 
 
 @pytest.fixture()
 def selected_timeseries(loaded_timeseries) -> scmdata.ScmRun:
     res = loaded_timeseries["emissions"].filter(
-        variable="Emissions|H2|Transportation Sector", region="R5.2OECD"
+        variable="Emissions|H2|Transportation Sector"
     )
     assert res.shape == (1, 1)
     return res

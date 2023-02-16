@@ -1,6 +1,12 @@
 inventory_name: victoria
 inventory_year: 2016
 
+input_timeseries:
+  - name: country_emissions
+    path: emissions_country.csv
+    filters:
+      - region: AUS
+
 timeslices:
   - 2020
   - 2040

@@ -16,7 +16,7 @@ def test_scale_inventory_missing_variable(inventory):
         VariableScalerConfig,
     )
     with pytest.raises(ValueError, match="Variable missing not available in inventory"):
-        scale_inventory(config, inventory, 2040)
+        scale_inventory(config, inventory, 2040, {})
 
 
 def test_scale_inventory_missing_sector(inventory):
@@ -29,7 +29,7 @@ def test_scale_inventory_missing_sector(inventory):
         VariableScalerConfig,
     )
     with pytest.raises(ValueError, match="Sector unknown not available in inventory"):
-        scale_inventory(config, inventory, 2040)
+        scale_inventory(config, inventory, 2040, {})
 
 
 def test_scale_inventory_constant(inventory):
@@ -41,7 +41,7 @@ def test_scale_inventory_constant(inventory):
         },
         VariableScalerConfig,
     )
-    res = scale_inventory(config, inventory, 2040)
+    res = scale_inventory(config, inventory, 2040, {})
     assert isinstance(res, xr.Dataset)
     assert res.year == 2040
 
@@ -67,7 +67,7 @@ def test_scale_inventory_relative(inventory):
         },
         VariableScalerConfig,
     )
-    res = scale_inventory(config, inventory, 2040)
+    res = scale_inventory(config, inventory, 2040, {})
     assert isinstance(res, xr.Dataset)
     assert res.year == 2040
 
@@ -82,8 +82,8 @@ def test_scale_inventory_relative(inventory):
     npt.assert_allclose(scale_factor.min(skipna=True), 1.209021, rtol=1e-5)
 
 
-def test_calculate_projections(config, inventory):
-    res = calculate_projections(config, inventory)
+def test_calculate_projections(config, inventory, loaded_timeseries):
+    res = calculate_projections(config, inventory, loaded_timeseries)
 
     assert isinstance(res, xr.Dataset)
 
@@ -99,10 +99,10 @@ def test_calculate_projections(config, inventory):
     assert not res["CO"].sel(sector="industry").isnull().all()
 
 
-def test_calculate_projections_with_default(config, inventory):
+def test_calculate_projections_with_default(config, inventory, loaded_timeseries):
     config.default_scaler = ConstantScaleMethod()
 
-    res = calculate_projections(config, inventory)
+    res = calculate_projections(config, inventory, loaded_timeseries)
 
     assert (res["sector"] == inventory.data["sector"]).all()
 

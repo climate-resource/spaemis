@@ -49,7 +49,7 @@ class ProxyMethod:
     proxy: str
 
     source_timeseries: str
-    source_filters: Dict[str, Any]
+    source_filters: List[Dict[str, Any]]
 
     name: ClassVar[Literal["proxy"]] = "proxy"
 

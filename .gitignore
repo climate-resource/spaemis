@@ -276,6 +276,7 @@ data/raw/inventories/victoria
 data/processed/*
 !data/processed/proxies
 data/raw/sedacs
+data/raw/ga
 
 notebooks/*.ipynb
 notebooks/**/*.ipynb

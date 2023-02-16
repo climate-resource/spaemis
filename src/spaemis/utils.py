@@ -7,6 +7,7 @@ from typing import Union
 
 import geopandas
 import numpy as np
+import pooch
 import rioxarray  # noqa
 import xarray as xr
 
@@ -171,3 +172,16 @@ def chdir(current_directory: str) -> None:
         yield
     finally:
         os.chdir(previous)
+
+
+def load_australia_boundary() -> geopandas.GeoDataFrame:
+    aus_boundary_dir = pooch.retrieve(
+        "https://www.github.com/wmgeolab/geoBoundaries/raw/c9c6efd0c2e035a5453fd8549bd1ca507a3910b4/releaseData/gbOpen/AUS/ADM1/geoBoundaries-AUS-ADM1-all.zip",
+        known_hash="d531bbed14d9c98652b619cffa6bcdaa972ea49eff1f74b4650c0287deb5ffe9",
+        processor=pooch.Unzip(),
+    )
+
+    aus_boundary = geopandas.read_file(
+        os.path.join(os.path.dirname(aus_boundary_dir[0]), "geoBoundaries-AUS-ADM1.shp")
+    ).to_crs("EPSG:4326")
+    return aus_boundary

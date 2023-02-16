@@ -17,7 +17,7 @@ def scale_inventory(
     cfg: VariableScalerConfig,
     inventory: EmissionsInventory,
     target_year: int,
-    timeseries: scmdata.ScmRun,
+    timeseries: Dict[str, scmdata.ScmRun],
 ) -> xr.Dataset:
     """
     Scale a given variable/sector
@@ -37,12 +37,19 @@ def scale_inventory(
     -------
         Dataset with a single variable with dimensions of (sector, year, lat, lon)
     """
-    if cfg.variable not in inventory.data.variables:
+    if cfg.variable not in inventory.data.variables and not cfg.allow_missing:
         raise ValueError(f"Variable {cfg.variable} not available in inventory")
-    if cfg.sector not in inventory.data["sector"]:
+    if cfg.sector not in inventory.data["sector"] and not cfg.allow_missing:
         raise ValueError(f"Sector {cfg.sector} not available in inventory")
-    field = inventory.data[cfg.variable].sel(sector=cfg.sector)
-
+    try:
+        field = inventory.data[cfg.variable].sel(sector=cfg.sector)
+    except KeyError:
+        if cfg.allow_missing:
+            field = xr.DataArray(
+                np.nan, coords=(inventory.data.lat, inventory.data.lon)
+            )
+        else:
+            raise
     scaled_field = get_scaler_by_config(cfg.method)(
         data=field, inventory=inventory, target_year=target_year, timeseries=timeseries
     )

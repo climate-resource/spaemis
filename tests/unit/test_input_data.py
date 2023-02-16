@@ -81,15 +81,15 @@ def test_initialize_data(monkeypatch, paths):
 def test_load_timeseries():
     res = load_timeseries(
         [
-            InputTimeseries(name="test", path="emissions_total.csv", filters=[{}]),
+            InputTimeseries(name="test", path="emissions_country.csv", filters=[{}]),
             InputTimeseries(
                 name="test2",
-                path="emissions_total.csv",
+                path="emissions_country.csv",
                 filters=[dict(variable="Emissions|H2|Transportation Sector")],
             ),
             InputTimeseries(
                 name="test3",
-                path="emissions_total.csv",
+                path="emissions_country.csv",
                 filters=[
                     dict(variable="Emissions|H2|Industrial Sector"),
                     dict(region="World", keep=False),
@@ -99,7 +99,7 @@ def test_load_timeseries():
         root_dir=os.path.join(TEST_DATA_DIR, "config"),
     )
 
-    exp = scmdata.ScmRun(os.path.join(TEST_DATA_DIR, "config", "emissions_total.csv"))
+    exp = scmdata.ScmRun(os.path.join(TEST_DATA_DIR, "config", "emissions_country.csv"))
 
     scmdata.testing.assert_scmdf_almost_equal(
         res["test"], exp, check_ts_names=False, allow_unordered=True
@@ -125,8 +125,12 @@ def test_load_timeseries_duplicate():
     with pytest.raises(ValueError, match="Duplicate input timeseries found: test"):
         load_timeseries(
             [
-                InputTimeseries(name="test", path="emissions_total.csv", filters=[{}]),
-                InputTimeseries(name="test", path="emissions_total.csv", filters=[{}]),
+                InputTimeseries(
+                    name="test", path="emissions_country.csv", filters=[{}]
+                ),
+                InputTimeseries(
+                    name="test", path="emissions_country.csv", filters=[{}]
+                ),
             ],
             root_dir=os.path.join(TEST_DATA_DIR, "config"),
         )

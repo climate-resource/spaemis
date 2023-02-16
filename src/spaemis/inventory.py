@@ -12,7 +12,7 @@ import xarray as xr
 from attrs import Attribute, define, field
 
 from spaemis.constants import RAW_DATA_DIR
-from spaemis.utils import clip_region
+from spaemis.utils import clip_region, load_australia_boundary
 
 logger = logging.getLogger(__name__)
 
@@ -146,9 +146,8 @@ class VictoriaEPAInventory(EmissionsInventory):
         merged_data = xr.concat([read_file(f) for f in fnames], dim="sector")
         merged_data = merged_data.where(merged_data > 0)
 
-        vic_border = geopandas.read_file(
-            os.path.join(RAW_DATA_DIR, "masks", "victoria_border_mask.gpkg")
-        )
+        vic_border = load_australia_boundary()
+        vic_border = vic_border[vic_border.shapeName == "Victoria"]
         return VictoriaEPAInventory(
             data=clip_region(merged_data, vic_border), border_mask=vic_border, year=2016
         )

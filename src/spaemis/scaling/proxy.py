@@ -9,6 +9,7 @@ from spaemis.config import ProxyMethod
 from spaemis.constants import PROCESSED_DATA_DIR
 from spaemis.input_data import _apply_filters
 from spaemis.inventory import EmissionsInventory
+from spaemis.unit_registry import convert_to_target_unit
 from spaemis.utils import clip_region
 
 from .base import BaseScaler
@@ -17,13 +18,18 @@ from .base import BaseScaler
 def get_proxy(proxy_name: str) -> xr.DataArray:
     root_dir = os.path.join(PROCESSED_DATA_DIR, "proxies")
     proxies = {
-        "Population": os.path.join(
+        "population": os.path.join(
             root_dir,
             "sedacs",
             "gpw_v4_population_density_adjusted_to_2015_unwpp_country_totals_rev11_2020_2pt5_aus.nc",
-        )
+        ),
+        "residential_density": os.path.join(
+            root_dir,
+            "ga",
+            "NEXIS_Residential_Dwelling_Density.nc",
+        ),
     }
-    return xr.load_dataarray(proxies[proxy_name])
+    return xr.load_dataset(proxies[proxy_name])[proxy_name]
 
 
 def _get_timeseries(timeseries, source, filters, target_year) -> scmdata.ScmRun:
@@ -95,6 +101,13 @@ class ProxyScaler(BaseScaler):
             target_year=target_year,
         )
 
+        # Adjust to kg X/yr
+        scale_factor = convert_to_target_unit(
+            ts.get_unique_meta("unit", True), target_unit="kg"
+        )
+        ts["unit"] = str(scale_factor.u)
+        ts = ts * scale_factor.m
+
         lat = inventory.data.lat
         lon = inventory.data.lon
 
@@ -105,11 +118,12 @@ class ProxyScaler(BaseScaler):
 
         region_share = region_total / total
 
-        # Calculate density o
-        proxy_scaled = proxy.interp(lat=lat, lon=lon)
+        # Calculate density map
+        proxy_scaled = proxy_clipped.interp(lat=lat, lon=lon)
         proxy_density = proxy_scaled / proxy_scaled.sum()
 
         scaled = ts.values.squeeze() * region_share * proxy_density
+        scaled.attrs["units"] = ts.get_unique_meta("unit", True) + " / cell"
 
         return scaled
 
@@ -118,5 +132,5 @@ class ProxyScaler(BaseScaler):
         return ProxyScaler(
             proxy=method.proxy,
             source_timeseries=method.source_timeseries,
-            source_filters={},
+            source_filters=method.source_filters,
         )
