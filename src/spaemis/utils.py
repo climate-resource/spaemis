@@ -175,6 +175,14 @@ def chdir(current_directory: str) -> None:
 
 
 def load_australia_boundary() -> geopandas.GeoDataFrame:
+    """
+    Load Australia boundary shapefile
+
+
+    Returns
+    -------
+        GeoDataFrame containing borders for each state
+    """
     aus_boundary_dir = pooch.retrieve(
         "https://www.github.com/wmgeolab/geoBoundaries/raw/c9c6efd0c2e035a5453fd8549bd1ca507a3910b4/releaseData/gbOpen/AUS/ADM1/geoBoundaries-AUS-ADM1-all.zip",
         known_hash="d531bbed14d9c98652b619cffa6bcdaa972ea49eff1f74b4650c0287deb5ffe9",

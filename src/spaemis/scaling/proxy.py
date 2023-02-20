@@ -1,3 +1,10 @@
+"""
+Proxy scaler
+
+A proxy scaler uses a proxy (a 2d pattern) to disaggregate an emissions timeseries over a target area.
+
+The proxy must cover the area of interest of the emissions timeseries
+"""
 import os
 from typing import Any, Dict, List
 
@@ -9,7 +16,7 @@ from spaemis.config import ProxyMethod
 from spaemis.constants import PROCESSED_DATA_DIR
 from spaemis.input_data import _apply_filters
 from spaemis.inventory import EmissionsInventory
-from spaemis.unit_registry import convert_to_target_unit
+from spaemis.unit_registry import convert_to_target_unit, unit_registry
 from spaemis.utils import clip_region
 
 from .base import BaseScaler
@@ -59,6 +66,20 @@ def _get_timeseries(timeseries, source, filters, target_year) -> scmdata.ScmRun:
     return ts
 
 
+def _check_unit(unit: str):
+    unit = unit_registry(unit)
+
+    msg = "Expected unit of the form [X] * [mass] / [time]"
+
+    if (
+        len(unit.dimensionality) != 3
+        and unit.dimensionality["[mass]"] != 1
+        and unit.dimensionality["[time]"] != -1
+        and "[length]" not in unit.dimensionality
+    ):
+        raise ValueError(msg)
+
+
 @define
 class ProxyScaler(BaseScaler):
     """
@@ -100,6 +121,9 @@ class ProxyScaler(BaseScaler):
             self.source_filters,
             target_year=target_year,
         )
+
+        # Verify units are [X] * [mass] / [time]
+        _check_unit(ts.get_unique_meta("unit", True))
 
         # Adjust to kg X/yr
         scale_factor = convert_to_target_unit(

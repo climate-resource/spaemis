@@ -1,7 +1,5 @@
 import os
 
-import geopandas
-import pooch
 import rioxarray  # noqa
 import xarray as xr
 
