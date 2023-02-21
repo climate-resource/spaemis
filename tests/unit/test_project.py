@@ -1,60 +1,9 @@
-import os
-
 import numpy.testing as npt
 import pytest
 import xarray as xr
 
-from spaemis.commands import cli
-from spaemis.commands.project_command import calculate_projections, scale_inventory
-from spaemis.config import (
-    ConstantScaleMethod,
-    VariableScalerConfig,
-    converter,
-    load_config,
-)
-
-
-def test_cli_project(runner, config_file, tmpdir, mocker, inventory):
-    exp_dataset = xr.concat(
-        [
-            inventory.data.assign_coords(year=2040).expand_dims("year", axis=1),
-            inventory.data.assign_coords(year=2060).expand_dims("year", axis=1),
-        ],
-        dim="year",
-    )
-    exp_cfg = load_config(config_file)
-    exp_cfg.timeslices = [2040, 2060]
-
-    mocked_call = mocker.patch(
-        "spaemis.commands.project_command.calculate_projections",
-        return_value=exp_dataset,
-    )
-    mocked_inv = mocker.patch("spaemis.commands.project_command.load_inventory")
-    mocker.patch(
-        "spaemis.commands.project_command.load_config",
-        return_value=exp_cfg,
-    )
-    out_dir = tmpdir / "out"
-    assert not out_dir.exists()
-
-    result = runner.invoke(
-        cli,
-        [
-            "project",
-            "--config",
-            config_file,
-            "--out-dir",
-            str(out_dir),
-        ],
-    )
-    assert result.exit_code == 0, result.output
-    assert out_dir.exists()
-    assert (out_dir / "2040").exists()
-    assert (out_dir / "2060").exists()
-
-    assert len(os.listdir((out_dir / "2040"))) == len(exp_dataset["sector"])
-
-    mocked_call.assert_called_with(exp_cfg, mocked_inv.return_value)
+from spaemis.config import ConstantScaleMethod, VariableScalerConfig, converter
+from spaemis.project import calculate_projections, scale_inventory
 
 
 def test_scale_inventory_missing_variable(inventory):
@@ -67,7 +16,7 @@ def test_scale_inventory_missing_variable(inventory):
         VariableScalerConfig,
     )
     with pytest.raises(ValueError, match="Variable missing not available in inventory"):
-        scale_inventory(config, inventory, 2040)
+        scale_inventory(config, inventory, 2040, {})
 
 
 def test_scale_inventory_missing_sector(inventory):
@@ -80,7 +29,7 @@ def test_scale_inventory_missing_sector(inventory):
         VariableScalerConfig,
     )
     with pytest.raises(ValueError, match="Sector unknown not available in inventory"):
-        scale_inventory(config, inventory, 2040)
+        scale_inventory(config, inventory, 2040, {})
 
 
 def test_scale_inventory_constant(inventory):
@@ -92,7 +41,7 @@ def test_scale_inventory_constant(inventory):
         },
         VariableScalerConfig,
     )
-    res = scale_inventory(config, inventory, 2040)
+    res = scale_inventory(config, inventory, 2040, {})
     assert isinstance(res, xr.Dataset)
     assert res.year == 2040
 
@@ -118,7 +67,7 @@ def test_scale_inventory_relative(inventory):
         },
         VariableScalerConfig,
     )
-    res = scale_inventory(config, inventory, 2040)
+    res = scale_inventory(config, inventory, 2040, {})
     assert isinstance(res, xr.Dataset)
     assert res.year == 2040
 
@@ -133,8 +82,8 @@ def test_scale_inventory_relative(inventory):
     npt.assert_allclose(scale_factor.min(skipna=True), 1.209021, rtol=1e-5)
 
 
-def test_calculate_projections(config, inventory):
-    res = calculate_projections(config, inventory)
+def test_calculate_projections(config, inventory, loaded_timeseries):
+    res = calculate_projections(config, inventory, loaded_timeseries)
 
     assert isinstance(res, xr.Dataset)
 
@@ -149,11 +98,14 @@ def test_calculate_projections(config, inventory):
     # but CO|industry should have data
     assert not res["CO"].sel(sector="industry").isnull().all()
 
+    assert "H2" in res.data_vars
+    assert res["H2"].shape == res["CO"].shape
 
-def test_calculate_projections_with_default(config, inventory):
+
+def test_calculate_projections_with_default(config, inventory, loaded_timeseries):
     config.default_scaler = ConstantScaleMethod()
 
-    res = calculate_projections(config, inventory)
+    res = calculate_projections(config, inventory, loaded_timeseries)
 
     assert (res["sector"] == inventory.data["sector"]).all()
 
