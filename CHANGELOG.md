@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add timeseries data to scaling calculation and create a new `ProxyScaler` scaler which uses a timeseries and a spatial pattern to disaggregate total emissions [#12](https://github.com/climate-resource/spaemis/pull/12)
 - Add `ssp119`, `ssp126` and `ssp245` scenario configurations [#10](https://github.com/climate-resource/spaemis/pull/10)
 - Add `default_scaler` to the configuration for the scaler to be used if no specific scaler configuration is provided [#9](https://github.com/climate-resource/spaemis/pull/9)
 - Move test configuration to `test-data` directory  [#8](https://github.com/climate-resource/spaemis/pull/8)

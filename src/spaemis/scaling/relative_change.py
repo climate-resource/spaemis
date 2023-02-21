@@ -77,9 +77,11 @@ class RelativeChangeScaler(BaseScaler):
 
     def __call__(
         self,
+        *,
         data: xr.DataArray,
         inventory: EmissionsInventory,
         target_year: int,
+        **kwargs,
     ) -> xr.DataArray:
         source = self.load_source(inventory)
         if tuple(sorted(source.dims)) != ("lat", "lon", "year"):
