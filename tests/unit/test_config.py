@@ -22,7 +22,14 @@ def test_load_config(fname, config):
     # TODO: handle extra timeseries
     # Remove the last item temporarily
     if "-with-csv" in fname:
-        config.scalers.pop(-1)
+        config.scalers.scalers.pop(-1)
+
+    # Check the scalers and the rest of the config separately as the form of the scalers
+    # is different, but the loaded scalers should be the same
+    assert res.scalers.get_scalers() == config.scalers.get_scalers()
+
+    res.scalers = None
+    config.scalers = None
     assert res == config
 
 
