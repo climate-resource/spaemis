@@ -133,14 +133,12 @@ class ScalerDefinition:
     source_files: Optional[List[str]] = None
     default_scaler: Optional[ScalerMethod] = None
 
-    def get_scalers(self):
-        scalers: List[VariableScalerConfig] = []
+    def __attrs_post_init__(self):
         if self.source_files:
             for fname in self.source_files:
-                scalers.extend(_convert_filename_to_scalers(fname))
-        scalers.extend(self.scalers)
+                self.scalers.extend(_convert_filename_to_scalers(fname))
 
-        return scalers
+        # TODO: Check and warn if duplicates exist
 
 
 @define

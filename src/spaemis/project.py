@@ -106,7 +106,7 @@ def calculate_projections(
     """
     scalers = config.scalers
     scaling_configs: Dict[Tuple[str, str], VariableScalerConfig] = {
-        (cfg.variable, cfg.sector): cfg for cfg in scalers.get_scalers()
+        (cfg.variable, cfg.sector): cfg for cfg in scalers.scalers
     }
 
     if scalers.default_scaler:
