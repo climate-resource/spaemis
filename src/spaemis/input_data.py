@@ -86,7 +86,10 @@ class InputEmissionsDatabase:
         subset = self.available_data
 
         if not len(self.available_data):
-            raise ValueError("No input data has been found")
+            raise ValueError(
+                "No input data has been found. "
+                "Set the 'SPAEMIS_INPUT_PATHS' environment variable",
+            )
 
         subset = subset[subset.source_id == source_id]
         subset = subset[subset.variable_id == variable_id]
@@ -108,7 +111,7 @@ def initialize_database(options: Optional[list[str]] = None) -> InputEmissionsDa
     Initialise the global database of input emissions
 
     Uses the `SPAEMIS_INPUT_PATHS` environment to provide a set of paths to search
-    for input emissions. This enviornment can contain a comma-separated list of
+    for input emissions. This environment can contain a comma-separated list of
     paths if multiple paths are used.
 
     Returns

@@ -4,6 +4,8 @@ Constants
 import os
 import typing
 
+OUTPUT_VERSION = "v20230317_1"
+
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 TEST_DATA_DIR = os.path.join(ROOT_DIR, "tests", "test-data")
 
@@ -13,6 +15,8 @@ PROCESSED_DATA_DIR = os.path.join(
     DATA_DIR,
     "processed",
 )
+
+RUNS_DIR = os.path.join(DATA_DIR, "runs", OUTPUT_VERSION)
 
 # Define the root variables that we support in this tool
 # Any variables should be renamed to these names

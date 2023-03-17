@@ -1,3 +1,5 @@
+name: ssp119
+
 inventory_name: victoria
 inventory_year: 2016
 
@@ -10,7 +12,7 @@ timeslices:
 
 input_timeseries:
   - name: emissions
-    path: emissions_country.csv
+    path: scenarios/emissions_country.csv
     filters:
       - region: AUS
 

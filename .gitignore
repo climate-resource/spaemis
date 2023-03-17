@@ -278,5 +278,8 @@ data/processed/*
 data/raw/sedacs
 data/raw/ga
 
+# These should be synced somewhere else
+data/runs
+
 notebooks/*.ipynb
 notebooks/**/*.ipynb

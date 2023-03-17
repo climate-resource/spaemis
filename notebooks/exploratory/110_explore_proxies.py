@@ -21,13 +21,13 @@
 # %%
 import os
 
-import pooch
 import geopandas
 import matplotlib.pyplot as plt
+import pooch
 import xarray as xr
-from spaemis.scaling.proxy import get_proxy
-from spaemis.inventory import load_inventory
 
+from spaemis.inventory import load_inventory
+from spaemis.scaling.proxy import get_proxy
 from spaemis.utils import clip_region
 
 # %%
@@ -40,14 +40,16 @@ inventory.data
 inventory.data.sel(sector="motor_vehicles")["NOx"].plot()
 
 # %%
-proxy = get_proxy('population')
+proxy = get_proxy("population")
 proxy
 
 # %%
 proxy.plot(robust=True)
 
 # %%
-df = geopandas.read_file("~/Downloads/aus_border/geoBoundaries-AUS-ADM1.shp").to_crs("EPSG:4326")
+df = geopandas.read_file("~/Downloads/aus_border/geoBoundaries-AUS-ADM1.shp").to_crs(
+    "EPSG:4326"
+)
 
 # %%
 vic_boundary = df[df.shapeName == "Victoria"]
