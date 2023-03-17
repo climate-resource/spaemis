@@ -277,6 +277,7 @@ data/processed/*
 !data/processed/proxies
 data/raw/sedacs
 data/raw/ga
+data/raw/EDGARv6.1
 
 # These should be synced somewhere else
 data/runs
