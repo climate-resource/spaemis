@@ -22,6 +22,7 @@ import pandas as pd
 from attrs import define, field
 from cattrs.preconf.pyyaml import make_converter
 
+from spaemis.constants import RUNS_DIR
 from spaemis.utils import chdir
 
 converter = make_converter()
@@ -57,6 +58,12 @@ class ProxyMethod:
 ScalerMethod = Union[ProxyMethod, RelativeChangeMethod, ConstantScaleMethod]
 
 
+def _unstructure_scaler(value: ScalerMethod) -> Dict[str, Any]:
+    res = converter.unstructure(value)
+    res["name"] = value.name
+    return res
+
+
 def _discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
     name = value.pop("name")
     for Klass in get_args(_klass):
@@ -65,6 +72,7 @@ def _discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
     raise ValueError(f"Could not determine scaler for {name}")
 
 
+converter.register_unstructure_hook(ScalerMethod, _unstructure_scaler)
 converter.register_structure_hook(ScalerMethod, _discriminate_scaler)
 
 
@@ -137,6 +145,7 @@ class ScalerDefinition:
         if self.source_files:
             for fname in self.source_files:
                 self.scalers.extend(_convert_filename_to_scalers(fname))
+        self.source_files = None
 
         # TODO: Check and warn if duplicates exist
 
@@ -147,8 +156,6 @@ class DownscalingScenarioConfig:
     Configuration for downscaling a scenario
     """
 
-    inventory_name: str
-    inventory_year: int
     timeslices: List[int]
     scalers: ScalerDefinition
     input_timeseries: Optional[List[InputTimeseries]] = None
@@ -174,3 +181,40 @@ def load_config(config_file: str) -> DownscalingScenarioConfig:
     with open(config_file) as handle:
         with chdir(os.path.dirname(config_file)):
             return converter.loads(handle.read(), DownscalingScenarioConfig)
+
+
+def get_path(output_dir: str, rel_path=None) -> str:
+    data_dir = output_dir
+
+    if rel_path:
+        data_dir = os.path.join(data_dir, rel_path)
+
+    os.makedirs(data_dir, exist_ok=True)
+    return data_dir
+
+
+def get_default_results_dir(config_path: str) -> str:
+    """
+    Get the default output path for a given configuration file
+
+    Defaults to ``data/runs/{OUTPUT_VERSION}/{CONFIG_FILE_NAME}``. This function
+    does not create that directory if it doesn't already exist.
+
+    Parameters
+    ----------
+    config_path
+
+    Raises
+    ------
+    FileNotFoundError
+        If config_path doesn't exist
+
+    Returns
+    -------
+    Output directory for results
+    """
+    if not os.path.exists(config_path):
+        FileNotFoundError(config_path)
+
+    config_file_name = os.path.splitext(os.path.basename(config_path))[0]
+    return os.path.join(RUNS_DIR, config_file_name)

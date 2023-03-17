@@ -17,8 +17,6 @@ def test_load_config(fname, config):
     res = load_config(os.path.join(TEST_DATA_DIR, "config", fname))
 
     assert isinstance(res, DownscalingScenarioConfig)
-    assert res.inventory_name == "victoria"
-    assert res.inventory_year == 2016
     # TODO: handle extra timeseries
     # Remove the last item temporarily
     if "-with-csv" in fname:
@@ -52,3 +50,10 @@ def test_structuring_constant():
 def test_structuring_invalid():
     with pytest.raises(ValueError, match="Could not determine scaler for unknown"):
         converter.structure({"name": "unknown"}, ScalerMethod)
+
+
+def test_scaler_unstructure(config):
+    scaler = config.scalers.scalers[0]
+    res = converter.unstructure(scaler)
+
+    assert res["method"]["name"] == scaler.method.name
