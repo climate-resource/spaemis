@@ -19,7 +19,7 @@ from typing import (
 )
 
 import pandas as pd
-from attrs import define
+from attrs import define, field
 from cattrs.preconf.pyyaml import make_converter
 
 from spaemis.utils import chdir
@@ -92,9 +92,7 @@ class VariableScalerConfig:
     allow_missing: bool = False
 
 
-def _convert_filename_to_scalers(
-    value: Union[dict, str], _
-) -> List[VariableScalerConfig]:
+def _convert_filename_to_scalers(value: Union[dict, str]) -> List[VariableScalerConfig]:
     if isinstance(value, str):
         # load_config updates the current working directory to match the
         # directory of a loaded config files otherwise a absolute filename is required
@@ -130,6 +128,20 @@ class PointSource:
 
 
 @define
+class ScalerDefinition:
+    scalers: List[VariableScalerConfig] = field(factory=list)
+    source_files: Optional[List[str]] = None
+    default_scaler: Optional[ScalerMethod] = None
+
+    def __attrs_post_init__(self):
+        if self.source_files:
+            for fname in self.source_files:
+                self.scalers.extend(_convert_filename_to_scalers(fname))
+
+        # TODO: Check and warn if duplicates exist
+
+
+@define
 class DownscalingScenarioConfig:
     """
     Configuration for downscaling a scenario
@@ -138,17 +150,9 @@ class DownscalingScenarioConfig:
     inventory_name: str
     inventory_year: int
     timeslices: List[int]
-    scalers: List[VariableScalerConfig]
+    scalers: ScalerDefinition
     input_timeseries: Optional[List[InputTimeseries]] = None
-    default_scaler: Optional[ScalerMethod] = None
     point_source: Optional[List[PointSource]] = None
-
-
-# Ideally we could use converter.register_structure_hook. See
-# https://github.com/python-attrs/cattrs/issues/206#issuecomment-1013714386
-converter.register_structure_hook_func(
-    lambda t: t == List[VariableScalerConfig], _convert_filename_to_scalers
-)
 
 
 def load_config(config_file: str) -> DownscalingScenarioConfig:
