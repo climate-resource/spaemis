@@ -103,7 +103,7 @@ def test_calculate_projections(config, inventory, loaded_timeseries):
 
 
 def test_calculate_projections_with_default(config, inventory, loaded_timeseries):
-    config.default_scaler = ConstantScaleMethod()
+    config.scalers.default_scaler = ConstantScaleMethod()
 
     res = calculate_projections(config, inventory, loaded_timeseries)
 

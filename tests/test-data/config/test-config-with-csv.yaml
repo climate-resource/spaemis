@@ -12,4 +12,6 @@ timeslices:
   - 2040
   - 2060
 
-scalers: test_scalers.csv
+scalers:
+  source_files:
+    - test_scalers.csv

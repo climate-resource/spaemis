@@ -8,7 +8,24 @@ timeslices:
   - 2080
   - 2100
 
-default_scaler:
-  name: constant
+input_timeseries:
+  - name: emissions
+    path: emissions_country.csv
+    filters:
+      - region: AUS
 
-scalers: ssp119_scalers.csv
+scalers:
+  default:
+    name: constant
+  source_files:
+    - ssp119_scalers.csv
+  scalers:
+    - variable: H2
+      sector: industry
+      allow_missing: true
+      method:
+        name: proxy
+        proxy: population
+        source_timeseries: emissions
+        source_filters:
+          - variable: Emissions|H2|Industrial Sector

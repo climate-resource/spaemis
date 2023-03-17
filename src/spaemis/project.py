@@ -104,11 +104,12 @@ def calculate_projections(
 
         The dimensionality of the output variables is (sector, year, lat, lon)
     """
+    scalers = config.scalers
     scaling_configs: Dict[Tuple[str, str], VariableScalerConfig] = {
-        (cfg.variable, cfg.sector): cfg for cfg in config.scalers
+        (cfg.variable, cfg.sector): cfg for cfg in scalers.scalers
     }
 
-    if config.default_scaler:
+    if scalers.default_scaler:
         # Add in additional scalers for each missing variable/sector
         variables = inventory.data.data_vars.keys()
         sectors = inventory.data["sector"].values
@@ -119,7 +120,7 @@ def calculate_projections(
                 VariableScalerConfig(
                     variable=variable,
                     sector=sector,
-                    method=config.default_scaler,
+                    method=scalers.default_scaler,
                 ),
             )
 
