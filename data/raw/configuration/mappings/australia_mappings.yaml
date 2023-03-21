@@ -1,0 +1,32 @@
+variables:
+  CO: CO-em-anthro
+  NOx: NOx-em-anthro
+  SO2: SO2-em-anthro
+  PM10: BC-em-anthro
+  VOC: BC-em-anthro # Need to download VOC-em-anthro
+sectors:  # Any non-specified sectors are kept constant
+  # Sectors must map to ``spaemis.input_data.SECTOR_MAP``
+  AGS: Agriculture
+  AWB: Agriculture
+  CHE: Solvents production and application
+  ENE: Energy Sector
+  FFF: Energy Sector
+  FOO_PAP: Agriculture
+  IND: Industrial Sector
+  IRO: Industrial Sector
+  MNM: Agriculture
+  NFE: Industrial Sector
+  PRU_SOL: Solvents production and application
+  RCO: Residential, Commercial, Other
+  REF_TRF: Energy Sector
+  SWD_INC: Waste
+  SWD_LDF: Waste
+  # Aviation not easily retrievable from input4MIPs
+#  TNR_Aviation_CDS: Aviation
+#  TNR_Aviation_CRS: Aviation
+#  TNR_Aviation_LTO: Aviation
+  TNR_Other: Transportation Sector
+  TNR_Ship: International Shipping
+  TRO_RES: Transportation Sector
+  TRO_noRES: Transportation Sector
+  WWT: Waste
