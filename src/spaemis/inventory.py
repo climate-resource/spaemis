@@ -168,7 +168,7 @@ class VictoriaEPAInventory(EmissionsInventory):
             )
 
         merged_data = xr.concat([read_file(f) for f in fnames], dim="sector")
-        merged_data = merged_data.where(merged_data > 0)
+        merged_data = merged_data.where(merged_data > 0).rename({"VOC": "NMVOC"})
 
         vic_border = load_australia_boundary()
         vic_border = vic_border[vic_border.shapeName == "Victoria"]
@@ -256,6 +256,7 @@ def load_inventory(
     )
     mapping = {
         ("victoria", 2016): VictoriaEPAInventory,
+        ("australia", 2016): AustraliaInventory,
         ("australia", 2018): AustraliaInventory,
     }
 

@@ -1,5 +1,10 @@
 name: ssp119_victoria
 
+inventory:
+  name: victoria
+  year: 2016
+
+
 timeslices:
   - 2020
   - 2040

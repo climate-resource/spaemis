@@ -1,3 +1,9 @@
+name: ssp245_australia
+
+inventory:
+  name: australia
+  year: 2018
+
 timeslices:
   - 2020
   - 2040

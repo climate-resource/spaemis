@@ -30,8 +30,9 @@ from spaemis.inventory import AustraliaGrid
 
 # %%
 
+target_year = 2016
 input_dir = os.path.join(RAW_DATA_DIR, "EDGARv6.1")
-output_dir = os.path.join(RAW_DATA_DIR, "inventories", "australia", "2018")
+output_dir = os.path.join(RAW_DATA_DIR, "inventories", "australia", str(target_year))
 
 # %%
 
@@ -47,7 +48,9 @@ def parse_fname(fname):
     }
 
 
-fnames = sorted(glob.glob(os.path.join(input_dir, "*", "*", "*.0.1x0.1.nc")))
+fnames = sorted(
+    glob.glob(os.path.join(input_dir, "*", "*", f"*_{target_year}_*.0.1x0.1.nc"))
+)
 available_data = pd.DataFrame([parse_fname(fname) for fname in fnames])
 len(available_data)
 

@@ -3,7 +3,7 @@ variables:
   NOx: NOx-em-anthro
   SO2: SO2-em-anthro
   PM10: BC-em-anthro
-  VOC: BC-em-anthro # Need to download VOC-em-anthro
+  NMVOC: BC-em-anthro # Need to download VOC-em-anthro
 sectors:  # Any non-specified sectors are kept constant
 #  aircraft: # We don't easily have aviation pathways from input4MIPs
   architect_coating: Residential, Commercial, Other

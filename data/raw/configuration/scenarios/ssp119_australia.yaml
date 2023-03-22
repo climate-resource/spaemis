@@ -1,5 +1,9 @@
 name: ssp119_australia
 
+inventory:
+  name: australia
+  year: 2016
+
 timeslices:
   - 2020
   - 2040

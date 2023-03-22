@@ -59,10 +59,13 @@ SECTORS = (
     "IRO",
     "MNM",
     "N2O",
+    "NEU",
     "NFE",
-    "PRO_COAL",
-    "PRO_GAS",
-    "PRO_OIL",
+    "NMM",
+    "PRO",
+    # "PRO_COAL",
+    # "PRO_GAS",
+    # "PRO_OIL",
     "PRU_SOL",
     "RCO",
     "REF_TRF",
@@ -71,16 +74,17 @@ SECTORS = (
     "TNR_Aviation_CDS",
     "TNR_Aviation_CRS",
     "TNR_Aviation_LTO",
+    "TNR_Aviation_SPS",
     "TNR_Other",
     "TNR_Ship",
     "TRO_RES",
     "TRO_noRES",
     "WWT",
-    "TOTAL",
+    "TOTALS",
 )
 
 SPECIES = ("BC", "CO", "NH3", "NMVOC", "NOx", "OC", "PM2.5", "PM10", "SO2")
-YEAR = 2018
+YEAR = 2016
 EDGAR_URL = "http://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/EDGAR/datasets/v61_AP"
 
 
@@ -106,7 +110,7 @@ def download_file(gas, sector, year):
     data = io.BytesIO(resp.content)
     zf = zipfile.ZipFile(data)
 
-    os.makedirs(out_dir)
+    os.makedirs(out_dir, exist_ok=True)
     zf.extract(exp_filename, os.path.join(out_dir))
     logger.info(f"{exp_filename} completed")
 
@@ -114,4 +118,4 @@ def download_file(gas, sector, year):
 options = itertools.product(SPECIES, SECTORS, [YEAR])
 download_file(SPECIES[0], SECTORS[1], YEAR)
 
-joblib.Parallel(n_jobs=8)(joblib.delayed(download_file)(*opts) for opts in options)
+joblib.Parallel(n_jobs=20)(joblib.delayed(download_file)(*opts) for opts in options)

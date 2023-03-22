@@ -1,0 +1,27 @@
+EDGAR sector,Description,IPCC 1996 code guidelines,IPCC 2006 guidelines
+AGS,Agricultural soils,4C+4D,3C2+3C3+3C4+3C7
+AWB,Agricultural waste burning,4F,3C1b
+CHE,Chemical processes,2B,2B
+ENE,Power industry,1A1a,1A1a
+FFF,Fossil Fuel Fires,7A,5B
+FOO_PAP,Food and Paper,2D,2H
+IND,Combustion for manufacturing,1A2,1A2
+IRO,Iron and steel production,2C1a+2C1c+2C1d+2C1e+2C1f+2C2,2C1+2C2
+MNM,Manure management,4B,3A2
+NEU,Non energy use of fuels,2G,2D1+2D2+2D4
+NFE,Non-ferrous metals production,2C3+2C4+2C5,2C3+2C4+2C5+2C6+2C7
+NMM,Non-metallic minerals production,2A,2A
+PRO,Fuel exploitation,1B1a+1B2a1+1B2a2+1B2a3+1B2a4+1B2c,1B1a+1B2aiii2+1B2aiii3+1B2bi+1B2bii
+PRU_SOL,Solvents and products use,3,2D3+2E+2F+2G
+RCO,Energy for buildings,1A4,1A4+1A5
+REF_TRF,Oil refineries and Transformation industry,1A1b+1A1c+1A5b1+1B1b+1B2a5+1B2a6+1B2b5+2C1b,1A1b+1A1ci+1A1cii+1A5biii+1B1b+1B2aiii6+1B2biii3+1B1c
+SWD_INC,Solid waste incineration,6C+6Dhaz,4C
+SWD_LDF,Solid waste landfills,6A+6Dcom,4A+4B
+TNR_Aviation_CDS,Aviation climbing&descent,1A3a_CDS,1A3a_CDS
+TNR_Aviation_CRS,Aviation cruise,1A3a_CRS,1A3a_CRS
+TNR_Aviation_LTO,Aviation landing&takeoff,1A3a_LTO,1A3a_LTO
+TNR_Other,"Railways, pipelines, off-road transport",1A3c+1A3e,1A3c+1A3e
+TNR_Ship,Shipping,1A3d+1C2,1A3d
+TRO_noRES,Road transportation no resuspension,1A3b_noRES,1A3b_noRES
+TRO_RES,Road transportation resuspension,1A3b_RES,1A3b_RES
+WWT,Waste water handling,6B,4D
