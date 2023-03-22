@@ -58,7 +58,9 @@ class EmissionsInventory:
     year: int
 
     @classmethod
-    def load_from_directory(cls, data_directory) -> "EmissionsInventory":
+    def load_from_directory(
+        cls, data_directory: str, year: int, **kwargs
+    ) -> "EmissionsInventory":
         """
         Load an emissions inventory from a directory
         """
@@ -129,6 +131,7 @@ class VictoriaEPAInventory(EmissionsInventory):
     def load_from_directory(
         cls,
         data_directory: str,
+        year: int,
         file_suffix: str = "_tif_to_csv3.csv",
         grid: Optional[Any] = None,
     ) -> "VictoriaEPAInventory":
@@ -168,12 +171,12 @@ class VictoriaEPAInventory(EmissionsInventory):
             )
 
         merged_data = xr.concat([read_file(f) for f in fnames], dim="sector")
-        merged_data = merged_data.where(merged_data > 0).rename({"VOC": "NMVOC"})
+        merged_data = merged_data.where(merged_data > 0)
 
         vic_border = load_australia_boundary()
         vic_border = vic_border[vic_border.shapeName == "Victoria"]
         return VictoriaEPAInventory(
-            data=clip_region(merged_data, vic_border), border_mask=vic_border, year=2016
+            data=clip_region(merged_data, vic_border), border_mask=vic_border, year=year
         )
 
 
@@ -190,6 +193,7 @@ class AustraliaInventory(EmissionsInventory):
     def load_from_directory(
         cls,
         data_directory: str,
+        year: int,
         file_suffix: str = ".nc",
     ) -> "AustraliaInventory":
         """
@@ -221,7 +225,7 @@ class AustraliaInventory(EmissionsInventory):
         return AustraliaInventory(
             data=clip_region(merged_data, australia_boundary),
             border_mask=australia_boundary,
-            year=2018,
+            year=year,
         )
 
 
@@ -265,7 +269,7 @@ def load_inventory(
     except KeyError:
         raise ValueError(f"No inventory matching {inventory}|{year}")
 
-    return loader.load_from_directory(data_directory=data_directory)
+    return loader.load_from_directory(data_directory=data_directory, year=year)
 
 
 def write_inventory_csvs(ds: xr.Dataset, output_dir: str):

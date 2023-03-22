@@ -27,6 +27,7 @@ import xarray as xr
 
 from spaemis.constants import RAW_DATA_DIR
 from spaemis.inventory import AustraliaGrid
+from spaemis.utils import area_grid
 
 # %%
 
@@ -79,6 +80,13 @@ for variable, variable_data in available_data.groupby("gas"):
     )
 
     ds = ds.rename({list(ds.data_vars.keys())[0]: variable})
+
+    assert ds[variable].attrs["units"] == "kg m-2 s-1"
+    area = area_grid(ds.lat, ds.lon)
+    num_s_per_year = 365 * 24 * 60
+
+    ds[variable] = ds[variable] * area * num_s_per_year
+    ds[variable].attrs["units"] = "kg yr-1"
 
     print(f"Writing {variable} to disk")
     ds.to_netcdf(os.path.join(output_dir, f"{variable}.nc"))
