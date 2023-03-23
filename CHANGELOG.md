@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Update point source configuration [#18](https://github.com/climate-resource/spaemis/pull/18)
 - Add Australian gridding configuration [#17](https://github.com/climate-resource/spaemis/pull/17)
 - Add script for downloading EDGARv6.1 data [#16](https://github.com/climate-resource/spaemis/pull/16)
 - Refactor to write results as notebooks in `data/runs/{OUTPUT_VERSION}` [#15](https://github.com/climate-resource/spaemis/pull/15)

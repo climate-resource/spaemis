@@ -279,6 +279,7 @@ data/processed/*
 data/raw/sedacs
 data/raw/ga
 data/raw/EDGARv6.1
+data/raw/configuration/point_sources/HEFT-MURIEL_locations.csv
 
 # These should be synced somewhere else
 data/runs

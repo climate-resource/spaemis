@@ -25,6 +25,7 @@ def test_load_config(fname, config):
     # Check the scalers and the rest of the config separately as the form of the scalers
     # is different, but the loaded scalers should be the same
     assert res.scalers.scalers == config.scalers.scalers
+    assert res.point_sources.sources == config.point_sources.sources
 
     res.scalers = None
     config.scalers = None

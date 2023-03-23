@@ -47,3 +47,24 @@ scalers:
         source_timeseries: emissions
         source_filters:
           - variable: Emissions|H2|Industrial Sector
+point_sources:
+  sources:
+    - location:
+        - - -41.069
+          - 146.865
+        - - -21.773
+          - 117.015
+        - - -23.675
+          - 150.443
+        - - -33.545
+          - 136.074
+        - - -32.747
+          - 151.311
+        - - -12.416
+          - 130.951
+        - - -38.21420584
+          - 146.5124112
+      quantity: 1
+      sector: industry
+      unit: kg
+      variable: H2
