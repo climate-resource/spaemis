@@ -1,0 +1,34 @@
+name: ssp126_australia
+
+inventory:
+  name: australia
+  year: 2018
+
+timeslices:
+  - 2020
+  - 2040
+  - 2060
+  - 2080
+  - 2100
+
+input_timeseries:
+  - name: emissions
+    path: emissions_country.csv
+    filters:
+      - region: AUS
+
+scalers:
+  default:
+    name: constant
+  source_files:
+    - ssp126_australia_scalers.csv
+  scalers:
+    - variable: H2
+      sector: industry
+      allow_missing: true
+      method:
+        name: proxy
+        proxy: population
+        source_timeseries: emissions
+        source_filters:
+          - variable: Emissions|H2|Industrial Sector

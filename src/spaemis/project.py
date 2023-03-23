@@ -1,3 +1,4 @@
+import itertools
 import logging
 from itertools import product
 from typing import Dict, Tuple
@@ -83,6 +84,29 @@ def _create_output_data(options, config, template: xr.Dataset):
     )
 
 
+def _process_slice(output_ds, inventory, timeseries, variable_config, year):
+    logger.info(
+        "Processing variable=%s sector=%s year=%i",
+        variable_config.variable,
+        variable_config.sector,
+        year,
+    )
+
+    res = scale_inventory(variable_config, inventory, year, timeseries)
+
+    output_ds[variable_config.variable].loc[
+        dict(sector=variable_config.sector, year=year)
+    ] = (
+        res[variable_config.variable]
+        .sel(sector=variable_config.sector, year=year)
+        .values
+    )
+
+    logger.info(
+        f"Sum: {output_ds[variable_config.variable].sel(sector=variable_config.sector, year=year).sum().values}"
+    )
+
+
 def calculate_projections(
     config: DownscalingScenarioConfig,
     inventory: EmissionsInventory,
@@ -124,32 +148,10 @@ def calculate_projections(
                 ),
             )
 
-    output_ds = None
+    options = itertools.product(scaling_configs.values(), config.timeslices)
+    output_ds = _create_output_data(scaling_configs.keys(), config, inventory.data)
 
-    for variable_config in scaling_configs.values():
-        for slice_year in config.timeslices:
-            logger.info(
-                "Processing variable=%s sector=%s year=%i",
-                variable_config.variable,
-                variable_config.sector,
-                slice_year,
-            )
-
-            res = scale_inventory(variable_config, inventory, slice_year, timeseries)
-
-            if output_ds is None:
-                output_ds = _create_output_data(scaling_configs.keys(), config, res)
-
-            output_ds[variable_config.variable].loc[
-                dict(sector=variable_config.sector, year=slice_year)
-            ] = (
-                res[variable_config.variable]
-                .sel(sector=variable_config.sector, year=slice_year)
-                .values
-            )
-
-            logger.info(
-                f"Sum: {output_ds[variable_config.variable].sel(sector=variable_config.sector, year=slice_year).sum().values}"
-            )
+    for opt in options:
+        _process_slice(output_ds, inventory, timeseries, *opt)
 
     return output_ds

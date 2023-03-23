@@ -151,11 +151,23 @@ class ScalerDefinition:
 
 
 @define
+class Inventory:
+    """
+    Define the inventory used for this scenario
+    """
+
+    name: str
+    year: int
+
+
+@define
 class DownscalingScenarioConfig:
     """
     Configuration for downscaling a scenario
     """
 
+    name: str
+    inventory: Inventory
     timeslices: List[int]
     scalers: ScalerDefinition
     input_timeseries: Optional[List[InputTimeseries]] = None

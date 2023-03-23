@@ -1,5 +1,8 @@
-inventory_name: victoria
-inventory_year: 2016
+name: ssp126_victoria
+
+inventory:
+  name: victoria
+  year: 2016
 
 timeslices:
   - 2020
@@ -18,7 +21,7 @@ scalers:
   default:
     name: constant
   source_files:
-    - ssp245_scalers.csv
+    - ssp126_victoria_scalers.csv
   scalers:
     - variable: H2
       sector: industry

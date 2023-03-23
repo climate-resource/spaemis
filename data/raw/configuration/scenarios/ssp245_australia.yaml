@@ -1,7 +1,8 @@
-name: ssp119
+name: ssp245_australia
 
-inventory_name: victoria
-inventory_year: 2016
+inventory:
+  name: australia
+  year: 2018
 
 timeslices:
   - 2020
@@ -12,7 +13,7 @@ timeslices:
 
 input_timeseries:
   - name: emissions
-    path: scenarios/emissions_country.csv
+    path: emissions_country.csv
     filters:
       - region: AUS
 
@@ -20,7 +21,7 @@ scalers:
   default:
     name: constant
   source_files:
-    - ssp119_scalers.csv
+    - ssp245_australia_scalers.csv
   scalers:
     - variable: H2
       sector: industry
