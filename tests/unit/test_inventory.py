@@ -33,6 +33,7 @@ def test_write_inventory(
     # We should be able to read these inventory files back as EmissionsInventory
     new_inv = VictoriaEPAInventory.load_from_directory(
         tmpdir,
+        year=2016,
         file_suffix="_projected.csv",
         grid=TestVicGrid(),
     )

@@ -58,24 +58,22 @@ class EmissionsInventory:
     year: int
 
     @classmethod
-    def load_from_directory(cls, data_directory) -> "EmissionsInventory":
+    def load_from_directory(
+        cls, data_directory: str, year: int, **kwargs
+    ) -> "EmissionsInventory":
         """
         Load an emissions inventory from a directory
         """
         pass
 
 
-class VictoriaGrid:
-    """
-    Information about the grid used in Victoria
-    """
-
-    nx: int = 903
-    ny: int = 592
-    x0: float = 140.6291
-    y0: float = -39.5402
-    dx: float = 0.01059988
-    dy: float = 0.01059988
+class Grid:
+    nx: int
+    ny: int
+    x0: float
+    y0: float
+    dx: float
+    dy: float
 
     @property
     def lats(self) -> list[float]:
@@ -92,6 +90,34 @@ class VictoriaGrid:
         return [self.x0 + self.dx * i for i in range(self.nx)]
 
 
+class VictoriaGrid(Grid):
+    """
+    Information about the grid used in Victoria
+    """
+
+    nx: int = 903
+    ny: int = 592
+    x0: float = 140.6291
+    y0: float = -39.5402
+    dx: float = 0.01059988
+    dy: float = 0.01059988
+
+
+class AustraliaGrid(Grid):
+    """
+    Information about the grid used in Australia
+
+    lat/lons represent the center of the cell
+    """
+
+    nx: int = 450
+    ny: int = 400
+    x0: float = 110.05
+    y0: float = -10.05
+    dx: float = 0.1
+    dy: float = -0.1
+
+
 @define
 class VictoriaEPAInventory(EmissionsInventory):
     """
@@ -105,6 +131,7 @@ class VictoriaEPAInventory(EmissionsInventory):
     def load_from_directory(
         cls,
         data_directory: str,
+        year: int,
         file_suffix: str = "_tif_to_csv3.csv",
         grid: Optional[Any] = None,
     ) -> "VictoriaEPAInventory":
@@ -149,7 +176,56 @@ class VictoriaEPAInventory(EmissionsInventory):
         vic_border = load_australia_boundary()
         vic_border = vic_border[vic_border.shapeName == "Victoria"]
         return VictoriaEPAInventory(
-            data=clip_region(merged_data, vic_border), border_mask=vic_border, year=2016
+            data=clip_region(merged_data, vic_border), border_mask=vic_border, year=year
+        )
+
+
+@define
+class AustraliaInventory(EmissionsInventory):
+    """
+    Australian data
+
+    CSV files of 1D datapoints. Each grid is slightly different so some post-processing
+    is required to get all the variables and sectors on to the same grid.
+    """
+
+    @classmethod
+    def load_from_directory(
+        cls,
+        data_directory: str,
+        year: int,
+        file_suffix: str = ".nc",
+    ) -> "AustraliaInventory":
+        """
+        Load Australian EDGAR data
+
+        Parameters
+        ----------
+        data_directory
+            Folder containing CSV input files
+
+        grid
+            Object containing information about the target grid
+
+        Returns
+        -------
+        Loaded data
+        """
+        fnames = sorted(glob.glob(os.path.join(data_directory, "*.nc")))
+        if not fnames:
+            raise ValueError("No inventory files found for Australia")
+
+        def read_file(fname):
+            return xr.load_dataset(fname)
+
+        merged_data = xr.merge([read_file(f) for f in fnames], join="outer")
+        merged_data = merged_data.where(merged_data > 0)
+
+        australia_boundary = load_australia_boundary()
+        return AustraliaInventory(
+            data=clip_region(merged_data, australia_boundary),
+            border_mask=australia_boundary,
+            year=year,
         )
 
 
@@ -182,14 +258,18 @@ def load_inventory(
     data_directory = data_directory or os.path.join(
         RAW_DATA_DIR, "inventories", inventory, str(year)
     )
-    mapping = {("victoria", 2016): VictoriaEPAInventory}
+    mapping = {
+        ("victoria", 2016): VictoriaEPAInventory,
+        ("australia", 2016): AustraliaInventory,
+        ("australia", 2018): AustraliaInventory,
+    }
 
     try:
         loader = mapping[(inventory, year)]
     except KeyError:
         raise ValueError(f"No inventory matching {inventory}|{year}")
 
-    return loader.load_from_directory(data_directory=data_directory)
+    return loader.load_from_directory(data_directory=data_directory, year=year)
 
 
 def write_inventory_csvs(ds: xr.Dataset, output_dir: str):

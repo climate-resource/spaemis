@@ -1,0 +1,112 @@
+variable,sector,scaler_name,scaler_variable_id,scaler_source_id,scaler_sector
+CO,AGS,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+CO,AWB,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+CO,CHE,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Solvents production and application
+CO,ENE,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+CO,FFF,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+CO,FOO_PAP,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+CO,IND,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+CO,IRO,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+CO,MNM,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+CO,NEU,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+CO,NFE,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+CO,NMM,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+CO,PRU_SOL,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Solvents production and application
+CO,RCO,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,"Residential, Commercial, Other"
+CO,REF_TRF,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+CO,SWD_INC,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+CO,SWD_LDF,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+CO,TNR_Other,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+CO,TNR_Ship,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,International Shipping
+CO,TRO_RES,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+CO,TRO_noRES,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+CO,WWT,relative_change,CO-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+NOx,AGS,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+NOx,AWB,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+NOx,CHE,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Solvents production and application
+NOx,ENE,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+NOx,FFF,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+NOx,FOO_PAP,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+NOx,IND,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+NOx,IRO,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+NOx,MNM,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+NOx,NEU,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+NOx,NFE,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+NOx,NMM,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+NOx,PRU_SOL,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Solvents production and application
+NOx,RCO,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,"Residential, Commercial, Other"
+NOx,REF_TRF,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+NOx,SWD_INC,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+NOx,SWD_LDF,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+NOx,TNR_Other,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+NOx,TNR_Ship,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,International Shipping
+NOx,TRO_RES,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+NOx,TRO_noRES,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+NOx,WWT,relative_change,NOx-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+SO2,AGS,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+SO2,AWB,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+SO2,CHE,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Solvents production and application
+SO2,ENE,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+SO2,FFF,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+SO2,FOO_PAP,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+SO2,IND,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+SO2,IRO,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+SO2,MNM,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+SO2,NEU,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+SO2,NFE,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+SO2,NMM,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+SO2,PRU_SOL,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Solvents production and application
+SO2,RCO,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,"Residential, Commercial, Other"
+SO2,REF_TRF,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+SO2,SWD_INC,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+SO2,SWD_LDF,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+SO2,TNR_Other,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+SO2,TNR_Ship,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,International Shipping
+SO2,TRO_RES,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+SO2,TRO_noRES,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+SO2,WWT,relative_change,SO2-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+PM10,AGS,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+PM10,AWB,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+PM10,CHE,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Solvents production and application
+PM10,ENE,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+PM10,FFF,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+PM10,FOO_PAP,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+PM10,IND,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+PM10,IRO,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+PM10,MNM,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+PM10,NEU,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+PM10,NFE,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+PM10,NMM,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+PM10,PRU_SOL,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Solvents production and application
+PM10,RCO,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,"Residential, Commercial, Other"
+PM10,REF_TRF,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+PM10,SWD_INC,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+PM10,SWD_LDF,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+PM10,TNR_Other,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+PM10,TNR_Ship,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,International Shipping
+PM10,TRO_RES,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+PM10,TRO_noRES,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+PM10,WWT,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+NMVOC,AGS,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+NMVOC,AWB,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+NMVOC,CHE,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Solvents production and application
+NMVOC,ENE,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+NMVOC,FFF,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+NMVOC,FOO_PAP,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+NMVOC,IND,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+NMVOC,IRO,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+NMVOC,MNM,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Agriculture
+NMVOC,NEU,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+NMVOC,NFE,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+NMVOC,NMM,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Industrial Sector
+NMVOC,PRU_SOL,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Solvents production and application
+NMVOC,RCO,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,"Residential, Commercial, Other"
+NMVOC,REF_TRF,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Energy Sector
+NMVOC,SWD_INC,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+NMVOC,SWD_LDF,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+NMVOC,TNR_Other,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+NMVOC,TNR_Ship,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,International Shipping
+NMVOC,TRO_RES,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+NMVOC,TRO_noRES,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Transportation Sector
+NMVOC,WWT,relative_change,BC-em-anthro,IAMC-IMAGE-ssp126-1-1,Waste
+
