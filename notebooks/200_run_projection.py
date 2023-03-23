@@ -29,12 +29,13 @@ dotenv.load_dotenv()
 import logging
 import os
 
-from spaemis.config import get_default_results_dir, get_path, load_config
-from spaemis.constants import OUTPUT_VERSION, RAW_DATA_DIR
-from spaemis.input_data import load_timeseries
-from spaemis.inventory import load_inventory, write_inventory_csvs
-from spaemis.project import calculate_projections
+import xarray as xr
 
+from spaemis.config import get_default_results_dir, get_path, load_config
+from spaemis.constants import OUTPUT_VERSION, RAW_DATA_DIR, TEST_DATA_DIR
+from spaemis.input_data import load_timeseries
+from spaemis.inventory import clip_region, load_inventory, write_inventory_csvs
+from spaemis.project import calculate_point_sources, calculate_projections
 
 logger = logging.getLogger("200_run_projection")
 logging.basicConfig(level=logging.INFO)
@@ -44,6 +45,11 @@ CONFIG_PATH = os.path.join(
     RAW_DATA_DIR, "configuration", "scenarios", "ssp119_australia.yaml"
 )
 RESULTS_PATH = get_default_results_dir(CONFIG_PATH)
+
+# %%
+# # Test configuration
+# CONFIG_PATH = os.path.join(TEST_DATA_DIR, "config", "test-config.yaml")
+# RESULTS_PATH = get_default_results_dir(CONFIG_PATH)
 
 # %%
 config = load_config(CONFIG_PATH)
@@ -59,6 +65,9 @@ inventory = load_inventory(config.inventory.name, config.inventory.year)
 inventory
 
 # %%
+inventory.data["CO"].sel(sector="industry").plot(robust=True)
+
+# %%
 timeseries = load_timeseries(config.input_timeseries, get_path(RESULTS_PATH, "inputs"))
 timeseries
 
@@ -66,9 +75,59 @@ timeseries
 dataset = calculate_projections(config, inventory, timeseries)
 dataset
 
+
+# %%
+def show_variable_sums(df):
+    if "year" not in df.coords:
+        df = df.copy()
+        df["year"] = "unknown"
+        df = df.expand_dims(["year"])
+
+    # Results are all in kg/cell/yr so can be summed like this
+    totals = df.sum(dim=("sector", "lat", "lon")).to_dataframe() / 1000 / 1000
+
+    return totals.round(3)  # kt / yr
+
+
+show_variable_sums(dataset)
+
+# %%
+point_sources = calculate_point_sources(config, inventory)
+point_sources
+
+# %%
+show_variable_sums(point_sources)
+
+# %%
+point_sources["H2"].sel(sector="industry").plot()
+
+# %%
+# Align and merge point sources
+# dataset has nans outside of the clipped region. PointSources in those areas are ignored.
+merged, temp = xr.align(dataset.fillna(0), point_sources, join="outer", fill_value=0)
+
+for variable in temp.data_vars:
+    if variable not in merged.data_vars:
+        merged[variable] = temp[variable]
+    else:
+        merged[variable] += temp[variable]
+
+del temp  # Save memory
+merged = clip_region(merged, inventory.border_mask)
+
+# %%
+show_variable_sums(merged)
+
+# %%
+dataset["H2"].sum(dim="sector").plot(robust=True, col="year")
+
+# %%
+for variable in merged.data_vars:
+    merged[variable].plot(robust=True, col="year", row="sector")
+
 # %%
 logger.info("Writing output dataset as netcdf")
-dataset.to_netcdf(
+merged.to_netcdf(
     os.path.join(output_dir, f"{OUTPUT_VERSION}_{config.inventory.name}_projections.nc")
 )
 
@@ -76,7 +135,7 @@ dataset.to_netcdf(
 logger.info("Writing CSV files")
 for year in config.timeslices:
     target_dir = os.path.join(output_dir, str(year))
-    data_to_write = dataset.sel(year=year)
+    data_to_write = merged.sel(year=year)
 
     os.makedirs(target_dir, exist_ok=True)
 

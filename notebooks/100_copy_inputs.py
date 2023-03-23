@@ -26,7 +26,7 @@ import os
 import shutil
 
 from spaemis.config import get_default_results_dir, get_path, load_config
-from spaemis.constants import RAW_DATA_DIR
+from spaemis.constants import RAW_DATA_DIR, TEST_DATA_DIR
 
 logger = logging.getLogger("100_copy_inputs")
 logging.basicConfig(level=logging.INFO)
@@ -35,15 +35,18 @@ logging.basicConfig(level=logging.INFO)
 CONFIG_PATH = os.path.join(
     RAW_DATA_DIR, "configuration", "scenarios", "ssp119_australia.yaml"
 )
-OUTPUT_PATH = get_default_results_dir(CONFIG_PATH)
+RESULTS_PATH = get_default_results_dir(CONFIG_PATH)
 
+# %%
+# CONFIG_PATH = os.path.join(TEST_DATA_DIR, "config", "test-config.yaml")
+# RESULTS_PATH = get_default_results_dir(CONFIG_PATH)
 # %%
 config = load_config(CONFIG_PATH)
 config.name
 
 # %%
 # Ensures that the output directory exists
-output_dir = get_path(OUTPUT_PATH, "inputs")
+output_dir = get_path(RESULTS_PATH, "inputs")
 output_dir
 
 # %%

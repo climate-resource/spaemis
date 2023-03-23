@@ -3,14 +3,12 @@ from typing import Dict
 
 import pytest
 import scmdata
-import xarray as xr
 from click.testing import CliRunner
 
 from spaemis.config import DownscalingScenarioConfig, load_config
 from spaemis.constants import TEST_DATA_DIR
 from spaemis.input_data import database
-from spaemis.inventory import EmissionsInventory
-from spaemis.utils import load_australia_boundary
+from spaemis.inventory import EmissionsInventory, TestInventory
 
 
 @pytest.fixture()
@@ -36,18 +34,7 @@ def config(config_file) -> DownscalingScenarioConfig:
 def inventory() -> EmissionsInventory:
     # For testing we use a decimated version of the vic inventory generated using
     # scripts/downsample_inventory.py
-    vic_border = load_australia_boundary()
-    vic_border = vic_border[vic_border.shapeName == "Victoria"]
-    data = xr.load_dataset(
-        os.path.join(
-            TEST_DATA_DIR,
-            "inventory",
-            "decimated",
-            "inventory_decimated.nc",
-        )
-    )
-
-    return EmissionsInventory(data, border_mask=vic_border, year=2016)
+    return TestInventory.load_from_directory()
 
 
 @pytest.fixture(autouse=True, scope="session")

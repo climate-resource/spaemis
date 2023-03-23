@@ -7,7 +7,7 @@ import numpy as np
 import scmdata
 import xarray as xr
 
-from spaemis.config import DownscalingScenarioConfig, VariableScalerConfig
+from spaemis.config import DownscalingScenarioConfig, PointSource, VariableScalerConfig
 from spaemis.inventory import EmissionsInventory
 from spaemis.scaling import get_scaler_by_config
 
@@ -101,10 +101,13 @@ def _process_slice(output_ds, inventory, timeseries, variable_config, year):
         .sel(sector=variable_config.sector, year=year)
         .values
     )
-
-    logger.info(
-        f"Sum: {output_ds[variable_config.variable].sel(sector=variable_config.sector, year=year).sum().values}"
+    total_emissions = (
+        output_ds[variable_config.variable]
+        .sel(sector=variable_config.sector, year=year)
+        .sum()
+        .values
     )
+    logger.info(f"Total: {total_emissions / 1000 / 1000} kt / yr")
 
 
 def calculate_projections(
@@ -155,3 +158,74 @@ def calculate_projections(
         _process_slice(output_ds, inventory, timeseries, *opt)
 
     return output_ds
+
+
+def _process_source(
+    point_source: PointSource, lat: xr.DataArray, lon: xr.DataArray
+) -> xr.Dataset:
+    field = xr.DataArray(coords=(lat, lon)).fillna(0)
+
+    if point_source.unit != "kg":
+        raise NotImplementedError("Only unit of kg are supported")
+
+    num_points = len(point_source.location)
+    d_lat = lat[1] - lat[0]
+    for location in point_source.location:
+        try:
+            # TODO: check that the correct cell is being choosen
+            field_location = field.sel(
+                lat=location[0],
+                lon=location[1],
+                method="nearest",
+                tolerance=np.abs(d_lat.values),
+            )
+
+            field.loc[field_location.lat, field_location.lon] += (
+                point_source.quantity / num_points
+            )
+        except KeyError:
+            # Value not in domain
+            pass
+
+    field["sector"] = point_source.sector
+
+    # The sum of field != the requested quantity in the case that some locations are
+    # outside of domain
+
+    return field.expand_dims(["sector"]).to_dataset(name=point_source.variable)
+
+
+def calculate_point_sources(
+    config: DownscalingScenarioConfig, inventory: EmissionsInventory
+) -> xr.Dataset:
+    """
+    Generate grids for point sources
+
+    Each point source has a total quantity. This quantity is split evenly over all
+    locations of that source. Values are excluded if the location falls outside of the
+    domain, but still contribute to the set of locations that the quantity is spread over.
+
+    Parameters
+    ----------
+    config
+        Scenario configuration
+    inventory
+        Loaded inventory data
+
+        These data are used for generating the latitude and longitude coordinates of the
+        output grid
+
+    Returns
+    -------
+    Dataset containing a gridded representation of the point source data. This Dataset
+    contains the variables and sectors covered by the point sources. The sectors
+    do not necessarily need to be the inventory data.
+    """
+    slices = []
+
+    for point_source in config.point_sources.sources:
+        slices.append(
+            _process_source(point_source, inventory.data.lat, inventory.data.lon)
+        )
+
+    return xr.merge(slices)
