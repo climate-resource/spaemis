@@ -11,7 +11,7 @@ import pandas as pd
 import xarray as xr
 from attrs import Attribute, define, field
 
-from spaemis.constants import RAW_DATA_DIR
+from spaemis.constants import RAW_DATA_DIR, TEST_DATA_DIR
 from spaemis.utils import clip_region, load_australia_boundary
 
 logger = logging.getLogger(__name__)
@@ -170,8 +170,9 @@ class VictoriaEPAInventory(EmissionsInventory):
                 {"sector": os.path.basename(fname).replace(file_suffix, "")}
             )
 
-        merged_data = xr.concat([read_file(f) for f in fnames], dim="sector")
-        merged_data = merged_data.where(merged_data > 0)
+        # Data should be nan outside of the region of interest, but zero if no emissions
+        # present
+        merged_data = xr.concat([read_file(f) for f in fnames], dim="sector").fillna(0)
 
         vic_border = load_australia_boundary()
         vic_border = vic_border[vic_border.shapeName == "Victoria"]
@@ -215,18 +216,60 @@ class AustraliaInventory(EmissionsInventory):
         if not fnames:
             raise ValueError("No inventory files found for Australia")
 
-        def read_file(fname):
-            return xr.load_dataset(fname)
-
-        merged_data = xr.merge([read_file(f) for f in fnames], join="outer")
-        merged_data = merged_data.where(merged_data > 0)
-
         australia_boundary = load_australia_boundary()
+
+        # Data should be nan outside of the region of interest, but zero if no emissions
+        # present
+        merged_data = xr.merge([xr.load_dataset(f) for f in fnames], join="outer")
+        merged_data = merged_data.where(merged_data > 0).fillna(0)
+
+        clipped_data = clip_region(merged_data, australia_boundary)
+
         return AustraliaInventory(
-            data=clip_region(merged_data, australia_boundary),
+            data=clipped_data,
             border_mask=australia_boundary,
             year=year,
         )
+
+
+@define
+class TestInventory(EmissionsInventory):
+    """
+    Test inventory using decimated Vic inventory data
+    """
+
+    @classmethod
+    def load_from_directory(cls, **kwargs) -> "TestInventory":
+        """
+        Load test inventory data
+
+        For testing we use a decimated version of the vic inventory generated using
+        ``scripts/downsample_inventory.py``
+
+        Parameters
+        ----------
+        data_directory
+            Folder containing CSV input files
+
+        grid
+            Object containing information about the target grid
+
+        Returns
+        -------
+        Loaded data
+        """
+        vic_border = load_australia_boundary()
+        vic_border = vic_border[vic_border.shapeName == "Victoria"]
+        data = xr.load_dataset(
+            os.path.join(
+                TEST_DATA_DIR,
+                "inventory",
+                "decimated",
+                "inventory_decimated.nc",
+            )
+        ).drop_vars("spatial_ref")
+
+        return TestInventory(data, border_mask=vic_border, year=2016)
 
 
 def load_inventory(
@@ -259,6 +302,7 @@ def load_inventory(
         RAW_DATA_DIR, "inventories", inventory, str(year)
     )
     mapping = {
+        ("test", 2016): TestInventory,
         ("victoria", 2016): VictoriaEPAInventory,
         ("australia", 2016): AustraliaInventory,
         ("australia", 2018): AustraliaInventory,

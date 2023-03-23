@@ -2,8 +2,18 @@ import numpy.testing as npt
 import pytest
 import xarray as xr
 
-from spaemis.config import ConstantScaleMethod, VariableScalerConfig, converter
-from spaemis.project import calculate_projections, scale_inventory
+from spaemis.config import (
+    ConstantScaleMethod,
+    PointSource,
+    VariableScalerConfig,
+    converter,
+)
+from spaemis.project import (
+    _process_source,
+    calculate_point_sources,
+    calculate_projections,
+    scale_inventory,
+)
 
 
 def test_scale_inventory_missing_variable(inventory):
@@ -109,7 +119,7 @@ def test_calculate_projections_with_default(config, inventory, loaded_timeseries
 
     assert (res["sector"] == inventory.data["sector"]).all()
 
-    exp = inventory.data["CO"].reset_coords("spatial_ref", drop=True)
+    exp = inventory.data["CO"]
 
     # CO|architect_coating should be held constant
     xr.testing.assert_allclose(
@@ -124,3 +134,57 @@ def test_calculate_projections_with_default(config, inventory, loaded_timeseries
             res["CO"].sel(sector="industry", year=2040).reset_coords("year", drop=True),
             exp.sel(sector="industry"),
         )
+
+
+@pytest.mark.parametrize("sector", ["industry", "gas_leak"])
+@pytest.mark.parametrize("variable", ["H2", "CO"])
+def test_process_sources(inventory, variable, sector):
+    point = PointSource(
+        variable=variable,
+        sector=sector,
+        quantity=600,
+        location=[
+            (-37.56, 143.85),  # Ballarat
+            (-38.21, 146.399),  # La Trobe Valley
+            (-27.47, 153.03),  # Brisbane (out of domain)
+        ],
+    )
+    res = _process_source(point, inventory.data.lat, inventory.data.lon)
+    assert res.sum() == 400
+    assert (
+        res[variable].sel(sector=sector, lat=-38.21, lon=146.4, method="nearest") == 200
+    )
+
+
+def test_calculate_point_sources(inventory, config):
+    config.point_sources.sources.append(
+        PointSource(
+            variable="H2",
+            sector="gas_leak",
+            quantity=600,
+            location=[
+                (-37.56, 143.85),  # Ballarat
+                (-38.21, 146.399),  # La Trobe Valley
+                (-27.47, 153.03),  # Brisbane (out of domain)
+            ],
+        )
+    )
+    config.point_sources.sources.append(
+        PointSource(
+            variable="NH3",
+            sector="gas_leak",
+            quantity=500,
+            location=[
+                (-37.56, 143.85),  # Ballarat
+                (-38.21, 146.399),  # La Trobe Valley
+            ],
+        )
+    )
+    res = calculate_point_sources(config, inventory)
+
+    assert res["sector"].values.tolist() == ["gas_leak", "industry"]
+    assert "H2" in res.data_vars
+    assert "NH3" in res.data_vars
+
+    assert res["H2"].sel(sector="gas_leak").sum() == 600 * 2 / 3
+    assert res["NH3"].sel(sector="gas_leak").sum() == 500

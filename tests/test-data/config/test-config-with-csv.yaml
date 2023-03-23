@@ -1,12 +1,12 @@
 name: test
 
 inventory:
-  name: victoria
+  name: test
   year: 2016
 
 input_timeseries:
   - name: emissions
-    path: emissions_country.csv
+    path: scenarios/emissions_country.csv
     filters:
       - region: AUS
 

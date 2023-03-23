@@ -45,8 +45,7 @@ def run_command(config, output_dir, force):
 
     notebooks_to_run = (
         "100_copy_inputs",
-        "200_run_victoria",
-        # "300_run_australia",
+        "200_run_projection",
     )
 
     results.run(notebooks_to_run)

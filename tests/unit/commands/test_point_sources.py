@@ -18,6 +18,8 @@ def test_cli_point_sources(runner):
         cli,
         [
             "point-source",
+            "--quantity",
+            100000,
             os.path.join(
                 RAW_DATA_DIR,
                 "configuration",
