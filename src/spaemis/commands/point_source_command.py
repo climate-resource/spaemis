@@ -22,7 +22,8 @@ def run_point_source_command(filename, variable, sector, quantity, unit):
     """
     Generate a point source configuration file from a set of locations
 
-    This is helpful for setting up a CSV of scaling options for later tweaking
+    The output from this command can be written to file and included using the
+    ``point_sources.source_files`` configuration attribute.
     """
 
     point_sources = pd.read_csv(filename)
