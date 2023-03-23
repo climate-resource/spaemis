@@ -65,7 +65,7 @@ jobs:
     - name: Install test dependencies
       run: |
         pip install --upgrade --user pip wheel
-        pip install -e .[tests]
+        pip install -e .[tests,notebooks]
         pip freeze
     - name: Decrypt inventory files
       run: ./scripts/decrypt_secrets.sh
