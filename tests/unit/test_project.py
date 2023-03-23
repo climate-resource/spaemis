@@ -119,7 +119,7 @@ def test_calculate_projections_with_default(config, inventory, loaded_timeseries
 
     assert (res["sector"] == inventory.data["sector"]).all()
 
-    exp = inventory.data["CO"].reset_coords("spatial_ref", drop=True)
+    exp = inventory.data["CO"]
 
     # CO|architect_coating should be held constant
     xr.testing.assert_allclose(

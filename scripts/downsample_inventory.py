@@ -33,7 +33,7 @@ def downsample_inventory():
 
     out_dir = os.path.join(TEST_DATA_DIR, "inventory", "decimated", "2016")
     os.makedirs(out_dir, exist_ok=True)
-    write_inventory_csvs(data, out_dir)
+    write_inventory_csvs(clipped_data, out_dir)
 
 
 if __name__ == "__main__":

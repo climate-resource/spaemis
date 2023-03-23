@@ -267,7 +267,7 @@ class TestInventory(EmissionsInventory):
                 "decimated",
                 "inventory_decimated.nc",
             )
-        )
+        ).drop_vars("spatial_ref")
 
         return TestInventory(data, border_mask=vic_border, year=2016)
 
