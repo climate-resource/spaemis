@@ -130,9 +130,27 @@ class InputTimeseries:
 class PointSource:
     variable: str
     sector: str
-    location: Tuple[float, float]  # Lat, lon
-    quantity: float
-    unit: str = "kt"
+    location: List[Tuple[float, float]]  # Lat, lon
+    quantity: float  # Total annual emissions spread evenly over sources
+    unit: str = "kg"
+
+
+@define
+class PointSourceDefinition:
+    sources: List[PointSource] = field(factory=list)
+    source_files: Optional[List[str]] = None
+
+    def __attrs_post_init__(self):
+        def read_point_source(fname) -> List[PointSource]:
+            with open(fname) as handle:
+                return converter.loads(handle.read(), List[PointSource])
+
+        if self.source_files:
+            for fname in self.source_files:
+                self.sources.extend(read_point_source(fname))
+        self.source_files = None
+
+        # TODO: Check and warn if duplicates exist
 
 
 @define
@@ -171,7 +189,7 @@ class DownscalingScenarioConfig:
     timeslices: List[int]
     scalers: ScalerDefinition
     input_timeseries: Optional[List[InputTimeseries]] = None
-    point_source: Optional[List[PointSource]] = None
+    point_sources: Optional[PointSourceDefinition] = None
 
 
 def load_config(config_file: str) -> DownscalingScenarioConfig:
