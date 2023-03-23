@@ -18,3 +18,7 @@ timeslices:
 scalers:
   source_files:
     - test_scalers.csv
+
+point_sources:
+  source_files:
+    - test_point_sources.yaml
