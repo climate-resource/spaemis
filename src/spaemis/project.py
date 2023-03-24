@@ -223,9 +223,12 @@ def calculate_point_sources(
     """
     slices = []
 
-    for point_source in config.point_sources.sources:
-        slices.append(
-            _process_source(point_source, inventory.data.lat, inventory.data.lon)
-        )
+    if config.point_sources:
+        for point_source in config.point_sources.sources:
+            slices.append(
+                _process_source(point_source, inventory.data.lat, inventory.data.lon)
+            )
 
-    return xr.merge(slices)
+        return xr.merge(slices)
+
+    return xr.Dataset()

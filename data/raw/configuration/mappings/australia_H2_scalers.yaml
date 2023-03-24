@@ -1,0 +1,64 @@
+scalers:
+  - variable: H2
+    sector: AGS
+    allow_missing: true
+    method:
+      name: proxy
+      proxy: inventory|AGS
+      source_timeseries: emissions
+      source_filters:
+        - variable: Emissions|H2|Agriculture
+  - variable: H2
+    sector: ENE
+    allow_missing: true
+    method:
+      name: proxy
+      proxy: inventory|ENE
+      source_timeseries: emissions
+      source_filters:
+        - variable: Emissions|H2|Energy Sector
+  - variable: H2
+    sector: IND
+    allow_missing: true
+    method:
+      name: proxy
+      proxy: inventory|IND
+      source_timeseries: emissions
+      source_filters:
+        - variable: Emissions|H2|Industrial Sector
+  - variable: H2
+    sector: RCO
+    allow_missing: true
+    method:
+      name: proxy
+      proxy: population
+      source_timeseries: emissions
+      source_filters:
+        - variable: Emissions|H2|Residential, Commercial, Other
+  - variable: H2
+    sector: CHE
+    allow_missing: true
+    method:
+      name: proxy
+      proxy: inventory|CHE
+      source_timeseries: emissions
+      source_filters:
+        - variable: Emissions|H2|Solvents production and application
+  - variable: H2
+    sector: TRO_noRES
+    allow_missing: true
+    method:
+      name: proxy
+      proxy: inventory|TRO_noRES
+      source_timeseries: emissions
+      source_filters:
+        - variable: Emissions|H2|Transportation Sector
+  - variable: H2
+    sector: WWT
+    allow_missing: true
+    method:
+      name: proxy
+      proxy: inventory|WWT
+      source_timeseries: emissions
+      source_filters:
+        - variable: Emissions|H2|Waste

@@ -15,15 +15,18 @@ from attrs import define
 from spaemis.config import ProxyMethod
 from spaemis.constants import PROCESSED_DATA_DIR
 from spaemis.input_data import _apply_filters
-from spaemis.inventory import EmissionsInventory
+from spaemis.inventory import EmissionsInventory, load_inventory
 from spaemis.unit_registry import convert_to_target_unit, unit_registry
 from spaemis.utils import clip_region
 
 from .base import BaseScaler
 
 
-def get_proxy(proxy_name: str) -> xr.DataArray:
+def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.DataArray:
     root_dir = os.path.join(PROCESSED_DATA_DIR, "proxies")
+
+    proxy_toks = proxy_name.split("|")
+
     proxies = {
         "population": os.path.join(
             root_dir,
@@ -36,7 +39,16 @@ def get_proxy(proxy_name: str) -> xr.DataArray:
             "NEXIS_Residential_Dwelling_Density.nc",
         ),
     }
-    return xr.load_dataset(proxies[proxy_name])[proxy_name]
+
+    if proxy_toks[0] in proxies:
+        return xr.load_dataset(proxies[proxy_toks[0]])[proxy_toks[0]]
+    elif proxy_toks[0] == "inventory":
+        sector = proxy_toks[1]
+        return inventory.data["NOx"].sel(sector=sector)
+    elif proxy_toks[0] == "australian_inventory":
+        aus_inv = load_inventory("australia", 2016)
+        sector = proxy_toks[1]
+        return aus_inv.data["NOx"].sel(sector=sector)
 
 
 def _get_timeseries(timeseries, source, filters, target_year) -> scmdata.ScmRun:
@@ -135,7 +147,7 @@ class ProxyScaler(BaseScaler):
         lat = inventory.data.lat
         lon = inventory.data.lon
 
-        proxy = get_proxy(self.proxy)
+        proxy = get_proxy(self.proxy, inventory=inventory)
         total = proxy.sum()
         proxy_clipped = clip_region(proxy, inventory.border_mask)
         region_total = proxy_clipped.sum()

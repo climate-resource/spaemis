@@ -105,6 +105,58 @@ class TestProxyScaler:
         assert res.shape == inventory.data["CO"].isel(sector=0).shape
         assert ur.Unit(res.attrs["units"]) == ur.Unit("kg H2/yr/cell")
 
+    def test_run_inventory(self, inventory, loaded_timeseries):
+        scaler = ProxyScaler(
+            proxy="inventory|industry",
+            source_timeseries="emissions",
+            source_filters=[
+                {
+                    "variable": "Emissions|H2|Industrial Sector",
+                }
+            ],
+        )
+
+        data = xr.DataArray(
+            0, coords=dict(lat=range(10), lon=range(10)), dims=("lat", "lon")
+        )
+
+        res = scaler(
+            data=data,
+            inventory=inventory,
+            target_year=2020,
+            timeseries=loaded_timeseries,
+        )
+
+        assert isinstance(res, xr.DataArray)
+        assert res.shape == inventory.data["CO"].isel(sector=0).shape
+        assert ur.Unit(res.attrs["units"]) == ur.Unit("kg H2/yr/cell")
+
+    def test_run_australian_inventory(self, inventory, loaded_timeseries):
+        scaler = ProxyScaler(
+            proxy="australian_inventory|ENE",
+            source_timeseries="emissions",
+            source_filters=[
+                {
+                    "variable": "Emissions|H2|Industrial Sector",
+                }
+            ],
+        )
+
+        data = xr.DataArray(
+            0, coords=dict(lat=range(10), lon=range(10)), dims=("lat", "lon")
+        )
+
+        res = scaler(
+            data=data,
+            inventory=inventory,
+            target_year=2020,
+            timeseries=loaded_timeseries,
+        )
+
+        assert isinstance(res, xr.DataArray)
+        assert res.shape == inventory.data["CO"].isel(sector=0).shape
+        assert ur.Unit(res.attrs["units"]) == ur.Unit("kg H2/yr/cell")
+
     def test_run_failed_too_many(self, loaded_timeseries):
         with pytest.raises(ValueError, match="More than one match was found for"):
             _get_timeseries(
