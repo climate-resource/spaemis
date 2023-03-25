@@ -1,6 +1,7 @@
 """
 Loading emissions inventories
 """
+import functools
 import glob
 import logging
 import os
@@ -272,6 +273,7 @@ class TestInventory(EmissionsInventory):
         return TestInventory(data, border_mask=vic_border, year=2016)
 
 
+@functools.lru_cache(5)
 def load_inventory(
     inventory: str, year: Optional[int] = None, data_directory: Optional[str] = None
 ) -> EmissionsInventory:

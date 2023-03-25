@@ -102,21 +102,28 @@ class VariableScalerConfig:
 
 def _convert_filename_to_scalers(value: Union[dict, str]) -> List[VariableScalerConfig]:
     if isinstance(value, str):
-        # load_config updates the current working directory to match the
-        # directory of a loaded config files otherwise a absolute filename is required
-        data = pd.read_csv(value).to_dict(orient="records")
+        if value.endswith(".csv"):
+            # load_config updates the current working directory to match the
+            # directory of a loaded config files otherwise a absolute filename is required
+            data = pd.read_csv(value).to_dict(orient="records")
 
-        def extract_scaler_info(data_item):
-            sector_info = {}
-            for key, value in data_item.copy().items():
-                if key.startswith("scaler_"):
-                    sector_info[key[7:]] = value
-                    data_item.pop(key)
-            return {**data_item, "method": sector_info}
+            def extract_scaler_info(data_item):
+                sector_info = {}
+                for key, value in data_item.copy().items():
+                    if key.startswith("scaler_"):
+                        sector_info[key[7:]] = value
+                        data_item.pop(key)
+                return {**data_item, "method": sector_info}
 
-        value = [extract_scaler_info(item) for item in data]
+            value = [extract_scaler_info(item) for item in data]
+            value = converter.structure(value, List[VariableScalerConfig])
+        elif value.endswith(".yaml") or value.endswith(".yml"):
+            with open(value) as fh:
+                value = converter.loads(fh.read(), List[VariableScalerConfig])
+        else:
+            raise ValueError(f"Cannot load scalers from {value}")
 
-    return [converter.structure(item, VariableScalerConfig) for item in value]
+    return value
 
 
 @define

@@ -65,9 +65,6 @@ inventory = load_inventory(config.inventory.name, config.inventory.year)
 inventory
 
 # %%
-inventory.data["CO"].sel(sector="industry").plot(robust=True)
-
-# %%
 timeseries = load_timeseries(config.input_timeseries, get_path(RESULTS_PATH, "inputs"))
 timeseries
 
@@ -99,7 +96,7 @@ point_sources
 show_variable_sums(point_sources)
 
 # %%
-point_sources["H2"].sel(sector="industry").plot()
+# point_sources["H2"].sel(sector="industry").plot()
 
 # %%
 # Align and merge point sources

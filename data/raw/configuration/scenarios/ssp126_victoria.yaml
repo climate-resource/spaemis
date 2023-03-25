@@ -22,13 +22,4 @@ scalers:
     name: constant
   source_files:
     - ssp126_victoria_scalers.csv
-  scalers:
-    - variable: H2
-      sector: industry
-      allow_missing: true
-      method:
-        name: proxy
-        proxy: population
-        source_timeseries: emissions
-        source_filters:
-          - variable: Emissions|H2|Industrial Sector
+    - ../mappings/victoria_H2_scalers.yaml

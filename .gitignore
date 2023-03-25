@@ -273,7 +273,6 @@ cython_debug/
 
 # TODO: verify with Vic EPA that files can be published
 data/raw/inventories/victoria
-data/raw/inventories/australia
 data/processed/*
 !data/processed/proxies
 data/raw/sedacs
