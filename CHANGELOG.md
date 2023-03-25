@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add complete set of H2 scalers [#20](https://github.com/climate-resource/spaemis/pull/20)
+- Add complete set of H2 scalers [#21](https://github.com/climate-resource/spaemis/pull/21)
 - Update point source configuration [#19](https://github.com/climate-resource/spaemis/pull/19)
 - Add command for generating point source configuration [#18](https://github.com/climate-resource/spaemis/pull/18)
 - Add Australian gridding configuration [#17](https://github.com/climate-resource/spaemis/pull/17)
