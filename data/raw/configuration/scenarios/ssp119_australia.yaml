@@ -22,7 +22,7 @@ scalers:
     name: constant
   source_files:
     - ssp119_australia_scalers.csv
-    - ../mappings/victoria_H2_scalers.yaml
+    - ../mappings/australia_H2_scalers.yaml
 
 point_sources:
   sources:

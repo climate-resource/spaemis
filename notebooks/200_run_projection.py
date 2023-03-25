@@ -64,6 +64,17 @@ output_dir
 inventory = load_inventory(config.inventory.name, config.inventory.year)
 inventory
 
+
+# %%
+def show_variable_sums(df, agg_over=("sector", "lat", "lon")):
+    # Results are all in kg/cell/yr so can be summed like this
+    totals = df.sum(dim=agg_over).to_dataframe() / 1000 / 1000
+
+    return totals.round(3)  # kt / yr
+
+
+show_variable_sums(inventory.data, ("lat", "lon"))
+
 # %%
 timeseries = load_timeseries(config.input_timeseries, get_path(RESULTS_PATH, "inputs"))
 timeseries
@@ -74,26 +85,14 @@ dataset
 
 
 # %%
-def show_variable_sums(df):
-    if "year" not in df.coords:
-        df = df.copy()
-        df["year"] = "unknown"
-        df = df.expand_dims(["year"])
-
-    # Results are all in kg/cell/yr so can be summed like this
-    totals = df.sum(dim=("sector", "lat", "lon")).to_dataframe() / 1000 / 1000
-
-    return totals.round(3)  # kt / yr
-
-
-show_variable_sums(dataset)
+show_variable_sums(dataset, ("sector", "lat", "lon"))
 
 # %%
 point_sources = calculate_point_sources(config, inventory)
 point_sources
 
 # %%
-show_variable_sums(point_sources)
+show_variable_sums(point_sources, agg_over=("lat", "lon"))
 
 # %%
 # point_sources["H2"].sel(sector="industry").plot()
@@ -113,7 +112,7 @@ del temp  # Save memory
 merged = clip_region(merged, inventory.border_mask)
 
 # %%
-show_variable_sums(merged)
+show_variable_sums(merged, ("sector", "lat", "lon"))
 
 # %%
 dataset["H2"].sum(dim="sector").plot(robust=True, col="year")

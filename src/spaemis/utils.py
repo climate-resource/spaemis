@@ -43,7 +43,7 @@ def area_grid(lat, lon):  # pragma: no cover
     dy = dlat * R
     dx = dlon * R * np.cos(np.deg2rad(ylat))
 
-    area = dy * dx
+    area = np.abs(dy * dx)
 
     xda = xr.DataArray(
         area,
