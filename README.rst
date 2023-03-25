@@ -55,7 +55,15 @@ the expected emissions associated with the future hydrogen economy.
 Developer Installation
 ++++++++++++++++++++++
 
+This repository uses Git LFS for managing some of the larger NetCDF files. Follow the
+`installation instructions <https://git-lfs.com/>`_ for Git LFS before working with the
+code.
+
+After Git LFS has been installed, a virtual environment can be created to which the
+development dependencies for ``spaemis`` are installed:
+
 .. code:: bash
+
 
     make -B virtual-environment
 
