@@ -3,7 +3,7 @@ variables:
   NOx: NOx-em-anthro
   SO2: SO2-em-anthro
   PM10: BC-em-anthro
-  NMVOC: BC-em-anthro # Need to download VOC-em-anthro
+  NMVOC: VOC-em-anthro
 sectors:  # Any non-specified sectors are kept constant
   # Sectors must map to ``spaemis.input_data.SECTOR_MAP``
   AGS: Agriculture

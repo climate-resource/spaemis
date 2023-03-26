@@ -92,7 +92,8 @@ point_sources = calculate_point_sources(config, inventory)
 point_sources
 
 # %%
-show_variable_sums(point_sources, agg_over=("lat", "lon"))
+if point_sources:
+    show_variable_sums(point_sources, agg_over=("lat", "lon"))
 
 # %%
 # point_sources["H2"].sel(sector="industry").plot()
