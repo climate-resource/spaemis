@@ -1,0 +1,20 @@
+variable,sector,scaler_name,scaler_variable_id,scaler_source_id,scaler_sector
+NOx,architect_coating,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,bakery,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,crematoria,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,cutback_bitumen,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Transportation Sector
+NOx,domestic_solvents,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Solvents production and application
+NOx,dry_cleaning,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,gas_leak,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Energy Sector
+NOx,industry_diffuse,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Waste
+NOx,industry,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Industrial Sector
+NOx,motor_vehicles,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Transportation Sector
+NOx,panel_beaters,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,petcrematoria,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,pizza,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,printing,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,rail,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Transportation Sector
+NOx,servos,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,shipping,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,International Shipping
+NOx,vicbakery,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,woodheater,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"

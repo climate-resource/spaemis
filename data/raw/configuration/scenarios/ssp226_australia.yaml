@@ -2,7 +2,7 @@ name: ssp126_australia
 
 inventory:
   name: australia
-  year: 2018
+  year: 2016
 
 timeslices:
   - 2020
@@ -13,7 +13,7 @@ timeslices:
 
 input_timeseries:
   - name: emissions
-    path: emissions_country.csv
+    path: scenarios/v20230324_1/REMIND-MAGPIE_ssp226_med/emissions_country.csv
     filters:
       - region: AUS
 
@@ -22,4 +22,5 @@ scalers:
     name: constant
   source_files:
     - ssp126_australia_scalers.csv
-    - ../mappings/victoria_H2_scalers.yaml
+    - cr-ssp226_australia_scalers.csv
+    - ../mappings/australia_H2_scalers.yaml

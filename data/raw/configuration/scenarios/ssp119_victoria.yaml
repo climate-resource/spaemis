@@ -13,7 +13,7 @@ timeslices:
 
 input_timeseries:
   - name: emissions
-    path: scenarios/emissions_country.csv
+    path: scenarios/v20230324_1/IMAGE_ssp119_med/emissions_country.csv
     filters:
       - region: AUS
 
@@ -22,6 +22,7 @@ scalers:
     name: constant
   source_files:
     - ssp119_victoria_scalers.csv
+    - cr-ssp119_victoria_scalers.csv
     - ../mappings/victoria_H2_scalers.yaml
 
 

@@ -1,0 +1,23 @@
+variable,sector,scaler_name,scaler_variable_id,scaler_source_id,scaler_sector
+NOx,AGS,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Agriculture
+NOx,AWB,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Agriculture
+NOx,CHE,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Solvents production and application
+NOx,ENE,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Energy Sector
+NOx,FFF,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Energy Sector
+NOx,FOO_PAP,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Agriculture
+NOx,IND,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Industrial Sector
+NOx,IRO,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Industrial Sector
+NOx,MNM,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Agriculture
+NOx,NEU,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Industrial Sector
+NOx,NFE,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Industrial Sector
+NOx,NMM,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Industrial Sector
+NOx,PRU_SOL,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Solvents production and application
+NOx,RCO,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,"Residential, Commercial, Other"
+NOx,REF_TRF,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Energy Sector
+NOx,SWD_INC,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Waste
+NOx,SWD_LDF,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Waste
+NOx,TNR_Other,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Transportation Sector
+NOx,TNR_Ship,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,International Shipping
+NOx,TRO_RES,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Transportation Sector
+NOx,TRO_noRES,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Transportation Sector
+NOx,WWT,relative_change,NOx-em-anthro,CR-REMIND-MAGPIE-ssp226-med,Waste

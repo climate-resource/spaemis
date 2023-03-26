@@ -8,10 +8,10 @@ set -e
 CONFIGS="data/raw/configuration/scenarios/*.yaml"
 
 echo "Found the following configurations:"
-printf "'%s'\n" "${CONFIGS[@]}"
+printf "'%s'\n" "$CONFIGS"
 echo
 
-for config in "${CONFIGS[@]}"; do
+for config in $CONFIGS; do
   echo "Processing $config"
   spaemis run --force -c $config
   echo
