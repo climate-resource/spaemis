@@ -30,6 +30,7 @@ import logging
 import os
 
 import matplotlib.pyplot as plt
+import pandas as pd
 import scmdata
 import seaborn as sns
 import xarray as xr
@@ -178,7 +179,7 @@ plt.savefig(os.path.join(out_dir, "growth_rates_by_sector.png"))
 sectors = sorted(growth_rates.get_unique_meta("sector"))
 
 
-for variable in growth_rates.get_unique_meta('variable'):
+for variable in growth_rates.get_unique_meta("variable"):
     fig, axs = plt.subplots(len(sectors), figsize=(12, 20), sharex=True)
 
     for i, sector in enumerate(sectors):
@@ -338,6 +339,7 @@ for variable in vic_data.data_vars:
 
 
 # %% [markdown]
+#
 # # Load results
 
 
@@ -583,8 +585,10 @@ for grid in ["victoria", "australia"]:
             by_sector = by_variable.filter(sector=sector)
             by_sector.lineplot(hue="scenario", style="region", ax=axs[i + 1])
             axs[i + 1].set_title(by_sector.get_unique_meta("sector", True))
-            
-        by_variable.process_over("sector", "sum", as_run=True).lineplot(hue="scenario", style="region", ax=axs[0])
+
+        by_variable.process_over("sector", "sum", as_run=True).lineplot(
+            hue="scenario", style="region", ax=axs[0]
+        )
         axs[0].set_title("Total")
         fig.tight_layout()
 
@@ -670,4 +674,65 @@ plt.savefig(os.path.join(out_dir, "points_by_species", f"points_by_species.png")
 
 # %%
 
+# %% [markdown]
+# ## Figure 1
+#
+
 # %%
+ceds_nox = database.load("NOx-em-anthro", "CR-MESSAGE-GLOBIOM-ssp245-high")
+proxy = (
+    ceds_nox["NOx_em_anthro"]
+    .sel(sector=SECTOR_MAP.index("Transportation Sector"))
+    .groupby("time.year")
+    .mean()
+)
+proxy = clip_region(proxy, vic_inv.border_mask)
+proxy
+
+# %%
+vic_data_to_plot = vic_inv.data["NOx"].sel(sector="motor_vehicles")
+vic_data_to_plot = from_cell_totals(vic_data_to_plot)
+
+# %%
+fig, axs = plt.subplots(2, 3, figsize=(20, 12))
+
+from_cell_totals(vic_inv.data["NOx"].sel(sector="motor_vehicles")).plot(
+    ax=axs[0, 0], robust=True, vmin=0
+)
+
+proxy.interp(year=2016).plot(ax=axs[0, 1], robust=True, vmin=0)
+proxy.interp(year=2060).plot(ax=axs[1, 0], robust=True, vmin=0)
+pd.Series(
+    [
+        vic_data_to_plot.mean().values.squeeze(),
+        proxy.interp(year=2016).mean().values.squeeze(),
+    ],
+    dtype=float,
+    index=["EPA", "CEDS"],
+).plot.bar(ax=axs[0, 2])
+
+(proxy.interp(year=2060) / proxy.interp(year=2016)).plot(ax=axs[1, 1], vmin=0, vmax=1)
+
+vic_results["NOx"].sel(scenario="ssp245", year=2060, sector="motor_vehicles").plot(
+    ax=axs[1, 2], robust=True, vmin=0
+)
+
+# %% [markdown]
+#
+# ## Figure 2
+
+# %%
+h2_emissions = scmdata.ScmRun(
+    os.path.join(
+        RUNS_DIR,
+        "ssp245_victoria/inputs/scenarios/v20230324_1/MESSAGE-GLOBIOM_ssp245_med/emissions_country.csv",
+    )
+).filter(region="AUS", variable="Emissions|H2|Transportation Sector")
+h2_emissions
+
+# %%
+fig, axs = plt.subplots(1, 3, figsize=(20, 8))
+
+h2_emissions.line_plot(ax=axs[0])
+
+# TODO
