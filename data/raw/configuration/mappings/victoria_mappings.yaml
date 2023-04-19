@@ -14,7 +14,7 @@ sectors:  # Any non-specified sectors are kept constant
   domestic_solvents: Solvents production and application
   dry_cleaning: Residential, Commercial, Other
   gas_leak: Energy Sector
-  industry_diffuse: Waste  # or Industrial Sector
+  industry_diffuse: Industrial Sector  # or Industrial Sector
   industry: Industrial Sector
   motor_vehicles: Transportation Sector
   panel_beaters: Residential, Commercial, Other
