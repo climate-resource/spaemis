@@ -18,9 +18,9 @@ input_timeseries:
       - region: AUS
 
 scalers:
-  default:
+  default_scaler:
     name: constant
   source_files:
     - ssp126_australia_scalers.csv
     - cr-ssp226_australia_scalers.csv
-    - ../mappings/australia_H2_scalers.yaml
+    - .cr-ssp226_australia_H2_scalers.yaml

@@ -173,9 +173,9 @@ class PointSourceDefinition:
 
 @define
 class ScalerDefinition:
+    default_scaler: ScalerMethod
     scalers: List[VariableScalerConfig] = field(factory=list)
     source_files: Optional[List[str]] = None
-    default_scaler: Optional[ScalerMethod] = None
 
     def __attrs_post_init__(self):
         if self.source_files:

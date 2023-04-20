@@ -42,7 +42,7 @@ logging.basicConfig(level=logging.INFO)
 
 # %% tags=["parameters"]
 CONFIG_PATH = os.path.join(
-    RAW_DATA_DIR, "configuration", "scenarios", "ssp119_australia.yaml"
+    RAW_DATA_DIR, "configuration", "scenarios", "ssp226_victoria.yaml"
 )
 RESULTS_PATH = get_default_results_dir(CONFIG_PATH)
 

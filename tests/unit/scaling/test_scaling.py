@@ -240,7 +240,7 @@ class TestTimeseriesScaler:
 class TestProxyScaler:
     def test_run(self, inventory):
         scaler = ProxyScaler(
-            proxy="population",
+            proxy="australian_inventory|WWT",
             source_id="IAMC-MESSAGE-GLOBIOM-ssp245-1-1",
             variable_id="NOx-em-anthro",
             sector="Industrial Sector",

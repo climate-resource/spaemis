@@ -18,9 +18,9 @@ echo
 #  echo
 #done
 
-#spaemis run --force -c data/raw/configuration/scenarios/ssp119_australia.yaml
+spaemis run --force -c data/raw/configuration/scenarios/ssp119_australia.yaml
 spaemis run --force -c data/raw/configuration/scenarios/ssp226_australia.yaml
-#spaemis run --force -c data/raw/configuration/scenarios/ssp245_australia.yaml
-#spaemis run --force -c data/raw/configuration/scenarios/ssp119_victoria.yaml
+spaemis run --force -c data/raw/configuration/scenarios/ssp245_australia.yaml
+spaemis run --force -c data/raw/configuration/scenarios/ssp119_victoria.yaml
 spaemis run --force -c data/raw/configuration/scenarios/ssp226_victoria.yaml
-#spaemis run --force -c data/raw/configuration/scenarios/ssp245_victoria.yaml
+spaemis run --force -c data/raw/configuration/scenarios/ssp245_victoria.yaml
