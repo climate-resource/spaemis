@@ -16,11 +16,13 @@ from .base import BaseScaler
 from .constant import ConstantScaler
 from .proxy import ProxyScaler
 from .relative_change import RelativeChangeScaler
+from .timeseries import TimeseriesScaler
 
 _scalers = {
     "constant": ConstantScaler,
     "relative_change": RelativeChangeScaler,
     "proxy": ProxyScaler,
+    "timeseries": TimeseriesScaler,
 }
 
 

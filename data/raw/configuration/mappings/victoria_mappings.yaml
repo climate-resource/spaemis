@@ -8,7 +8,7 @@ sectors:  # Any non-specified sectors are kept constant
 #  aircraft: # We don't easily have aviation pathways from input4MIPs
   architect_coating: Residential, Commercial, Other
   bakery: Residential, Commercial, Other
-#  charcoal
+#  charcoalPVO
   crematoria: Residential, Commercial, Other
   cutback_bitumen: Transportation Sector
   domestic_solvents: Solvents production and application

@@ -4,7 +4,7 @@ Constants
 import os
 import typing
 
-OUTPUT_VERSION = "v20230328_1"
+OUTPUT_VERSION = "v20230421_1"
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 TEST_DATA_DIR = os.path.join(ROOT_DIR, "tests", "test-data")

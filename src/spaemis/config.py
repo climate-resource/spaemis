@@ -47,15 +47,26 @@ class RelativeChangeMethod:
 
 @define
 class ProxyMethod:
+    source_id: str
+    variable_id: str
+    sector: str
     proxy: str
-
-    source_timeseries: str
-    source_filters: List[Dict[str, Any]]
 
     name: ClassVar[Literal["proxy"]] = "proxy"
 
 
-ScalerMethod = Union[ProxyMethod, RelativeChangeMethod, ConstantScaleMethod]
+@define
+class TimeseriesMethod:
+    proxy: str
+    source_timeseries: str
+    source_filters: List[Dict[str, Any]]
+    proxy_region: Optional[str] = None
+    name: ClassVar[Literal["proxy"]] = "timeseries"
+
+
+ScalerMethod = Union[
+    ProxyMethod, RelativeChangeMethod, ConstantScaleMethod, TimeseriesMethod
+]
 
 
 def _unstructure_scaler(value: ScalerMethod) -> Dict[str, Any]:

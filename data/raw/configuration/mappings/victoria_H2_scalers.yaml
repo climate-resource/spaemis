@@ -21,10 +21,11 @@
   allow_missing: true
   method:
     name: proxy
+    variable_id: ""
+    source_id: ""
+    sector: Industrial Sector
     proxy: inventory|industry
-    source_timeseries: emissions
-    source_filters:
-      - variable: Emissions|H2|Industrial Sector
+    proxy_region: australian_inventory|IND
 - variable: H2
   sector: rco
   allow_missing: true
@@ -40,6 +41,7 @@
   method:
     name: proxy
     proxy: inventory|domestic_solvents
+    proxy_region: australian_inventory|CHE
     source_timeseries: emissions
     source_filters:
       - variable: Emissions|H2|Solvents production and application
@@ -49,6 +51,7 @@
   method:
     name: proxy
     proxy: inventory|motor_vehicles
+    proxy_region: australian_inventory|TRO_noRES
     source_timeseries: emissions
     source_filters:
       - variable: Emissions|H2|Transportation Sector

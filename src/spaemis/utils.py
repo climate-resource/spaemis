@@ -194,3 +194,24 @@ def load_australia_boundary() -> geopandas.GeoDataFrame:
         os.path.join(os.path.dirname(aus_boundary_dir[0]), "geoBoundaries-AUS-ADM1.shp")
     ).to_crs("EPSG:4326")
     return aus_boundary
+
+
+def covers(dataarray: xr.DataArray, dim: str, value: float) -> bool:
+    """
+    Check if a dimension of a DataArray can be interpolated for a given value
+
+    If this check fails an extrapolation will be required
+    Parameters
+    ----------
+    dataarray
+        DataArray to check
+    dim
+        Dimension of interest
+    value
+        Value to check
+
+    Returns
+    -------
+    True if `value` could be interpolated in `DataArray`'s dimension `dim`
+    """
+    return bool(dataarray[dim].min() <= value <= dataarray[dim].max())

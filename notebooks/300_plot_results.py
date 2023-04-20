@@ -38,6 +38,7 @@ import xarray as xr
 from spaemis.constants import OUTPUT_VERSION, RUNS_DIR
 from spaemis.input_data import SECTOR_MAP, database
 from spaemis.inventory import clip_region, load_inventory
+from spaemis.scaling.proxy import get_proxy
 from spaemis.utils import area_grid
 
 logger = logging.getLogger("200_run_projection")
@@ -731,8 +732,19 @@ h2_emissions = scmdata.ScmRun(
 h2_emissions
 
 # %%
+get_proxy("australian_inventory|TRO_noRES", inventory=vic_inv).plot(robust=True)
+
+# %%
 fig, axs = plt.subplots(1, 3, figsize=(20, 8))
 
 h2_emissions.line_plot(ax=axs[0])
 
-# TODO
+clip_region(
+    get_proxy("australian_inventory|TRO_noRES", inventory=vic_inv), vic_inv.border_mask
+).plot(ax=axs[1])
+
+vic_results["H2"].sel(scenario="ssp245", year=2060, sector="motor_vehicles").plot(
+    ax=axs[2], robust=True
+)
+
+# %
