@@ -23,4 +23,4 @@ scalers:
   source_files:
     - ssp126_australia_scalers.csv
     - cr-ssp226_australia_scalers.csv
-    - .cr-ssp226_australia_H2_scalers.yaml
+    - cr-ssp226_australia_H2_scalers.yaml

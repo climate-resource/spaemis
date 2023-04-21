@@ -23,4 +23,4 @@ scalers:
   source_files:
     - ssp245_victoria_scalers.csv
     - cr-ssp245_victoria_scalers.csv
-    - cr-ssp24_victoria_H2_scalers.yaml
+    - cr-ssp245_victoria_H2_scalers.yaml

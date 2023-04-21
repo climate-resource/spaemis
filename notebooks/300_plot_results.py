@@ -39,6 +39,7 @@ from spaemis.constants import OUTPUT_VERSION, RUNS_DIR
 from spaemis.input_data import SECTOR_MAP, database
 from spaemis.inventory import clip_region, load_inventory
 from spaemis.scaling.proxy import get_proxy
+from spaemis.scaling.base import load_source
 from spaemis.utils import area_grid
 
 logger = logging.getLogger("200_run_projection")
@@ -695,14 +696,22 @@ vic_data_to_plot = vic_inv.data["NOx"].sel(sector="motor_vehicles")
 vic_data_to_plot = from_cell_totals(vic_data_to_plot)
 
 # %%
+vmin_1 =0
+vmax_1 = 1e-10
+cmap_1 = "seismic"
+
+vmin_2 = 0
+vmax_2 = 5e-11
+cmap_2 = "viridis"
+
 fig, axs = plt.subplots(2, 3, figsize=(20, 12))
 
 from_cell_totals(vic_inv.data["NOx"].sel(sector="motor_vehicles")).plot(
-    ax=axs[0, 0], robust=True, vmin=0
+    ax=axs[0, 0], vmin=vmin_2, vmax=vmax_2, cmap=cmap_2, cbar_kwargs={"label": "NOx Anthropogenic Emissions [kg m-2 s-1]"}
 )
 
-proxy.interp(year=2016).plot(ax=axs[0, 1], robust=True, vmin=0)
-proxy.interp(year=2060).plot(ax=axs[1, 0], robust=True, vmin=0)
+proxy.interp(year=2016).plot(ax=axs[0, 1],  vmin=vmin_1, vmax=vmax_1, cmap=cmap_1, cbar_kwargs={"label": "NOx Anthropogenic Emissions [kg m-2 s-1]"})
+proxy.interp(year=2060).plot(ax=axs[1, 0],  vmin=vmin_1, vmax=vmax_1, cmap=cmap_1, cbar_kwargs={"label": "NOx Anthropogenic Emissions [kg m-2 s-1]"})
 pd.Series(
     [
         vic_data_to_plot.mean().values.squeeze(),
@@ -711,12 +720,38 @@ pd.Series(
     dtype=float,
     index=["EPA", "CEDS"],
 ).plot.bar(ax=axs[0, 2])
+axs[0, 2].set_ylabel("NOx Anthropogenic Emissions [kg m-2 s-1]")
 
-(proxy.interp(year=2060) / proxy.interp(year=2016)).plot(ax=axs[1, 1], vmin=0, vmax=1)
+(proxy.interp(year=2060) / proxy.interp(year=2016)).plot(ax=axs[1, 1], vmin=0, vmax=1, cbar_kwargs={"label": "Scale Factor [dimensionless]"})
 
 vic_results["NOx"].sel(scenario="ssp245", year=2060, sector="motor_vehicles").plot(
-    ax=axs[1, 2], robust=True, vmin=0
+    ax=axs[1, 2], vmin=vmin_2, vmax=vmax_2, cmap=cmap_2, cbar_kwargs={"label": "NOx Anthropogenic Emissions [kg m-2 s-1]"}
 )
+
+axs[0, 0].set_title("a)", loc='left')
+axs[0, 0].set_title("")
+axs[0, 0].get_xaxis().set_ticklabels([])
+axs[0, 0].set_xlabel("")
+axs[0, 1].set_title("b)", loc='left')
+axs[0, 1].set_title("")
+axs[0, 1].get_xaxis().set_ticklabels([])
+axs[0, 1].set_xlabel("")
+axs[0, 1].get_yaxis().set_ticklabels([])
+axs[0, 1].set_ylabel("")
+axs[0, 2].set_title("c)", loc='left')
+axs[0, 2].set_title("")
+axs[1, 0].set_title("d)", loc='left')
+axs[1, 0].set_title("")
+axs[1, 1].set_title("e)", loc='left')
+axs[1, 1].set_title("")
+axs[1, 1].get_yaxis().set_ticklabels([])
+axs[1, 1].set_ylabel("")
+axs[1, 2].set_title("f)", loc='left')
+axs[1, 2].set_title("")
+axs[1, 2].get_yaxis().set_ticklabels([])
+axs[1, 2].set_ylabel("")
+plt.tight_layout()
+
 
 # %% [markdown]
 #
@@ -732,19 +767,105 @@ h2_emissions = scmdata.ScmRun(
 h2_emissions
 
 # %%
-get_proxy("australian_inventory|TRO_noRES", inventory=vic_inv).plot(robust=True)
+source_aus = load_source(
+            "CR-MESSAGE-GLOBIOM-ssp245-high",
+            "H2-em-anthro",
+            "Transportation Sector",
+            aus_inv,
+)
+source_vic = load_source(
+            "CR-MESSAGE-GLOBIOM-ssp245-high",
+            "H2-em-anthro",
+            "Transportation Sector",
+            vic_inv,
+)
+areas = area_grid(source_aus.lat, source_aus.lon)
+source_aus_emissions = source_aus * areas * 365 * 24 * 60 * 60
+
+areas = area_grid(source_vic.lat, source_vic.lon)
+source_vic_emissions = source_vic * areas * 365 * 24 * 60 * 60
+
+total_emms = scmdata.run_append([
+    scmdata.ScmRun(
+        data=source_aus_emissions.sum(dim=["lat", "lon"]).values,
+        index=source_aus_emissions.year.values,
+        columns={'region': "AUS", 'scenario': "", 'model': "", 'unit': "kt H2 / yr", 'variable': "Emissions|H2"}
+    ),
+        scmdata.ScmRun(
+        data=source_vic_emissions.sum(dim=["lat", "lon"]).values,
+        index=source_vic_emissions.year.values,
+        columns={'region': "VIC", 'scenario': "", 'model': "", 'unit': "kt H2 / yr", 'variable': "Emissions|H2"}
+    )
+]) / 1e6
 
 # %%
-fig, axs = plt.subplots(1, 3, figsize=(20, 8))
+# plt.figure?
 
-h2_emissions.line_plot(ax=axs[0])
+# %%
+plt.rcParams.update({'font.size': 16})
 
+fig = plt.figure(layout="constrained", figsize=(20, 8))
+subfigs = fig.subfigures(1, 4, wspace=0.07, width_ratios=[1, 1.5, 1., 0.05])
+
+
+# axs = subfigs[0].subplots(1, 2)
+ax = subfigs[0].subplots(1, 1)
+total_emms.line_plot(ax=ax, hue="region", time_axis="year")
+ax.set_title("Bulk emissions")
+ax.set_title("a)", loc="left")
+ax.set_ylabel("H2 Anthropogenic Emissions [kt H2 / yr]")
+ax.set_xlabel("Year")
+ax.set_xticks([2020, 2040, 2060, 2080, 2100])
+
+ax = subfigs[1].subplots(1, 1)
 clip_region(
-    get_proxy("australian_inventory|TRO_noRES", inventory=vic_inv), vic_inv.border_mask
-).plot(ax=axs[1])
+    get_proxy("inventory|motor_vehicles", inventory=vic_inv), vic_inv.border_mask
+).plot(ax=ax, robust=True, vmin=0, cmap="seismic", cbar_kwargs={"label": "Emissions of NOx [kg / cell]","extend": "max"})
+ax.set_title("Proxy")
+ax.set_title("b)", loc="left")
 
-vic_results["H2"].sel(scenario="ssp245", year=2060, sector="motor_vehicles").plot(
-    ax=axs[2], robust=True
+axs = subfigs[2].subplots(2, 2)
+vmin=0
+vmax=2e-11
+
+common_kwargs = dict(vmin=vmin, vmax=vmax, add_colorbar=False, add_labels=False)
+
+vic_results["H2"].sel(scenario="ssp245", year=2020, sector="motor_vehicles").plot(
+    ax=axs[0, 0], **common_kwargs
 )
+axs[0, 0].set_title("2020")
+axs[0, 0].set_title("c1)", loc="left")
+axs[0, 0].get_xaxis().set_ticklabels([])
+axs[0, 0].get_xaxis().set_ticks([142, 144, 146, 148])
+vic_results["H2"].sel(scenario="ssp245", year=2040, sector="motor_vehicles").plot(
+    ax=axs[0, 1], **common_kwargs
+)
+axs[0,1].set_title("2040")
+axs[0, 1].set_title("c2)", loc="left")
+axs[0, 1].get_xaxis().set_ticklabels([])
+axs[0, 1].get_yaxis().set_ticklabels([])
+axs[0, 1].get_xaxis().set_ticks([142, 144, 146, 148])
+vic_results["H2"].sel(scenario="ssp245", year=2060, sector="motor_vehicles").plot(
+    ax=axs[1, 0], **common_kwargs
+)
+axs[1,0].set_title("2060")
+axs[1, 0].set_title("c3)", loc="left")
+axs[1, 0].get_xaxis().set_ticks([142, 144, 146, 148])
+im= vic_results["H2"].sel(scenario="ssp245", year=2080, sector="motor_vehicles").plot(
+    ax=axs[1, 1], **common_kwargs
+)
+axs[1,1].set_title("2080")
+axs[1, 1].set_title("c4)", loc="left")
+axs[1, 1].get_yaxis().set_ticklabels([])
+axs[1, 1].get_xaxis().set_ticks([142, 144, 146, 148])
 
-# %
+# subfigs[2].subplots_adjust(bottom=0.08, left=0.08)
+subfigs[2].text(0.5, -0.03, 'longitude [degrees_north]', ha='center')
+subfigs[2].text(-0.04, 0.5, 'latitude [degrees_east]', va='center', rotation='vertical')
+
+
+cbar_ax = subfigs[3].add_axes([0.2, 0.1, 1, 0.8])
+fig.colorbar(im, cax=cbar_ax, label="Emissions of H2 [kg m-2 s-1]")
+
+
+# %%
