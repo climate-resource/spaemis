@@ -30,6 +30,11 @@ converter.register_unstructure_hook(str, lambda u: str(u))
 
 
 @define
+class ExcludeScaleMethod:
+    name: ClassVar[Literal["constant"]] = "exclude"
+
+
+@define
 class ConstantScaleMethod:
     scale_factor: float = 1.0
 
@@ -65,7 +70,11 @@ class TimeseriesMethod:
 
 
 ScalerMethod = Union[
-    ProxyMethod, RelativeChangeMethod, ConstantScaleMethod, TimeseriesMethod
+    ExcludeScaleMethod,
+    ProxyMethod,
+    RelativeChangeMethod,
+    ConstantScaleMethod,
+    TimeseriesMethod,
 ]
 
 
@@ -173,7 +182,7 @@ class PointSourceDefinition:
 
 @define
 class ScalerDefinition:
-    default_scaler: ScalerMethod
+    default_scaler: ScalerMethod = ExcludeScaleMethod()
     scalers: List[VariableScalerConfig] = field(factory=list)
     source_files: Optional[List[str]] = None
 

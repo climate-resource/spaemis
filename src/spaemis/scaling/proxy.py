@@ -106,7 +106,8 @@ class ProxyScaler(BaseScaler):
                 f"source {source.name} does not cover target year. Extrapolating"
             )
 
-        assert source.attrs["units"] == "kg m-2 s-1"
+        if source.attrs["units"] != "kg m-2 s-1":
+            raise AssertionError(f"Unexpected units: {source.attrs['units']}")
         areas = area_grid(source.lat, source.lon)
         source_emissions = source.interp(year=target_year) * areas * 365 * 24 * 60 * 60
         source_emissions.attrs["units"] = "kg / cell / yr"
@@ -119,6 +120,7 @@ class ProxyScaler(BaseScaler):
         # Calculate density map over the area of interest
         # proxy grid is interpolated onto the target grid before clipping
         proxy = get_proxy(self.proxy, inventory=inventory)
+
         proxy_interp = clip_region(
             proxy.interp(lat=lat, lon=lon), inventory.border_mask
         ).interp(lat=lat, lon=lon)

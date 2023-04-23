@@ -151,7 +151,7 @@ class TestTimeseriesScaler:
 
         assert isinstance(res, xr.DataArray)
         assert res.shape == data.shape
-        assert ur.Unit(res.attrs["units"]) == ur.Unit("kg / yr / cell")
+        assert ur.Unit(res.attrs["units"]) == ur.Unit("kg H2 / yr / cell")
 
     def test_run_australian_inventory(self, inventory, loaded_timeseries):
         scaler = TimeseriesScaler(
@@ -177,7 +177,7 @@ class TestTimeseriesScaler:
         )
 
         assert isinstance(res, xr.DataArray)
-        assert res.shape == inventory.data["CO"].isel(sector=0).shape
+        assert res.shape == data.shape
         assert ur.Unit(res.attrs["units"]) == ur.Unit("kg H2/yr/cell")
 
     def test_run_failed_too_many(self, loaded_timeseries):
@@ -240,7 +240,7 @@ class TestTimeseriesScaler:
 class TestProxyScaler:
     def test_run(self, inventory):
         scaler = ProxyScaler(
-            proxy="australian_inventory|WWT",
+            proxy="australian_inventory|IND",
             source_id="IAMC-MESSAGE-GLOBIOM-ssp245-1-1",
             variable_id="NOx-em-anthro",
             sector="Industrial Sector",

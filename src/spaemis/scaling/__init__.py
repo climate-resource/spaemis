@@ -14,12 +14,14 @@ from spaemis.config import ScalerMethod
 
 from .base import BaseScaler
 from .constant import ConstantScaler
+from .exclude import ExcludedScaler
 from .proxy import ProxyScaler
 from .relative_change import RelativeChangeScaler
 from .timeseries import TimeseriesScaler
 
 _scalers = {
     "constant": ConstantScaler,
+    "exclude": ExcludedScaler,
     "relative_change": RelativeChangeScaler,
     "proxy": ProxyScaler,
     "timeseries": TimeseriesScaler,
@@ -35,8 +37,14 @@ def get_scaler(name: str) -> Type[BaseScaler]:
     name
         Name of the scaler
 
+        #TODO: Update docs
+
         Options include:
         * "constant": Apply a constant multiplier
+        * "exclude": All nans
+        * "relative_change": Use the relative change between two data sets to scale
+        * "proxy": Downscaler the quantities from CEDS using an arbitrary proxy
+        * "timeseries": Use a timeseries and a proxy to scale results
 
     Raises
     ------
