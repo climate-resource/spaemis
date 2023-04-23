@@ -12,10 +12,6 @@ timeslices:
   - 2100
 
 input_timeseries:
-  - name: emissions
-    path: scenarios/v20230324_1/MESSAGE-GLOBIOM_ssp245_med/emissions_country.csv
-    filters:
-      - region: AUS
 
 scalers:
   default_scaler:

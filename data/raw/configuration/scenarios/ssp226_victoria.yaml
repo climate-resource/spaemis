@@ -11,12 +11,7 @@ timeslices:
   - 2080
   - 2100
 
-# These data arent really used anymore
 input_timeseries:
-  - name: emissions
-    path: scenarios/v20230324_1/REMIND-MAGPIE_ssp226_med/emissions_country.csv
-    filters:
-      - region: AUS
 
 scalers:
   default_scaler:

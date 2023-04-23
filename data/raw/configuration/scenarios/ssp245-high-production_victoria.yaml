@@ -1,0 +1,46 @@
+name: ssp245_victoria
+
+inventory:
+  name: victoria
+  year: 2016
+
+timeslices:
+  - 2020
+  - 2040
+  - 2060
+  - 2080
+  - 2100
+
+input_timeseries:
+  - name: high_production
+    path: scenarios/v20230327_1/MESSAGE-GLOBIOM_ssp245_high/high-production-emissions.csv
+    filters:
+      - region: AUS
+
+scalers:
+  default_scaler:
+    name: constant
+  source_files:
+    - ssp245_victoria_scalers.csv
+    - cr-ssp245_victoria_scalers.csv
+    - cr-ssp245_victoria_H2_scalers.yaml
+  scalers:
+    - variable: H2
+      sector: industry_production
+      allow_missing: true
+      method:
+        name: point_source
+        point_sources: "point_sources/hysupply_locations.csv"
+        source_timeseries: high_production
+        source_filters:
+          - product: H2
+    - variable: NOx
+      sector: industry_production
+      allow_missing: true
+      method:
+        name: point_source
+        point_sources: "point_sources/hysupply_locations.csv"
+        source_timeseries: high_production
+        source_filters:
+          - product: NOx
+  # TODO add NH3
