@@ -2,7 +2,7 @@ import numpy as np
 import xarray as xr
 from attrs import define
 
-from spaemis.config import ConstantScaleMethod
+from spaemis.config import ExcludeScaleMethod
 
 from .base import BaseScaler
 
@@ -25,5 +25,5 @@ class ExcludedScaler(BaseScaler):
         return scaled
 
     @classmethod
-    def create_from_config(cls, method) -> "ConstantScaler":
+    def create_from_config(cls, method: ExcludeScaleMethod) -> "ExcludedScaler":
         return ExcludedScaler()
