@@ -15,6 +15,7 @@ from spaemis.config import ScalerMethod
 from .base import BaseScaler
 from .constant import ConstantScaler
 from .exclude import ExcludedScaler
+from .point_source import PointSourceScaler
 from .proxy import ProxyScaler
 from .relative_change import RelativeChangeScaler
 from .timeseries import TimeseriesScaler
@@ -24,6 +25,7 @@ _scalers = {
     "exclude": ExcludedScaler,
     "relative_change": RelativeChangeScaler,
     "proxy": ProxyScaler,
+    "point_source": PointSourceScaler,
     "timeseries": TimeseriesScaler,
 }
 
@@ -44,6 +46,7 @@ def get_scaler(name: str) -> Type[BaseScaler]:
         * "exclude": All nans
         * "relative_change": Use the relative change between two data sets to scale
         * "proxy": Downscaler the quantities from CEDS using an arbitrary proxy
+        * "point_source": Apply a quantity of emissions across a number of point sources
         * "timeseries": Use a timeseries and a proxy to scale results
 
     Raises

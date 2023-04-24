@@ -114,7 +114,7 @@ def clip_region(
         da.rio.set_spatial_dims("lon", "lat")
         .rio.write_crs("WGS84")
         .rio.clip(boundary.geometry.values, all_touched=True)
-        .drop("spatial_ref")
+        .drop_vars("spatial_ref")
     )
 
 

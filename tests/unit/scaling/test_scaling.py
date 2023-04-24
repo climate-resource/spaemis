@@ -1,18 +1,29 @@
+import logging
+import os
 import re
 
+import numpy.testing as npt
 import pytest
+import scmdata
 import xarray as xr
 
-from spaemis.config import ConstantScaleMethod, RelativeChangeMethod, TimeseriesMethod
+from spaemis.config import (
+    ConstantScaleMethod,
+    PointSourceMethod,
+    RelativeChangeMethod,
+    TimeseriesMethod,
+)
+from spaemis.constants import RAW_DATA_DIR
 from spaemis.scaling import (
     ConstantScaler,
+    PointSourceScaler,
     ProxyScaler,
     RelativeChangeScaler,
     TimeseriesScaler,
     get_scaler,
     get_scaler_by_config,
 )
-from spaemis.scaling.timeseries import _get_timeseries
+from spaemis.scaling.timeseries import get_timeseries
 from spaemis.unit_registry import unit_registry as ur
 
 
@@ -182,7 +193,7 @@ class TestTimeseriesScaler:
 
     def test_run_failed_too_many(self, loaded_timeseries):
         with pytest.raises(ValueError, match="More than one match was found for"):
-            _get_timeseries(
+            get_timeseries(
                 loaded_timeseries,
                 "emissions",
                 [{"variable": "Emissions|H2|*"}],
@@ -199,7 +210,7 @@ class TestTimeseriesScaler:
                 f"No data matching {filters} was found in emissions input data"
             ),
         ):
-            _get_timeseries(
+            get_timeseries(
                 loaded_timeseries,
                 "emissions",
                 filters,
@@ -211,7 +222,7 @@ class TestTimeseriesScaler:
             ValueError,
             match="Source dataset is not loaded: other",
         ):
-            _get_timeseries(
+            get_timeseries(
                 loaded_timeseries,
                 "other",
                 [],
@@ -225,7 +236,7 @@ class TestTimeseriesScaler:
             loaded_timeseries["emissions"] = loaded_timeseries["emissions"].filter(
                 year=range(2030, 2100)
             )
-            _get_timeseries(
+            get_timeseries(
                 loaded_timeseries,
                 "emissions",
                 [
@@ -256,3 +267,53 @@ class TestProxyScaler:
 
         assert res.shape == data.shape
         assert ur.Unit(res.attrs["units"]) == ur.Unit("kg / yr / cell")
+
+
+class TestPointSourceScaler:
+    def test_run(self, inventory, caplog):
+        caplog.set_level(logging.DEBUG)
+
+        scaler = PointSourceScaler.create_from_config(
+            PointSourceMethod(
+                point_sources="point_sources/hysupply_locations.csv",
+                source_timeseries="high_production",
+                source_filters=[{"product": "H2"}],
+            )
+        )
+        assert len(scaler.point_sources) == 41
+
+        data = xr.DataArray(
+            0,
+            coords=dict(lat=inventory.data.lat, lon=inventory.data.lon),
+            dims=("lat", "lon"),
+        )
+
+        extra_emissions = scmdata.ScmRun(
+            os.path.join(
+                RAW_DATA_DIR,
+                "scenarios/v20230327_1/MESSAGE-GLOBIOM_ssp245_high/high-production-emissions.csv",
+            )
+        )
+
+        res = scaler(
+            data=data,
+            inventory=inventory,
+            target_year=2040,
+            timeseries={"high_production": extra_emissions},
+        )
+
+        # Only 10 points present
+        assert (res > 0).sum() == 10
+
+        assert res.shape == data.shape
+        portion_in_vic = 10 / 41
+        exp_value = (
+            extra_emissions.filter(year=2040, product="H2").values.squeeze()
+            * portion_in_vic
+            * 1e9
+        )
+        npt.assert_allclose(
+            res.sum().values,
+            exp_value,
+            rtol=0.01,
+        )

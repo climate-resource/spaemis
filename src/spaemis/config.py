@@ -31,7 +31,7 @@ converter.register_unstructure_hook(str, lambda u: str(u))
 
 @define
 class ExcludeScaleMethod:
-    name: ClassVar[Literal["constant"]] = "exclude"
+    name: ClassVar[Literal["exclude"]] = "exclude"
 
 
 @define
@@ -66,7 +66,15 @@ class TimeseriesMethod:
     source_timeseries: str
     source_filters: List[Dict[str, Any]]
     proxy_region: Optional[str] = None
-    name: ClassVar[Literal["proxy"]] = "timeseries"
+    name: ClassVar[Literal["timeseries"]] = "timeseries"
+
+
+@define
+class PointSourceMethod:
+    point_sources: str
+    source_timeseries: str
+    source_filters: List[Dict[str, Any]]
+    name: ClassVar[Literal["point_source"]] = "point_source"
 
 
 ScalerMethod = Union[
@@ -75,6 +83,7 @@ ScalerMethod = Union[
     RelativeChangeMethod,
     ConstantScaleMethod,
     TimeseriesMethod,
+    PointSourceMethod,
 ]
 
 

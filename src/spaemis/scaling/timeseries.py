@@ -5,6 +5,7 @@ A proxy scaler uses a proxy (a 2d pattern) to disaggregate an emissions timeseri
 
 The proxy must cover the area of interest of the emissions timeseries
 """
+import logging
 import os
 from typing import Any, Dict, List
 
@@ -51,7 +52,7 @@ def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.Da
         return aus_inv.data["NOx"].sel(sector=sector)
 
 
-def _get_timeseries(timeseries, source, filters, target_year) -> scmdata.ScmRun:
+def get_timeseries(timeseries, source, filters, target_year) -> scmdata.ScmRun:
     try:
         ts = timeseries[source]
     except KeyError as exc:
@@ -92,6 +93,25 @@ def _check_unit(unit: str):
         raise ValueError(msg)
 
 
+def apply_amount(amount: float, unit: str, proxy: xr.DataArray) -> xr.DataArray:
+    # Verify units are [X] * [mass] / [time]
+    _check_unit(unit)
+
+    logging.debug(f"applying {amount} {unit} using a proxy")
+
+    # Adjust to kg X/yr
+    scale_factor = convert_to_target_unit(unit, target_unit="kg")
+    amount = amount * scale_factor.m
+
+    # Calculate density map
+    proxy_density = proxy / proxy.sum()
+
+    scaled = amount * proxy_density
+    scaled.attrs["units"] = str(scale_factor.u) + " / cell"
+
+    return scaled
+
+
 @define
 class TimeseriesScaler(BaseScaler):
     """
@@ -128,43 +148,25 @@ class TimeseriesScaler(BaseScaler):
         -------
 
         """
-        ts = _get_timeseries(
+        ts = get_timeseries(
             timeseries,
             self.source_timeseries,
             self.source_filters,
             target_year=target_year,
         )
 
-        # Verify units are [X] * [mass] / [time]
-        _check_unit(ts.get_unique_meta("unit", True))
-
-        # Adjust to kg X/yr
-        scale_factor = convert_to_target_unit(
-            ts.get_unique_meta("unit", True), target_unit="kg"
-        )
-        ts["unit"] = str(scale_factor.u)
-        ts = ts * scale_factor.m
-
-        lat = data.lat
-        lon = data.lon
-
         proxy_region = get_proxy(self.proxy_region, inventory=inventory)
         proxy_region_clipped = clip_region(proxy_region, inventory.border_mask)
-
         region_share = proxy_region_clipped.sum() / proxy_region.sum()
 
-        # Calculate density map
         proxy = clip_region(
             get_proxy(self.proxy, inventory=inventory), inventory.border_mask
         )
+        proxy_interp = proxy.interp(lat=data.lat, lon=data.lon)
 
-        proxy_interp = proxy.interp(lat=lat, lon=lon)
-        proxy_density = proxy_interp / proxy_interp.sum()
-
-        scaled = ts.values.squeeze() * region_share * proxy_density
-        scaled.attrs["units"] = ts.get_unique_meta("unit", True) + " / cell"
-
-        return scaled
+        unit = ts.get_unique_meta("unit", True)
+        amount = ts.values.squeeze() * region_share
+        return apply_amount(amount, unit, proxy_interp)
 
     @classmethod
     def create_from_config(cls, method: TimeseriesMethod) -> "TimeseriesScaler":
