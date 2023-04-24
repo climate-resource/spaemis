@@ -5,6 +5,7 @@ A proxy scaler uses a proxy (a 2d pattern) to disaggregate an emissions timeseri
 
 The proxy must cover the area of interest of the emissions timeseries
 """
+import logging
 import os
 from typing import Any, Dict, List
 
@@ -92,9 +93,11 @@ def _check_unit(unit: str):
         raise ValueError(msg)
 
 
-def apply_amount(amount, unit, proxy: xr.DataArray) -> xr.DataArray:
+def apply_amount(amount: float, unit: str, proxy: xr.DataArray) -> xr.DataArray:
     # Verify units are [X] * [mass] / [time]
     _check_unit(unit)
+
+    logging.debug(f"applying {amount} {unit} using a proxy")
 
     # Adjust to kg X/yr
     scale_factor = convert_to_target_unit(unit, target_unit="kg")

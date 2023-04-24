@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 
@@ -269,7 +270,9 @@ class TestProxyScaler:
 
 
 class TestPointSourceScaler:
-    def test_run(self, inventory):
+    def test_run(self, inventory, caplog):
+        caplog.set_level(logging.DEBUG)
+
         scaler = PointSourceScaler.create_from_config(
             PointSourceMethod(
                 point_sources="point_sources/hysupply_locations.csv",
@@ -299,6 +302,9 @@ class TestPointSourceScaler:
             timeseries={"high_production": extra_emissions},
         )
 
+        # Only 10 points present
+        assert (res > 0).sum() == 10
+
         assert res.shape == data.shape
         portion_in_vic = 10 / 41
         exp_value = (
@@ -311,5 +317,4 @@ class TestPointSourceScaler:
             exp_value,
             rtol=0.01,
         )
-        # Only 10 points present
-        assert (res > 0).sum() == 10
+        raise ValueError
