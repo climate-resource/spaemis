@@ -270,12 +270,9 @@ class TestProxyScaler:
 
 class TestPointSourceScaler:
     def test_run(self, inventory):
-        config_dir = os.path.join(RAW_DATA_DIR, "configuration")
         scaler = PointSourceScaler.create_from_config(
             PointSourceMethod(
-                point_sources=os.path.join(
-                    config_dir, "point_sources/hysupply_locations.csv"
-                ),
+                point_sources="point_sources/hysupply_locations.csv",
                 source_timeseries="high_production",
                 source_filters=[{"product": "H2"}],
             )

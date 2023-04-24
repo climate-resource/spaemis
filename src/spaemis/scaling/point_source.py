@@ -5,6 +5,7 @@ Split a timeseries of emissions across a number of points
 
 """
 import logging
+import os
 from typing import Any, Dict, List
 
 import numpy as np
@@ -14,6 +15,7 @@ import xarray as xr
 from attrs import define
 
 from spaemis.config import PointSourceMethod
+from spaemis.constants import RAW_DATA_DIR
 from spaemis.inventory import EmissionsInventory
 from spaemis.utils import clip_region
 
@@ -99,7 +101,9 @@ class PointSourceScaler(BaseScaler):
 
     @classmethod
     def create_from_config(cls, method: PointSourceMethod) -> "PointSourceScaler":
-        point_info = pd.read_csv(method.point_sources)
+        point_info = pd.read_csv(
+            os.path.join(RAW_DATA_DIR, "configuration", method.point_sources)
+        )
         points = [
             Point(lat=item["lat"], lon=item["lon"])
             for item in point_info.to_dict("records")
