@@ -1,8 +1,10 @@
 """General utility functions."""
+import functools
 import os
+import weakref
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Union
-from collections.abc import Iterable
+from typing import Any, Callable, TypeVar
 
 import geopandas
 import numpy as np
@@ -11,7 +13,7 @@ import rioxarray  # noqa
 import xarray as xr
 
 
-def area_grid(lat: Iterable[float], lon: Iterable[float]) -> xr.DataArray:
+def area_grid(lat: list[float], lon: list[float]) -> xr.DataArray:
     """
     Calculate the area of each grid cell.
 
@@ -85,14 +87,15 @@ def earth_radius(lat: np.ndarray) -> np.ndarray:
 
     # radius equation
     # see equation 3-107 in WGS84
-    r = (a * (1 - e2) ** 0.5) / (1 - (e2 * np.cos(lat_gc) ** 2)) ** 0.5
+    r: np.ndarray = (a * (1 - e2) ** 0.5) / (1 - (e2 * np.cos(lat_gc) ** 2)) ** 0.5
 
     return r
 
 
-def clip_region(
-    da: Union[xr.DataArray, xr.Dataset], boundary: geopandas.GeoDataFrame
-) -> Union[xr.DataArray, xr.Dataset]:
+T = TypeVar("T", xr.DataArray, xr.Dataset)
+
+
+def clip_region(da: T, boundary: geopandas.GeoDataFrame) -> T:
     """
     Clip a region out of a larger DS.
 
@@ -154,7 +157,7 @@ def weighted_annual_mean(
 
 
 @contextmanager
-def chdir(current_directory: str) -> None:
+def chdir(current_directory: str) -> Iterator:
     """
     Context manager to temporarily change the current working directory.
 
@@ -212,3 +215,29 @@ def covers(dataarray: xr.DataArray, dim: str, value: float) -> bool:
     True if `value` could be interpolated in `DataArray`'s dimension `dim`
     """
     return bool(dataarray[dim].min() <= value <= dataarray[dim].max())
+
+
+V = TypeVar("V")
+
+
+def weak_lru(
+    maxsize: int = 128, typed: bool = False
+) -> Callable[..., Callable[..., V]]:
+    """
+    LRU Cache decorator that keeps a weak reference to "self"
+
+    https://stackoverflow.com/a/55990799
+    """
+
+    def wrapper(func: Callable[..., V]) -> Callable[..., V]:
+        @functools.lru_cache(maxsize, typed)
+        def _func(_self: Any, *args, **kwargs) -> V:
+            return func(_self(), *args, **kwargs)
+
+        @functools.wraps(func)
+        def inner(self: Any, *args, **kwargs) -> V:
+            return _func(weakref.ref(self), *args, **kwargs)
+
+        return inner
+
+    return wrapper

@@ -25,6 +25,4 @@ EmissionVariable = typing.Literal[
     "Emissions|Sulfur",
     "Emissions|PM10",
 ]
-COVERED_VARIABLES: tuple[EmissionVariable, ...] = typing.get_args(
-    EmissionVariable
-)
+COVERED_VARIABLES: tuple[EmissionVariable, ...] = typing.get_args(EmissionVariable)

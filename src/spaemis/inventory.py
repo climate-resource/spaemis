@@ -61,7 +61,7 @@ class EmissionsInventory:
         cls, data_directory: str, year: int, **kwargs
     ) -> "EmissionsInventory":
         """Load an emissions inventory from a directory."""
-        pass
+        raise NotImplementedError()
 
 
 class Grid:

@@ -87,15 +87,15 @@ def get_timeseries(
 
 
 def _check_unit(unit: str) -> None:
-    unit = unit_registry(unit)
+    parsed_unit = unit_registry(unit)
 
     msg = "Expected unit of the form [X] * [mass] / [time]"
 
     if (
-        len(unit.dimensionality) != 3
-        and unit.dimensionality["[mass]"] != 1
-        and unit.dimensionality["[time]"] != -1
-        and "[length]" not in unit.dimensionality
+        len(parsed_unit.dimensionality) != 3
+        and parsed_unit.dimensionality["[mass]"] != 1
+        and parsed_unit.dimensionality["[time]"] != -1
+        and "[length]" not in parsed_unit.dimensionality
     ):
         raise ValueError(msg)
 

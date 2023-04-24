@@ -1,8 +1,8 @@
+from typing import Any
 
 import scmdata
 import xarray as xr
 
-from spaemis.config import ScalerMethod
 from spaemis.input_data import SECTOR_MAP, database
 from spaemis.inventory import EmissionsInventory
 from spaemis.utils import clip_region, weighted_annual_mean
@@ -14,7 +14,7 @@ def load_source(
     sector: str,
     inventory: EmissionsInventory,
     weighted_temporal_mean: bool = False,
-) -> xr.DataArray:
+) -> xr.Dataset:
     """
     Load and preprocess the appropriate input4MIPs data.
 
@@ -86,7 +86,7 @@ class BaseScaler:
         raise NotImplementedError
 
     @classmethod
-    def create_from_config(cls, method: ScalerMethod) -> "BaseScaler":
+    def create_from_config(cls, method: Any) -> "BaseScaler":
         """
         Factory for creating a new scaler.
 

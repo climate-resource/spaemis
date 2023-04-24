@@ -48,9 +48,9 @@ def run_generate_command(scaler: str, scaler_source: str, mappings: Any) -> None
 
     if not scaler_information:
         raise click.ClickException("No scaler information generated")
-    scaler_information = pd.DataFrame(scaler_information)
+    scalers = pd.DataFrame(scaler_information)
 
     buff = io.StringIO()
-    scaler_information.to_csv(buff, index=False)
+    scalers.to_csv(buff, index=False)
 
     click.echo(buff.getvalue())

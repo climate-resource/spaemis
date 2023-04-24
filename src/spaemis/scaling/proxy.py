@@ -31,6 +31,11 @@ def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.Da
     Parameters
     ----------
     proxy_name
+        Options include:
+        * population - population map for Australia
+        * residential_density
+        * inventory|* - sector from inventory for NOx
+        * australian_inventory|* - sector from Australian inventory for NOx
     inventory
     kwargs
 
@@ -64,6 +69,8 @@ def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.Da
         aus_inv = load_inventory("australia", 2016)
         sector = proxy_toks[1]
         return aus_inv.data["NOx"].sel(sector=sector)
+
+    raise ValueError(f"Could not load proxy: {proxy_name}")
 
 
 @define

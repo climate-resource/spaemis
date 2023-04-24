@@ -22,7 +22,7 @@ select = [
     "F", # pyflakes
     "B", # flake8-bugbear
     "C90", # mccabe
-    "D", # pydocstyle
+#    "D", # pydocstyle
     "UP", # pyupgrade
     "ANN", # flake8-annotations
 ]

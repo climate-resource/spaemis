@@ -17,7 +17,7 @@ def run_notebooks(
     notebooks: Iterable[str],
     output_dir: str,
     parameters: dict[str, Any],
-    notebook_dir: str = None,
+    notebook_dir: str | None = None,
 ) -> None:
     """
     Run a set of notebooks.

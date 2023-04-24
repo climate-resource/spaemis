@@ -1,5 +1,6 @@
 import itertools
 import logging
+from collections.abc import Iterable
 from itertools import product
 
 import numpy as np
@@ -61,7 +62,7 @@ def scale_inventory(
 
 
 def _create_output_data(
-    options: list[tuple[str, str]],
+    options: Iterable[tuple[str, str]],
     config: DownscalingScenarioConfig,
     template: xr.Dataset,
 ) -> xr.Dataset:

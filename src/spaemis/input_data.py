@@ -1,14 +1,14 @@
 import logging
 import os
-from functools import lru_cache
 from glob import glob
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import pandas as pd
 import scmdata
 import xarray as xr
 
 from spaemis.config import InputTimeseries
+from spaemis.utils import weak_lru
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +30,11 @@ SECTOR_MAP = [
 class InputEmissionsDatabase:
     """Database of Input4MIPs emissions data."""
 
-    def __init__(self, paths: Union[str, list[str]] = None) -> None:
+    def __init__(self, paths: str | list[str] | None = None) -> None:
         self.available_data = pd.DataFrame(
             columns=["variable_id", "institute_id" "source_id", "filename"]
         )
-        self.paths = []
+        self.paths: list[str] = []
 
         if paths:
             if isinstance(paths, str):
@@ -79,7 +79,7 @@ class InputEmissionsDatabase:
 
         return pd.DataFrame(filter(lambda item: item is not None, file_info))
 
-    @lru_cache(maxsize=15)
+    @weak_lru(maxsize=15)
     def load(self, variable_id: str, source_id: str) -> Optional[xr.Dataset]:
         subset = self.available_data
 
