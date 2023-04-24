@@ -294,6 +294,7 @@ class TestPointSourceScaler:
                 "scenarios/v20230327_1/MESSAGE-GLOBIOM_ssp245_high/high-production-emissions.csv",
             )
         )
+        print(extra_emissions.timeseries())
 
         res = scaler(
             data=data,
@@ -317,4 +318,3 @@ class TestPointSourceScaler:
             exp_value,
             rtol=0.01,
         )
-        raise ValueError

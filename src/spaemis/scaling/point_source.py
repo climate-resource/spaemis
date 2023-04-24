@@ -73,6 +73,9 @@ class PointSourceScaler(BaseScaler):
             target_year=target_year,
         )
 
+        print(ts)
+        print(data)
+
         scaled = data.copy()
         scaled[:, :] = 0
         scaled = clip_region(scaled, inventory.border_mask)
@@ -92,6 +95,9 @@ class PointSourceScaler(BaseScaler):
             except KeyError:
                 # Value not in domain
                 pass
+
+        if num_points == 0:
+            raise ValueError("No point sources are present in domain")
         portion_in_domain = scaled.sum().values.squeeze() / num_points
         logger.info(f"{portion_in_domain * 100 }% of points sources are in domain")
 
