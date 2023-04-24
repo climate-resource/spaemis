@@ -11,6 +11,7 @@ timeslices:
   - 2080
   - 2100
 
+# These data arent really used anymore
 input_timeseries:
   - name: emissions
     path: scenarios/v20230324_1/REMIND-MAGPIE_ssp226_med/emissions_country.csv
@@ -18,9 +19,9 @@ input_timeseries:
       - region: AUS
 
 scalers:
-  default:
+  default_scaler:
     name: constant
   source_files:
     - ssp126_victoria_scalers.csv
     - cr-ssp226_victoria_scalers.csv
-    - ../mappings/victoria_H2_scalers.yaml
+    - cr-ssp226_victoria_H2_scalers.yaml

@@ -5,21 +5,22 @@ A proxy scaler uses a proxy (a 2d pattern) to disaggregate an emissions timeseri
 
 The proxy must cover the area of interest of the emissions timeseries
 """
+import logging
 import os
-from typing import Any, Dict, List
 
-import scmdata
+import numpy.testing as npt
 import xarray as xr
 from attrs import define
 
 from spaemis.config import ProxyMethod
 from spaemis.constants import PROCESSED_DATA_DIR
-from spaemis.input_data import _apply_filters
+from spaemis.input_data import SECTOR_MAP
 from spaemis.inventory import EmissionsInventory, load_inventory
-from spaemis.unit_registry import convert_to_target_unit, unit_registry
-from spaemis.utils import clip_region
+from spaemis.utils import area_grid, clip_region, covers
 
-from .base import BaseScaler
+from .base import BaseScaler, load_source
+
+logger = logging.getLogger(__name__)
 
 
 def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.DataArray:
@@ -51,63 +52,25 @@ def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.Da
         return aus_inv.data["NOx"].sel(sector=sector)
 
 
-def _get_timeseries(timeseries, source, filters, target_year) -> scmdata.ScmRun:
-    try:
-        ts = timeseries[source]
-    except KeyError as exc:
-        raise ValueError(f"Source dataset is not loaded: {source}") from exc
-
-    # This linearly interpolates the timeseries
-    ts = _apply_filters(ts, filters).resample("AS")
-
-    if len(ts) == 0:
-        raise ValueError(f"No data matching {filters} was found in {source} input data")
-
-    if len(ts) > 1:
-        raise ValueError(
-            f"More than one match was found for {filters} in {source} input data"
-        )
-
-    if target_year not in ts["year"].values:
-        raise ValueError(f"No timeseries data for year={target_year} available")
-
-    ts = ts.filter(year=target_year)
-
-    if ts.shape != (1, 1):
-        raise AssertionError("Something went wrong when filtering timeseries")
-    return ts
-
-
-def _check_unit(unit: str):
-    unit = unit_registry(unit)
-
-    msg = "Expected unit of the form [X] * [mass] / [time]"
-
-    if (
-        len(unit.dimensionality) != 3
-        and unit.dimensionality["[mass]"] != 1
-        and unit.dimensionality["[time]"] != -1
-        and "[length]" not in unit.dimensionality
-    ):
-        raise ValueError(msg)
-
-
 @define
 class ProxyScaler(BaseScaler):
     """
-    Use a proxy to distribute a set quantity spatially
+    Combine global emissions with a proxy
+
+    The spatial pattern of the global emissions are ignored, but the quantity over the area of interest is
+    preserved.
     """
 
     proxy: str
-    source_timeseries: str
-    source_filters: List[Dict[str, Any]]
+    variable_id: str
+    source_id: str
+    sector: str
 
     def __call__(
         self,
         *,
         data: xr.DataArray,
         inventory: EmissionsInventory,
-        timeseries: Dict[str, scmdata.ScmRun],
         target_year: int,
         **kwargs,
     ) -> xr.DataArray:
@@ -127,46 +90,56 @@ class ProxyScaler(BaseScaler):
         -------
 
         """
-        ts = _get_timeseries(
-            timeseries,
-            self.source_timeseries,
-            self.source_filters,
-            target_year=target_year,
+        source = load_source(
+            self.source_id,
+            self.variable_id,
+            self.sector,
+            inventory,
         )
+        if tuple(sorted(source.dims)) != ("lat", "lon", "year"):
+            raise AssertionError(
+                f"Excepted only lat, lon and year dims. Got: {source.dims}"
+            )
 
-        # Verify units are [X] * [mass] / [time]
-        _check_unit(ts.get_unique_meta("unit", True))
+        if not covers(source, "year", target_year):
+            logger.warning(
+                f"source {source.name} does not cover target year. Extrapolating"
+            )
 
-        # Adjust to kg X/yr
-        scale_factor = convert_to_target_unit(
-            ts.get_unique_meta("unit", True), target_unit="kg"
-        )
-        ts["unit"] = str(scale_factor.u)
-        ts = ts * scale_factor.m
+        if source.attrs["units"] != "kg m-2 s-1":
+            raise AssertionError(f"Unexpected units: {source.attrs['units']}")
+        areas = area_grid(source.lat, source.lon)
+        source_emissions = source.interp(year=target_year) * areas * 365 * 24 * 60 * 60
+        source_emissions.attrs["units"] = "kg / cell / yr"
 
-        lat = inventory.data.lat
-        lon = inventory.data.lon
+        total_emms = source_emissions.sum().values.squeeze()
 
+        lat = data.lat
+        lon = data.lon
+
+        # Calculate density map over the area of interest
+        # proxy grid is interpolated onto the target grid before clipping
         proxy = get_proxy(self.proxy, inventory=inventory)
-        total = proxy.sum()
-        proxy_clipped = clip_region(proxy, inventory.border_mask)
-        region_total = proxy_clipped.sum()
 
-        region_share = region_total / total
+        proxy_interp = clip_region(
+            proxy.interp(lat=lat, lon=lon), inventory.border_mask
+        ).interp(lat=lat, lon=lon)
+        proxy_density = proxy_interp / proxy_interp.sum()
+        npt.assert_allclose(proxy_density.sum().values, 1)
 
-        # Calculate density map
-        proxy_scaled = proxy_clipped.interp(lat=lat, lon=lon)
-        proxy_density = proxy_scaled / proxy_scaled.sum()
-
-        scaled = ts.values.squeeze() * region_share * proxy_density
-        scaled.attrs["units"] = ts.get_unique_meta("unit", True) + " / cell"
+        scaled = total_emms * proxy_density
+        scaled.attrs["units"] = "kg / cell / yr"
 
         return scaled
 
     @classmethod
     def create_from_config(cls, method: ProxyMethod) -> "ProxyScaler":
+        if method.sector not in SECTOR_MAP:
+            raise ValueError(f"Unknown input4MIPs sector: {method.sector}")
+
         return ProxyScaler(
             proxy=method.proxy,
-            source_timeseries=method.source_timeseries,
-            source_filters=method.source_filters,
+            variable_id=method.variable_id,
+            source_id=method.source_id,
+            sector=method.sector,
         )

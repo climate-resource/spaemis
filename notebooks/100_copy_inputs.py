@@ -33,7 +33,7 @@ logging.basicConfig(level=logging.INFO)
 
 # %% tags=["parameters"]
 CONFIG_PATH = os.path.join(
-    RAW_DATA_DIR, "configuration", "scenarios", "ssp119_australia.yaml"
+    RAW_DATA_DIR, "configuration", "scenarios", "ssp226_victoria.yaml"
 )
 RESULTS_PATH = get_default_results_dir(CONFIG_PATH)
 
@@ -52,12 +52,13 @@ output_dir
 # %%
 # Copy input files
 # Paths for input data are relative to the raw data directory
-for timeseries in config.input_timeseries:
-    output_file_path = os.path.join(output_dir, timeseries.path)
-    os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
-    shutil.copy(
-        os.path.join(RAW_DATA_DIR, timeseries.path),
-        output_file_path,
-    )
+if config.input_timeseries:
+    for timeseries in config.input_timeseries:
+        output_file_path = os.path.join(output_dir, timeseries.path)
+        os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
+        shutil.copy(
+            os.path.join(RAW_DATA_DIR, timeseries.path),
+            output_file_path,
+        )
 
 # %%

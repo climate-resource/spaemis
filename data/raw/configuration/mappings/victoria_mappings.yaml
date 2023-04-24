@@ -3,18 +3,18 @@ variables:
   NOx: NOx-em-anthro
   SO2: SO2-em-anthro
   PM10: BC-em-anthro
-  VOC: BC-em-anthro # Need to download VOC-em-anthro
+  VOC: VOC-em-anthro
 sectors:  # Any non-specified sectors are kept constant
 #  aircraft: # We don't easily have aviation pathways from input4MIPs
   architect_coating: Residential, Commercial, Other
   bakery: Residential, Commercial, Other
-#  charcoal
+#  charcoalPVO
   crematoria: Residential, Commercial, Other
   cutback_bitumen: Transportation Sector
   domestic_solvents: Solvents production and application
   dry_cleaning: Residential, Commercial, Other
   gas_leak: Energy Sector
-  industry_diffuse: Waste  # or Industrial Sector
+  industry_diffuse: Industrial Sector  # or Industrial Sector
   industry: Industrial Sector
   motor_vehicles: Transportation Sector
   panel_beaters: Residential, Commercial, Other

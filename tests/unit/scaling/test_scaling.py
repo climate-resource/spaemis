@@ -3,15 +3,16 @@ import re
 import pytest
 import xarray as xr
 
-from spaemis.config import ConstantScaleMethod, ProxyMethod, RelativeChangeMethod
+from spaemis.config import ConstantScaleMethod, RelativeChangeMethod, TimeseriesMethod
 from spaemis.scaling import (
     ConstantScaler,
     ProxyScaler,
     RelativeChangeScaler,
+    TimeseriesScaler,
     get_scaler,
     get_scaler_by_config,
 )
-from spaemis.scaling.proxy import _get_timeseries
+from spaemis.scaling.timeseries import _get_timeseries
 from spaemis.unit_registry import unit_registry as ur
 
 
@@ -55,7 +56,7 @@ class TestRelativeScaler:
 
         assert res.source_id == "source"
         assert res.variable_id == "variable"
-        assert res.sector_id == 2
+        assert res.sector == "Industrial Sector"
 
     def test_create_missing_sector(self):
         with pytest.raises(ValueError, match="Unknown input4MIPs sector: not-a-sector"):
@@ -65,11 +66,30 @@ class TestRelativeScaler:
                 )
             )
 
+    def test_run(self, inventory):
+        scaler = RelativeChangeScaler(
+            source_id="IAMC-MESSAGE-GLOBIOM-ssp245-1-1",
+            variable_id="NOx-em-anthro",
+            sector="Industrial Sector",
+        )
 
-class TestProxyScaler:
+        data = xr.DataArray(
+            0,
+            coords=dict(lat=range(10), lon=range(10)),
+            dims=("lat", "lon"),
+            attrs={"units": "kg NOx / yr / cell"},
+        )
+
+        res = scaler(data=data, inventory=inventory, target_year=2040)
+
+        assert res.shape == data.shape
+        assert ur.Unit(res.attrs["units"]) == ur.Unit("kg NOx/yr/cell")
+
+
+class TestTimeseriesScaler:
     def test_create(self):
-        res = ProxyScaler.create_from_config(
-            ProxyMethod(
+        res = TimeseriesScaler.create_from_config(
+            TimeseriesMethod(
                 proxy="population",
                 source_timeseries="inputs",
                 source_filters=[{"variable": "H2"}],
@@ -81,8 +101,9 @@ class TestProxyScaler:
         assert res.source_filters == [{"variable": "H2"}]
 
     def test_run(self, inventory, loaded_timeseries):
-        scaler = ProxyScaler(
+        scaler = TimeseriesScaler(
             proxy="population",
+            proxy_region="population",
             source_timeseries="emissions",
             source_filters=[
                 {
@@ -102,12 +123,13 @@ class TestProxyScaler:
             timeseries=loaded_timeseries,
         )
 
-        assert res.shape == inventory.data["CO"].isel(sector=0).shape
+        assert res.shape == data.shape
         assert ur.Unit(res.attrs["units"]) == ur.Unit("kg H2/yr/cell")
 
     def test_run_inventory(self, inventory, loaded_timeseries):
-        scaler = ProxyScaler(
+        scaler = TimeseriesScaler(
             proxy="inventory|industry",
+            proxy_region="australian_inventory|IND",
             source_timeseries="emissions",
             source_filters=[
                 {
@@ -128,12 +150,13 @@ class TestProxyScaler:
         )
 
         assert isinstance(res, xr.DataArray)
-        assert res.shape == inventory.data["CO"].isel(sector=0).shape
-        assert ur.Unit(res.attrs["units"]) == ur.Unit("kg H2/yr/cell")
+        assert res.shape == data.shape
+        assert ur.Unit(res.attrs["units"]) == ur.Unit("kg H2 / yr / cell")
 
     def test_run_australian_inventory(self, inventory, loaded_timeseries):
-        scaler = ProxyScaler(
+        scaler = TimeseriesScaler(
             proxy="australian_inventory|ENE",
+            proxy_region="australian_inventory|ENE",
             source_timeseries="emissions",
             source_filters=[
                 {
@@ -154,7 +177,7 @@ class TestProxyScaler:
         )
 
         assert isinstance(res, xr.DataArray)
-        assert res.shape == inventory.data["CO"].isel(sector=0).shape
+        assert res.shape == data.shape
         assert ur.Unit(res.attrs["units"]) == ur.Unit("kg H2/yr/cell")
 
     def test_run_failed_too_many(self, loaded_timeseries):
@@ -212,3 +235,24 @@ class TestProxyScaler:
                 ],
                 2000,
             )
+
+
+class TestProxyScaler:
+    def test_run(self, inventory):
+        scaler = ProxyScaler(
+            proxy="australian_inventory|IND",
+            source_id="IAMC-MESSAGE-GLOBIOM-ssp245-1-1",
+            variable_id="NOx-em-anthro",
+            sector="Industrial Sector",
+        )
+
+        data = xr.DataArray(
+            0,
+            coords=dict(lat=inventory.data.lat[:10], lon=inventory.data.lon[:10]),
+            dims=("lat", "lon"),
+        )
+
+        res = scaler(data=data, inventory=inventory, target_year=2040)
+
+        assert res.shape == data.shape
+        assert ur.Unit(res.attrs["units"]) == ur.Unit("kg / yr / cell")

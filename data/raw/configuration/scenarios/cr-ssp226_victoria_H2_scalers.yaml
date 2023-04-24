@@ -1,0 +1,63 @@
+- variable: H2
+  sector: agriculture
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: australian_inventory|AGS
+    source_id: CR-REMIND-MAGPIE-ssp226-med
+    variable_id: H2-em-anthro
+    sector: Agriculture
+- variable: H2
+  sector: energy
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: australian_inventory|ENE
+    source_id: CR-REMIND-MAGPIE-ssp226-med
+    variable_id: H2-em-anthro
+    sector: Energy Sector
+- variable: H2
+  sector: industry
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: inventory|industry
+    source_id: CR-REMIND-MAGPIE-ssp226-med
+    variable_id: H2-em-anthro
+    sector: Industrial Sector
+- variable: H2
+  sector: rco
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: population
+    source_id: CR-REMIND-MAGPIE-ssp226-med
+    variable_id: H2-em-anthro
+    sector: Residential, Commercial, Other
+- variable: H2
+  sector: domestic_solvents
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: australian_inventory|CHE
+    source_id: CR-REMIND-MAGPIE-ssp226-med
+    variable_id: H2-em-anthro
+    sector: Solvents production and application
+- variable: H2
+  sector: motor_vehicles
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: inventory|motor_vehicles
+    source_id: CR-REMIND-MAGPIE-ssp226-med
+    variable_id: H2-em-anthro
+    sector: Transportation Sector
+#- variable: H2
+#  sector: waste
+#  allow_missing: true
+#  method:
+#    name: proxy
+#    proxy: australian_inventory|WWT
+#    source_id: CR-REMIND-MAGPIE-ssp226-med
+#    variable_id: H2-em-anthro
+#    sector: Waste

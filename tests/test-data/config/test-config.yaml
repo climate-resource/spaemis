@@ -42,7 +42,7 @@ scalers:
       sector: industry
       allow_missing: true
       method:
-        name: proxy
+        name: timeseries
         proxy: population
         source_timeseries: emissions
         source_filters:

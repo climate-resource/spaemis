@@ -18,12 +18,12 @@ input_timeseries:
       - region: AUS
 
 scalers:
-  default:
+  default_scaler:
     name: constant
   source_files:
     - ssp119_victoria_scalers.csv
     - cr-ssp119_victoria_scalers.csv
-    - ../mappings/victoria_H2_scalers.yaml
+    - cr-ssp119_victoria_H2_scalers.yaml
 
 
 point_sources:

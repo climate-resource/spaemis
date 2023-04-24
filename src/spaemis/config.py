@@ -30,6 +30,11 @@ converter.register_unstructure_hook(str, lambda u: str(u))
 
 
 @define
+class ExcludeScaleMethod:
+    name: ClassVar[Literal["constant"]] = "exclude"
+
+
+@define
 class ConstantScaleMethod:
     scale_factor: float = 1.0
 
@@ -47,15 +52,30 @@ class RelativeChangeMethod:
 
 @define
 class ProxyMethod:
+    source_id: str
+    variable_id: str
+    sector: str
     proxy: str
-
-    source_timeseries: str
-    source_filters: List[Dict[str, Any]]
 
     name: ClassVar[Literal["proxy"]] = "proxy"
 
 
-ScalerMethod = Union[ProxyMethod, RelativeChangeMethod, ConstantScaleMethod]
+@define
+class TimeseriesMethod:
+    proxy: str
+    source_timeseries: str
+    source_filters: List[Dict[str, Any]]
+    proxy_region: Optional[str] = None
+    name: ClassVar[Literal["proxy"]] = "timeseries"
+
+
+ScalerMethod = Union[
+    ExcludeScaleMethod,
+    ProxyMethod,
+    RelativeChangeMethod,
+    ConstantScaleMethod,
+    TimeseriesMethod,
+]
 
 
 def _unstructure_scaler(value: ScalerMethod) -> Dict[str, Any]:
@@ -162,9 +182,9 @@ class PointSourceDefinition:
 
 @define
 class ScalerDefinition:
+    default_scaler: ScalerMethod = ExcludeScaleMethod()
     scalers: List[VariableScalerConfig] = field(factory=list)
     source_files: Optional[List[str]] = None
-    default_scaler: Optional[ScalerMethod] = None
 
     def __attrs_post_init__(self):
         if self.source_files:

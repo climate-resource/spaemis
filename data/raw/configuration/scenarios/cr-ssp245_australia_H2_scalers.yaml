@@ -1,0 +1,63 @@
+- variable: H2
+  sector: AGS
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: inventory|AGS
+    source_id: CR-MESSAGE-GLOBIOM-ssp245-high
+    variable_id: H2-em-anthro
+    sector: Agriculture
+- variable: H2
+  sector: ENE
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: inventory|ENE
+    source_id: CR-MESSAGE-GLOBIOM-ssp245-high
+    variable_id: H2-em-anthro
+    sector: Energy Sector
+- variable: H2
+  sector: IND
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: inventory|IND
+    source_id: CR-MESSAGE-GLOBIOM-ssp245-high
+    variable_id: H2-em-anthro
+    sector: Industrial Sector
+- variable: H2
+  sector: RCO
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: population
+    source_id: CR-MESSAGE-GLOBIOM-ssp245-high
+    variable_id: H2-em-anthro
+    sector: Residential, Commercial, Other
+- variable: H2
+  sector: CHE
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: inventory|CHE
+    source_id: CR-MESSAGE-GLOBIOM-ssp245-high
+    variable_id: H2-em-anthro
+    sector: Solvents production and application
+- variable: H2
+  sector: TRO_noRES
+  allow_missing: true
+  method:
+    name: proxy
+    proxy: inventory|TRO_noRES
+    source_id: CR-MESSAGE-GLOBIOM-ssp245-high
+    variable_id: H2-em-anthro
+    sector: Transportation Sector
+#- variable: H2
+#  sector: WWT
+#  allow_missing: true
+#  method:
+#    name: proxy
+#    proxy: inventory|WWT
+#    source_timeseries: emissions
+#    source_filters:
+#      - variable: Emissions|H2|Waste
