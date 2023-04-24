@@ -7,7 +7,7 @@ from spaemis.constants import PROCESSED_DATA_DIR, RAW_DATA_DIR
 from spaemis.utils import load_australia_boundary
 
 
-def extract_sedac():
+def extract_sedac() -> xr.DataArray:
     # This files has to be downloaded manually
     da = xr.open_dataset(
         os.path.join(

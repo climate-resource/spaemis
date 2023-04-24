@@ -1,7 +1,8 @@
 """
-Proxy scaler
+Proxy scaler.
 
-A proxy scaler uses a proxy (a 2d pattern) to disaggregate an emissions timeseries over a target area.
+A proxy scaler uses a proxy (a 2d pattern) to disaggregate a quantity of emissions
+from input4MIPs over a domain.
 
 The proxy must cover the area of interest of the emissions timeseries
 """
@@ -24,6 +25,19 @@ logger = logging.getLogger(__name__)
 
 
 def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.DataArray:
+    """
+    Get proxy from name.
+
+    Parameters
+    ----------
+    proxy_name
+    inventory
+    kwargs
+
+    Returns
+    -------
+        Proxy data array with dimensions lat and lon
+    """
     root_dir = os.path.join(PROCESSED_DATA_DIR, "proxies")
 
     proxy_toks = proxy_name.split("|")
@@ -55,10 +69,10 @@ def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.Da
 @define
 class ProxyScaler(BaseScaler):
     """
-    Combine global emissions with a proxy
+    Combine global emissions with a proxy.
 
-    The spatial pattern of the global emissions are ignored, but the quantity over the area of interest is
-    preserved.
+    The spatial pattern of the global emissions are ignored, but the quantity over the
+    area of interest is preserved.
     """
 
     proxy: str
@@ -75,7 +89,7 @@ class ProxyScaler(BaseScaler):
         **kwargs,
     ) -> xr.DataArray:
         """
-        Apply scaling
+        Apply scaling.
 
         Parameters
         ----------
@@ -85,10 +99,11 @@ class ProxyScaler(BaseScaler):
         timeseries
             Timeseries data used by the proxy
         kwargs
+            Ignored
 
         Returns
         -------
-
+            Scaled data array
         """
         source = load_source(
             self.source_id,
@@ -134,6 +149,7 @@ class ProxyScaler(BaseScaler):
 
     @classmethod
     def create_from_config(cls, method: ProxyMethod) -> "ProxyScaler":
+        """Factory method for ProxyScaler."""
         if method.sector not in SECTOR_MAP:
             raise ValueError(f"Unknown input4MIPs sector: {method.sector}")
 

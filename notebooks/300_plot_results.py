@@ -39,7 +39,7 @@ from matplotlib import colors
 
 from spaemis.constants import OUTPUT_VERSION, RAW_DATA_DIR, RUNS_DIR
 from spaemis.input_data import SECTOR_MAP, database
-from spaemis.inventory import clip_region, load_inventory
+from spaemis.inventory import EmissionsInventory, clip_region, load_inventory
 from spaemis.scaling.base import load_source
 from spaemis.scaling.proxy import get_proxy
 from spaemis.utils import area_grid
@@ -91,7 +91,7 @@ plt.savefig(os.path.join(out_dir, "country_growth_rate.png"))
 
 
 # %%
-def calc_growth_rate(variable, scenario, ds) -> scmdata.ScmRun:
+def calc_growth_rate(variable: str, scenario: str, ds: xr.DataArray) -> scmdata.ScmRun:
     point = (-37, 145)
     source = (
         ds.sel(lat=point[0], lon=point[1], method="nearest")[variable.replace("-", "_")]
@@ -240,7 +240,7 @@ vic_inv = load_inventory("victoria", 2016)
 
 
 # %%
-def from_cell_totals(da):
+def from_cell_totals(da: xr.DataArray) -> xr.DataArray:
     areas = area_grid(da.lat, da.lon)
 
     return da / areas / (365 * 24 * 60 * 60)
@@ -297,7 +297,9 @@ aus_inv.data = aus_inv.data.rename({"NMVOC": "VOC"})
 
 
 # %%
-def aggregate_inventory(inventory, sectors):
+def aggregate_inventory(
+    inventory: EmissionsInventory, sectors: dict[str, str]
+) -> xr.Dataset:
     coords = (
         xr.IndexVariable(data=list(sectors.keys()), dims="sector"),
         inventory.data.lat,
@@ -521,7 +523,12 @@ aus_results["NOx"].sel(scenario="ssp245", sector="IND", year=2020).plot(
 
 
 # %%
-def extract_point(results, point, location, threshold=0.2):
+def extract_point(
+    results: xr.DataArray,
+    point: tuple[float, float],
+    location: str,
+    threshold: float = 0.2,
+) -> scmdata.ScmRun:
     df = (
         results.sel(lat=slice(point[0] - threshold, point[0] + threshold))
         .sel(lon=slice(point[1] - threshold, point[1] + threshold))
@@ -559,7 +566,7 @@ point_timeseries.meta[["grid", "scenario"]].drop_duplicates()
 
 
 # %%
-def get_largest(run, n):
+def get_largest(run: scmdata.ScmRun, n: int) -> list[str]:
     values = run.timeseries().squeeze().sort_values()[-n:]
 
     return values.index.get_level_values("sector").to_list()
@@ -674,7 +681,7 @@ for i, variable in enumerate(variables):
     axs[i, 1].set_title(variable + " - VIC")
 fig.tight_layout()
 os.makedirs(os.path.join(out_dir, "points_by_species"), exist_ok=True)
-plt.savefig(os.path.join(out_dir, "points_by_species", f"points_by_species.png"))
+plt.savefig(os.path.join(out_dir, "points_by_species", "points_by_species.png"))
 
 # %%
 
@@ -955,7 +962,7 @@ proxy = clip_region(proxy, vic_inv.border_mask)
 
 d_lat = proxy.lat[1] - proxy.lat[0]
 points = []
-for i, source in point_locations.iterrows():
+for _, source in point_locations.iterrows():
     try:
         field_location = proxy.sel(
             lat=source.lat,

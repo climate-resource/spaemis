@@ -65,7 +65,7 @@ compare_data
 
 
 # %%
-def process_edgar(variable, year):
+def process_edgar(variable: str, year: int) -> xr.Dataset:
     nox_fname = os.path.join(
         RAW_DATA_DIR,
         "EDGARv6.1",
@@ -97,7 +97,7 @@ for v in ["NOx", "SO2", "CO", "PM10", "NMVOC"]:
 # %%
 
 
-def process_ceds(variable):
+def process_ceds(variable: str) -> xr.DataArray:
     ds = database.load(variable + "-em-anthro", "IAMC-IMAGE-ssp126-1-1")
 
     ceds_nox = (

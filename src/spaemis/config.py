@@ -1,22 +1,11 @@
 """
-Configuration
+Configuration.
 
 The configuration is stored as YAML files and can be loaded and validated using
 :func:`load_config`.
 """
 import os.path
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-    get_args,
-)
+from typing import Any, ClassVar, Literal, Optional, Union, get_args
 
 import pandas as pd
 from attrs import define, field
@@ -31,11 +20,15 @@ converter.register_unstructure_hook(str, lambda u: str(u))
 
 @define
 class ExcludeScaleMethod:
+    """Configuration for an ExcludeScaler."""
+
     name: ClassVar[Literal["exclude"]] = "exclude"
 
 
 @define
 class ConstantScaleMethod:
+    """Configuration for a ConstantScaler."""
+
     scale_factor: float = 1.0
 
     name: ClassVar[Literal["constant"]] = "constant"
@@ -43,6 +36,8 @@ class ConstantScaleMethod:
 
 @define
 class RelativeChangeMethod:
+    """Configuration for a RelativeChangeScaler."""
+
     source_id: str
     variable_id: str
     sector: str
@@ -52,6 +47,8 @@ class RelativeChangeMethod:
 
 @define
 class ProxyMethod:
+    """Configuration for a ProxyScaler."""
+
     source_id: str
     variable_id: str
     sector: str
@@ -62,18 +59,22 @@ class ProxyMethod:
 
 @define
 class TimeseriesMethod:
+    """Configuration for a TimeseriesScaler."""
+
     proxy: str
     source_timeseries: str
-    source_filters: List[Dict[str, Any]]
+    source_filters: list[dict[str, Any]]
     proxy_region: Optional[str] = None
     name: ClassVar[Literal["timeseries"]] = "timeseries"
 
 
 @define
 class PointSourceMethod:
+    """Configuration for a PointSourceScaler."""
+
     point_sources: str
     source_timeseries: str
-    source_filters: List[Dict[str, Any]]
+    source_filters: list[dict[str, Any]]
     name: ClassVar[Literal["point_source"]] = "point_source"
 
 
@@ -87,13 +88,13 @@ ScalerMethod = Union[
 ]
 
 
-def _unstructure_scaler(value: ScalerMethod) -> Dict[str, Any]:
+def _unstructure_scaler(value: ScalerMethod) -> dict[str, Any]:
     res = converter.unstructure(value)
     res["name"] = value.name
     return res
 
 
-def _discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
+def _discriminate_scaler(value: Any, _klass: type) -> ScalerMethod:
     name = value.pop("name")
     for Klass in get_args(_klass):
         if Klass.name == name:
@@ -108,7 +109,7 @@ converter.register_structure_hook(ScalerMethod, _discriminate_scaler)
 @define
 class VariableScalerConfig:
     """
-    Represents a mapping between a variable/sector and a scaler
+    Represents a mapping between a variable/sector and a scaler.
 
     In some cases, the target data may not exist in an inventory. In that case the
     scaler should be configured correctly to be able to handle that situation.
@@ -129,14 +130,14 @@ class VariableScalerConfig:
     allow_missing: bool = False
 
 
-def _convert_filename_to_scalers(value: Union[dict, str]) -> List[VariableScalerConfig]:
+def _convert_filename_to_scalers(value: Union[dict, str]) -> list[VariableScalerConfig]:
     if isinstance(value, str):
         if value.endswith(".csv"):
             # load_config updates the current working directory to match the
             # directory of a loaded config files otherwise a absolute filename is required
             data = pd.read_csv(value).to_dict(orient="records")
 
-            def extract_scaler_info(data_item):
+            def extract_scaler_info(data_item: dict[str, Any]) -> dict[str, Any]:
                 sector_info = {}
                 for key, value in data_item.copy().items():
                     if key.startswith("scaler_"):
@@ -145,10 +146,10 @@ def _convert_filename_to_scalers(value: Union[dict, str]) -> List[VariableScaler
                 return {**data_item, "method": sector_info}
 
             value = [extract_scaler_info(item) for item in data]
-            value = converter.structure(value, List[VariableScalerConfig])
+            value = converter.structure(value, list[VariableScalerConfig])
         elif value.endswith(".yaml") or value.endswith(".yml"):
             with open(value) as fh:
-                value = converter.loads(fh.read(), List[VariableScalerConfig])
+                value = converter.loads(fh.read(), list[VariableScalerConfig])
         else:
             raise ValueError(f"Cannot load scalers from {value}")
 
@@ -159,27 +160,27 @@ def _convert_filename_to_scalers(value: Union[dict, str]) -> List[VariableScaler
 class InputTimeseries:
     name: str
     path: str
-    filters: List[Dict[str, Any]]
+    filters: list[dict[str, Any]]
 
 
 @define
 class PointSource:
     variable: str
     sector: str
-    location: List[Tuple[float, float]]  # Lat, lon
+    location: list[tuple[float, float]]  # Lat, lon
     quantity: float  # Total annual emissions spread evenly over sources
     unit: str = "kg"
 
 
 @define
 class PointSourceDefinition:
-    sources: List[PointSource] = field(factory=list)
-    source_files: Optional[List[str]] = None
+    sources: list[PointSource] = field(factory=list)
+    source_files: Optional[list[str]] = None
 
-    def __attrs_post_init__(self):
-        def read_point_source(fname) -> List[PointSource]:
+    def __attrs_post_init__(self) -> None:
+        def read_point_source(fname: str) -> list[PointSource]:
             with open(fname) as handle:
-                return converter.loads(handle.read(), List[PointSource])
+                return converter.loads(handle.read(), list[PointSource])
 
         if self.source_files:
             for fname in self.source_files:
@@ -192,10 +193,10 @@ class PointSourceDefinition:
 @define
 class ScalerDefinition:
     default_scaler: ScalerMethod = ExcludeScaleMethod()
-    scalers: List[VariableScalerConfig] = field(factory=list)
-    source_files: Optional[List[str]] = None
+    scalers: list[VariableScalerConfig] = field(factory=list)
+    source_files: Optional[list[str]] = None
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         if self.source_files:
             for fname in self.source_files:
                 self.scalers.extend(_convert_filename_to_scalers(fname))
@@ -206,9 +207,7 @@ class ScalerDefinition:
 
 @define
 class Inventory:
-    """
-    Define the inventory used for this scenario
-    """
+    """Define the inventory used for this scenario."""
 
     name: str
     year: int
@@ -216,21 +215,19 @@ class Inventory:
 
 @define
 class DownscalingScenarioConfig:
-    """
-    Configuration for downscaling a scenario
-    """
+    """Configuration for downscaling a scenario."""
 
     name: str
     inventory: Inventory
-    timeslices: List[int]
+    timeslices: list[int]
     scalers: ScalerDefinition
-    input_timeseries: Optional[List[InputTimeseries]] = None
+    input_timeseries: Optional[list[InputTimeseries]] = None
     point_sources: Optional[PointSourceDefinition] = None
 
 
 def load_config(config_file: str) -> DownscalingScenarioConfig:
     """
-    Load and parse configuration from a file
+    Load and parse configuration from a file.
 
     Any filenames referenced in the configuration are relative to the configuration file
     not the current directory.
@@ -249,7 +246,7 @@ def load_config(config_file: str) -> DownscalingScenarioConfig:
             return converter.loads(handle.read(), DownscalingScenarioConfig)
 
 
-def get_path(output_dir: str, rel_path=None) -> str:
+def get_path(output_dir: str, rel_path: str | None = None) -> str:
     data_dir = output_dir
 
     if rel_path:
@@ -261,7 +258,7 @@ def get_path(output_dir: str, rel_path=None) -> str:
 
 def get_default_results_dir(config_path: str) -> str:
     """
-    Get the default output path for a given configuration file
+    Get the default output path for a given configuration file.
 
     Defaults to ``data/runs/{OUTPUT_VERSION}/{CONFIG_FILE_NAME}``. This function
     does not create that directory if it doesn't already exist.

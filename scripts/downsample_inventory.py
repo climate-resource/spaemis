@@ -9,10 +9,8 @@ TEST_DATA_DIR = os.path.join(ROOT_DIR, "tests", "test-data")
 
 
 @click.command()
-def downsample_inventory():
-    """
-    Downsample victoria Inventory data onto a coarser grid for testing
-    """
+def downsample_inventory() -> None:
+    """Downsample victoria Inventory data onto a coarser grid for testing."""
     inventory = load_inventory("victoria", 2016)
     data = inventory.data.coarsen(
         {"lat": 10, "lon": 10},

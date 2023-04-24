@@ -2,7 +2,7 @@ import logging
 import os
 from functools import lru_cache
 from glob import glob
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Optional, Union
 
 import pandas as pd
 import scmdata
@@ -28,11 +28,9 @@ SECTOR_MAP = [
 
 
 class InputEmissionsDatabase:
-    """
-    Database of Input4MIPs emissions data
-    """
+    """Database of Input4MIPs emissions data."""
 
-    def __init__(self, paths: Union[str, list[str]] = None):
+    def __init__(self, paths: Union[str, list[str]] = None) -> None:
         self.available_data = pd.DataFrame(
             columns=["variable_id", "institute_id" "source_id", "filename"]
         )
@@ -45,7 +43,7 @@ class InputEmissionsDatabase:
             for path in paths:
                 self.register_path(path)
 
-    def register_path(self, path: str):
+    def register_path(self, path: str) -> None:
         extra_options = self._find_options(path)
 
         if not len(extra_options):
@@ -62,10 +60,10 @@ class InputEmissionsDatabase:
             ).sort_values(["variable_id", "institute_id" "source_id"])
             self.paths.append(path)
 
-    def _find_options(self, root_dir) -> pd.DataFrame:
+    def _find_options(self, root_dir: str) -> pd.DataFrame:
         files = glob(os.path.join(root_dir, "**", "*.nc"), recursive=True)
 
-        def parse_filename(dataset_fname) -> Optional[dict]:
+        def parse_filename(dataset_fname: str) -> Optional[dict]:
             toks = os.path.basename(dataset_fname).split("_")
             if len(toks) != 7:
                 return None
@@ -82,7 +80,7 @@ class InputEmissionsDatabase:
         return pd.DataFrame(filter(lambda item: item is not None, file_info))
 
     @lru_cache(maxsize=15)
-    def load(self, variable_id, source_id) -> Optional[xr.Dataset]:
+    def load(self, variable_id: str, source_id: str) -> Optional[xr.Dataset]:
         subset = self.available_data
 
         if not len(self.available_data):
@@ -96,7 +94,8 @@ class InputEmissionsDatabase:
 
         if len(subset) == 0:
             raise ValueError(
-                f"Could not find any matching data for source_id={source_id} variable_id={variable_id}"
+                f"Could not find any matching data for "
+                f"source_id={source_id} variable_id={variable_id}"
             )
 
         files_to_load = sorted(subset.filename.values)
@@ -108,7 +107,7 @@ class InputEmissionsDatabase:
 
 def initialize_database(options: Optional[list[str]] = None) -> InputEmissionsDatabase:
     """
-    Initialise the global database of input emissions
+    Initialise the global database of input emissions.
 
     Uses the `SPAEMIS_INPUT_PATHS` environment to provide a set of paths to search
     for input emissions. This environment can contain a comma-separated list of
@@ -128,15 +127,15 @@ def initialize_database(options: Optional[list[str]] = None) -> InputEmissionsDa
     return InputEmissionsDatabase(options)
 
 
-def _apply_filters(ts: scmdata.ScmRun, filters: List[Dict[str, Any]]) -> scmdata.ScmRun:
-    for filters in filters:
-        ts = ts.filter(**filters)
+def _apply_filters(ts: scmdata.ScmRun, filters: list[dict[str, Any]]) -> scmdata.ScmRun:
+    for args in filters:
+        ts = ts.filter(**args)
     return ts
 
 
 def load_timeseries(
-    options: List[InputTimeseries], root_dir: Optional[str] = None
-) -> Dict[str, scmdata.ScmRun]:
+    options: list[InputTimeseries], root_dir: Optional[str] = None
+) -> dict[str, scmdata.ScmRun]:
     data = {}
     for ts_config in options:
         if ts_config.name in data:

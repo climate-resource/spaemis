@@ -38,7 +38,7 @@ output_dir = os.path.join(RAW_DATA_DIR, "inventories", "australia", str(target_y
 # %%
 
 
-def parse_fname(fname):
+def parse_fname(fname: str) -> dict[str, str]:
     suffix = ".0.1x0.1.nc"
     toks = os.path.basename(fname[: -len(suffix)]).split("_")
     return {
@@ -61,7 +61,7 @@ len(available_data)
 grid = AustraliaGrid()
 
 
-def extract_aus_subset(data):
+def extract_aus_subset(data: dict[str, str]) -> xr.Dataset:
     ds_trimmed = (
         xr.load_dataset(data["filename"])
         .sel(lat=grid.lats, lon=grid.lons)

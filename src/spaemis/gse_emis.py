@@ -4,7 +4,7 @@ import os
 import numpy as np
 
 
-def run_gse(year: int, month: int, day: int, datapath: str, out_dir: str):
+def run_gse(year: int, month: int, day: int, datapath: str, out_dir: str) -> None:
     dayw = datetime.datetime(year, month, day).weekday()
 
     srcList = [
@@ -316,7 +316,7 @@ def run_gse(year: int, month: int, day: int, datapath: str, out_dir: str):
             input_datafile = os.path.join(datapath, f"{sector}__tif_to_csv3.csv")
             fh.write(
                 f"Victoria emissions from {srcLongName[i]}. VOCs are lumped for Carbon Bond V\n"
-                + "user grid- nx, ny, x0, y0, dx, dy (x0,y0- sw cell centre; all coordinates in decimal degrees lat/long\n"
+                + "user grid- nx, ny, x0, y0, dx, dy (x0,y0- sw cell centre; all coordinates in decimal degrees lat/long\n"  # noqa
                 + "903,592,140.6291,-39.5402,0.01059988,0.01059988\n"
                 + "name of spatial factor file, number of spatial factor columns\n"
                 + f"{input_datafile}\n"
@@ -349,8 +349,8 @@ def run_gse(year: int, month: int, day: int, datapath: str, out_dir: str):
                 + "Mapping to speciation tables (-1 = no mapping)- this is for NSW\n"
                 + "NO  ,1,NO2 ,2,CO  ,3,SO2 ,4,PART,5,ALD2,13,ETH ,7,FORM,12,ISOP,9,OLE ,8\n"
                 + "PAR ,6,TOL ,10,XYL ,11,ETOH,15,MEOH,14,UNR ,16,NH3 ,17,ETHA,18,IOLE,19,ALDX,20\n"
-                + "OC25,21,OC10,22,EC25,23,EC10,24,OT25,25,OT10,26,ASO4,27,AS10,28,APA1,29,APA2,30\n"
-                + "APA3,31,APA4,32,APA5,33,APA6,34,APA7,35,APA8,36,APA9,37,PTOL,38,PXYL,39,PBNZ,40\n"
+                + "OC25,21,OC10,22,EC25,23,EC10,24,OT25,25,OT10,26,ASO4,27,AS10,28,APA1,29,APA2,30\n"  # noqa
+                + "APA3,31,APA4,32,APA5,33,APA6,34,APA7,35,APA8,36,APA9,37,PTOL,38,PXYL,39,PBNZ,40\n"  # noqa
                 + "LEVO,41,SOX1,4,SOX2,4,SOX3,4\n"
                 + "Species pointers to data columns in the input file\n"
                 + "Species emission factors (generally kg/yr/cell -> kg/day/cell\n"

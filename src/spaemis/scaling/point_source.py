@@ -1,12 +1,11 @@
 """
-Point source scaler
+Point source scaler.
 
 Split a timeseries of emissions across a number of points
-
 """
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -27,19 +26,19 @@ logger = logging.getLogger(__name__)
 
 @define
 class Point:
+    """Single lat/lon point."""
+
     lat: float
     lon: float
 
 
 @define
 class PointSourceScaler(BaseScaler):
-    """
-    Split emissions across some point sources
-    """
+    """Split emissions across some point sources."""
 
-    point_sources: List[Point]
+    point_sources: list[Point]
     source_timeseries: str
-    source_filters: List[Dict[str, Any]]
+    source_filters: list[dict[str, Any]]
 
     def __call__(
         self,
@@ -47,11 +46,11 @@ class PointSourceScaler(BaseScaler):
         data: xr.DataArray,
         inventory: EmissionsInventory,
         target_year: int,
-        timeseries: Dict[str, scmdata.ScmRun],
+        timeseries: dict[str, scmdata.ScmRun],
         **kwargs,
     ) -> xr.DataArray:
         """
-        Apply scaling
+        Apply scaling.
 
         Parameters
         ----------
@@ -108,6 +107,7 @@ class PointSourceScaler(BaseScaler):
 
     @classmethod
     def create_from_config(cls, method: PointSourceMethod) -> "PointSourceScaler":
+        """Factory method for creating a PointSourceScaler."""
         point_info = pd.read_csv(
             os.path.join(RAW_DATA_DIR, "configuration", method.point_sources)
         )

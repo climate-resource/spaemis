@@ -1,6 +1,4 @@
-"""
-CLI
-"""
+"""CLI."""
 import dotenv
 
 from spaemis.commands import cli

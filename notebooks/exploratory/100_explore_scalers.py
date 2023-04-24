@@ -18,7 +18,8 @@
 #
 # A Scaler is used to project inventory data into the future.
 #
-# These scalers can be configured to use information from different sources to perform the projections.
+# These scalers can be configured to use information from different sources to perform
+# the projections.
 
 # %%
 import logging

@@ -1,5 +1,5 @@
 """
-spaemis a tool for generating future emissions for local air quality modelling
+spaemis a tool for generating future emissions for local air quality modelling.
 
 See README and docs for more info.
 """

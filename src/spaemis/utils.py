@@ -1,9 +1,8 @@
-"""
-General utility functions
-"""
+"""General utility functions."""
 import os
 from contextlib import contextmanager
 from typing import Union
+from collections.abc import Iterable
 
 import geopandas
 import numpy as np
@@ -12,9 +11,9 @@ import rioxarray  # noqa
 import xarray as xr
 
 
-def area_grid(lat, lon):  # pragma: no cover
+def area_grid(lat: Iterable[float], lon: Iterable[float]) -> xr.DataArray:
     """
-    Calculate the area of each grid cell
+    Calculate the area of each grid cell.
 
     Area is in square meters
 
@@ -58,10 +57,9 @@ def area_grid(lat, lon):  # pragma: no cover
     return xda
 
 
-def earth_radius(lat: np.ndarray) -> np.ndarray:  # pragma: no cover
+def earth_radius(lat: np.ndarray) -> np.ndarray:
     """
-    Calculate radius of Earth assuming oblate spheroid
-    defined by WGS84
+    Calculate radius of Earth assuming oblate spheroid defined by WGS84.
 
     Parameters
     ----------
@@ -96,7 +94,7 @@ def clip_region(
     da: Union[xr.DataArray, xr.Dataset], boundary: geopandas.GeoDataFrame
 ) -> Union[xr.DataArray, xr.Dataset]:
     """
-    Clip a region out of a larger DS
+    Clip a region out of a larger DS.
 
     Parameters
     ----------
@@ -122,7 +120,7 @@ def weighted_annual_mean(
     ds: xr.Dataset, variable: str
 ) -> xr.DataArray:  # pragma: no cover
     """
-    Calculate a weighted temporal annual mean
+    Calculate a weighted temporal annual mean.
 
     This method takes into account the different number of days in each month
 
@@ -158,7 +156,7 @@ def weighted_annual_mean(
 @contextmanager
 def chdir(current_directory: str) -> None:
     """
-    Context manager to temporarily change the current working directory
+    Context manager to temporarily change the current working directory.
 
     Should not be used in async or parallel methods as it changes
     the global state
@@ -177,8 +175,7 @@ def chdir(current_directory: str) -> None:
 
 def load_australia_boundary() -> geopandas.GeoDataFrame:
     """
-    Load Australia boundary shapefile
-
+    Load Australia boundary shapefile.
 
     Returns
     -------
@@ -198,7 +195,7 @@ def load_australia_boundary() -> geopandas.GeoDataFrame:
 
 def covers(dataarray: xr.DataArray, dim: str, value: float) -> bool:
     """
-    Check if a dimension of a DataArray can be interpolated for a given value
+    Check if a dimension of a DataArray can be interpolated for a given value.
 
     If this check fails an extrapolation will be required
     Parameters

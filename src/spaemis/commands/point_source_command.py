@@ -1,6 +1,4 @@
-"""
-point-sources CLI command
-"""
+"""point-sources CLI command."""
 import logging
 
 import click
@@ -18,20 +16,22 @@ logger = logging.getLogger(__name__)
 @click.option("--quantity", default=1)
 @click.option("--unit", default="kg")
 @click.argument("filename", type=click.Path(exists=True, dir_okay=False))
-def run_point_source_command(filename, variable, sector, quantity, unit):
+def run_point_source_command(
+    filename: str, variable: str, sector: str, quantity: float, unit: str
+) -> None:
     """
-    Generate a point source configuration file from a set of locations
+    Generate a point source configuration file from a set of locations.
 
     The output from this command can be written to file and included using the
     ``point_sources.source_files`` configuration attribute.
     """
-
     point_sources = pd.read_csv(filename)
     if point_sources.columns.isin(["lat", "lon"]).all():
         raise click.ClickException("Input file did not contain lat/lon coordinates")
 
     locations = [
-        (lat, lon) for lat, lon in zip(point_sources["lat"], point_sources["lon"])
+        (lat, lon)
+        for lat, lon in zip(point_sources["lat"], point_sources["lon"], strict=True)
     ]
 
     ps = PointSource(

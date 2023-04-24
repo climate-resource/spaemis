@@ -1,7 +1,6 @@
 import itertools
 import logging
 from itertools import product
-from typing import Dict, Tuple
 
 import numpy as np
 import scmdata
@@ -18,10 +17,10 @@ def scale_inventory(
     cfg: VariableScalerConfig,
     inventory: EmissionsInventory,
     target_year: int,
-    timeseries: Dict[str, scmdata.ScmRun],
+    timeseries: dict[str, scmdata.ScmRun],
 ) -> xr.Dataset:
     """
-    Scale a given variable/sector
+    Scale a given variable/sector.
 
     Parameters
     ----------
@@ -61,7 +60,11 @@ def scale_inventory(
     return scaled_field.expand_dims(["sector", "year"]).to_dataset(name=cfg.variable)
 
 
-def _create_output_data(options, config, template: xr.Dataset):
+def _create_output_data(
+    options: list[tuple[str, str]],
+    config: DownscalingScenarioConfig,
+    template: xr.Dataset,
+) -> xr.Dataset:
     unique_variables = sorted(set([variable for variable, _ in options]))
     unique_sectors = sorted(set([sector for _, sector in options]))
     unique_years = sorted(config.timeslices)
@@ -84,7 +87,13 @@ def _create_output_data(options, config, template: xr.Dataset):
     )
 
 
-def _process_slice(output_ds, inventory, timeseries, variable_config, year):
+def _process_slice(
+    output_ds: xr.Dataset,
+    inventory: EmissionsInventory,
+    timeseries: dict[str, scmdata.ScmRun],
+    variable_config: VariableScalerConfig,
+    year: int,
+) -> None:
     logger.info(
         "Processing variable=%s sector=%s year=%i",
         variable_config.variable,
@@ -113,10 +122,10 @@ def _process_slice(output_ds, inventory, timeseries, variable_config, year):
 def calculate_projections(
     config: DownscalingScenarioConfig,
     inventory: EmissionsInventory,
-    timeseries: Dict[str, scmdata.ScmRun],
+    timeseries: dict[str, scmdata.ScmRun],
 ) -> xr.Dataset:
     """
-    Calculate a projected set of emissions according to some configuration
+    Calculate a projected set of emissions according to some configuration.
 
     Parameters
     ----------
@@ -132,7 +141,7 @@ def calculate_projections(
         The dimensionality of the output variables is (sector, year, lat, lon)
     """
     scalers = config.scalers
-    scaling_configs: Dict[Tuple[str, str], VariableScalerConfig] = {
+    scaling_configs: dict[tuple[str, str], VariableScalerConfig] = {
         (cfg.variable, cfg.sector): cfg for cfg in scalers.scalers
     }
 
@@ -199,7 +208,7 @@ def calculate_point_sources(
     config: DownscalingScenarioConfig, inventory: EmissionsInventory
 ) -> xr.Dataset:
     """
-    Generate grids for point sources
+    Generate grids for point sources.
 
     Each point source has a total quantity. This quantity is split evenly over all
     locations of that source. Values are excluded if the location falls outside of the

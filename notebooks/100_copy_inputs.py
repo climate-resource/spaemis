@@ -17,7 +17,8 @@
 # # Copy inputs
 #
 # Copy the required data to the results directory
-# This step also reads in any scaler source CSV files and calculates the complete list of sources used for projecting the results
+# This step also reads in any scaler source CSV files and
+# calculates the complete list of sources used for projecting the results
 
 # %%
 
@@ -26,7 +27,7 @@ import os
 import shutil
 
 from spaemis.config import get_default_results_dir, get_path, load_config
-from spaemis.constants import RAW_DATA_DIR, TEST_DATA_DIR
+from spaemis.constants import RAW_DATA_DIR
 
 logger = logging.getLogger("100_copy_inputs")
 logging.basicConfig(level=logging.INFO)

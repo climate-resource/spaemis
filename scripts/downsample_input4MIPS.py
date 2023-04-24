@@ -9,7 +9,7 @@ from spaemis.constants import ROOT_DIR
 TEST_DATA_DIR = os.path.join(ROOT_DIR, "tests", "test-data")
 
 
-def downsample_file(fname, out_path):
+def downsample_file(fname: str, out_path: str) -> None:
     fname_toks = fname.split(os.sep)
     out_fname = os.path.join(out_path, *fname_toks[-11:])
     # Downsample spatial resolution by 10x
@@ -22,9 +22,9 @@ def downsample_file(fname, out_path):
 
 @click.command()
 @click.argument("root_dir")
-def downsample_input4MIPs(root_dir):
+def downsample_input4MIPs(root_dir: str) -> None:
     """
-    Down sample input4MIPs to a coarser grid for testing purposes
+    Down sample input4MIPs to a coarser grid for testing purposes.
 
     The selected files must be in the same file structure as
     """

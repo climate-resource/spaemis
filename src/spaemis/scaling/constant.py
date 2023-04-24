@@ -8,9 +8,7 @@ from .base import BaseScaler
 
 @define
 class ConstantScaler(BaseScaler):
-    """
-    Apply some constant scale factor to an inventory
-    """
+    """Apply some constant scale factor to an inventory."""
 
     scaling_factor: float
 

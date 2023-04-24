@@ -18,6 +18,7 @@ class ExcludedScaler(BaseScaler):
     def __call__(
         self, *, data: xr.DataArray, target_year: int, **kwargs
     ) -> xr.DataArray:
+        """Do not apply any scaling."""
         scaled = data.copy()
 
         scaled[:, :] = np.nan
@@ -26,4 +27,5 @@ class ExcludedScaler(BaseScaler):
 
     @classmethod
     def create_from_config(cls, method: ExcludeScaleMethod) -> "ExcludedScaler":
+        """Factory method to create an ExcludedScaler."""
         return ExcludedScaler()

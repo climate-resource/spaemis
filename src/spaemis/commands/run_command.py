@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help="Removes any existing results before running",
 )
-def run_command(config, output_dir, force):
+def run_command(config: str, output_dir: str, force: bool) -> None:
     if output_dir is None:
         output_dir = get_default_results_dir(config)
         logger.warning(f"No output directory specified. Defaulting to {output_dir}")

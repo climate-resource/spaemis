@@ -1,6 +1,7 @@
 import logging
 import os.path
-from typing import Any, Dict, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 import jupytext
 import papermill as pm
@@ -14,12 +15,12 @@ logger = logging.getLogger(__name__)
 
 def run_notebooks(
     notebooks: Iterable[str],
-    output_dir,
-    parameters: Dict[str, Any],
-    notebook_dir=os.path.join(ROOT_DIR, "notebooks"),
+    output_dir: str,
+    parameters: dict[str, Any],
+    notebook_dir: str = None,
 ) -> None:
     """
-    Run a set of notebooks
+    Run a set of notebooks.
 
     Each notebook is copied to the output directory (suffix '-template.ipynb') before
     being run by papermill ('.ipynb') with a set of parameters.
@@ -45,6 +46,8 @@ def run_notebooks(
 
         The state of the notebook when it failed is written to the ``output_dir``
     """
+    if notebook_dir is None:
+        notebook_dir = os.path.join(ROOT_DIR, "notebooks")
     for nb in notebooks:
         input_fname = os.path.join(notebook_dir, nb + ".py")
         output_template_fname = os.path.join(output_dir, nb + "-template.ipynb")
@@ -67,12 +70,12 @@ def run_notebooks(
 
 
 class NotebookException(Exception):
-    def __init__(self, exc, filename):
+    def __init__(self, exc: Exception, filename: str) -> None:
         self.exc = exc
         self.filename = filename
         super().__init__(self.exc)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.filename} failed to execute: {self.exc}"
 
 
@@ -87,7 +90,7 @@ class NotebookRunner:
         if not output_path:
             raise ValueError("No value for output_dir specified")
 
-    def create_output_directory(self):
+    def create_output_directory(self) -> None:
         if os.path.exists(self.output_path):
             raise ValueError(
                 f"Output directory {self.output_path} already exists. "
@@ -110,7 +113,7 @@ class NotebookRunner:
         # Update the config path to use the new one
         self.config_path = updated_config_fname
 
-    def run(self, notebooks):
+    def run(self, notebooks: Iterable[str]) -> None:
         # Run the various notebooks
         run_notebooks(
             notebooks,

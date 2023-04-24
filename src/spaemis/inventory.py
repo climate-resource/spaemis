@@ -1,6 +1,4 @@
-"""
-Loading emissions inventories
-"""
+"""Loading emissions inventories."""
 import functools
 import glob
 import logging
@@ -22,7 +20,7 @@ def has_dimensions(
     dimensions: Union[str, list[str]]
 ) -> Callable[[Any, Attribute, Union[xr.Dataset, xr.DataArray]], None]:
     """
-    Check if a xarray Dataset or DataArray has the expected dimensions
+    Check if a xarray Dataset or DataArray has the expected dimensions.
 
     Parameters
     ----------
@@ -36,7 +34,9 @@ def has_dimensions(
     """
     dims: list[str] = [dimensions] if isinstance(dimensions, str) else dimensions
 
-    def _check(instance, attribute, value: Union[xr.Dataset, xr.DataArray]) -> None:
+    def _check(
+        instance: Any, attribute: Any, value: Union[xr.Dataset, xr.DataArray]
+    ) -> None:
         for exp_dim in dims:
             if exp_dim not in value.dims:
                 raise ValueError(f"Missing dimension: {exp_dim}")
@@ -46,9 +46,7 @@ def has_dimensions(
 
 @define
 class EmissionsInventory:
-    """
-    An emissions inventory is a set of bottom up
-    """
+    """An emissions inventory is a set of bottom up."""
 
     data: xr.Dataset = field(
         validator=[
@@ -62,9 +60,7 @@ class EmissionsInventory:
     def load_from_directory(
         cls, data_directory: str, year: int, **kwargs
     ) -> "EmissionsInventory":
-        """
-        Load an emissions inventory from a directory
-        """
+        """Load an emissions inventory from a directory."""
         pass
 
 
@@ -78,23 +74,17 @@ class Grid:
 
     @property
     def lats(self) -> list[float]:
-        """
-        Latitudes of the grid
-        """
+        """Latitudes of the grid."""
         return [self.y0 + self.dy * i for i in range(self.ny)]
 
     @property
     def lons(self) -> list[float]:
-        """
-        Longitudes of the grid
-        """
+        """Longitudes of the grid."""
         return [self.x0 + self.dx * i for i in range(self.nx)]
 
 
 class VictoriaGrid(Grid):
-    """
-    Information about the grid used in Victoria
-    """
+    """Information about the grid used in Victoria."""
 
     nx: int = 903
     ny: int = 592
@@ -106,7 +96,7 @@ class VictoriaGrid(Grid):
 
 class AustraliaGrid(Grid):
     """
-    Information about the grid used in Australia
+    Information about the grid used in Australia.
 
     lat/lons represent the center of the cell
     """
@@ -122,7 +112,7 @@ class AustraliaGrid(Grid):
 @define
 class VictoriaEPAInventory(EmissionsInventory):
     """
-    Victorian EPA data
+    Victorian EPA data.
 
     CSV files of 1D datapoints. Each grid is slightly different so some post-processing
     is required to get all the variables and sectors on to the same grid.
@@ -137,7 +127,7 @@ class VictoriaEPAInventory(EmissionsInventory):
         grid: Optional[Any] = None,
     ) -> "VictoriaEPAInventory":
         """
-        Load Victorian EPA inventory data
+        Load Victorian EPA inventory data.
 
         Parameters
         ----------
@@ -158,7 +148,7 @@ class VictoriaEPAInventory(EmissionsInventory):
         if grid is None:
             grid = VictoriaGrid()
 
-        def read_file(fname):
+        def read_file(fname: os.PathLike | str) -> xr.Dataset:
             dataframe = pd.read_csv(fname).set_index(["lat", "lon"])
             dataset = xr.Dataset.from_dataframe(dataframe)
             dataset["lat_new"] = grid.lats
@@ -185,7 +175,7 @@ class VictoriaEPAInventory(EmissionsInventory):
 @define
 class AustraliaInventory(EmissionsInventory):
     """
-    Australian data
+    Australian data.
 
     CSV files of 1D datapoints. Each grid is slightly different so some post-processing
     is required to get all the variables and sectors on to the same grid.
@@ -199,7 +189,7 @@ class AustraliaInventory(EmissionsInventory):
         file_suffix: str = ".nc",
     ) -> "AustraliaInventory":
         """
-        Load Australian EDGAR data
+        Load Australian EDGAR data.
 
         Parameters
         ----------
@@ -235,14 +225,12 @@ class AustraliaInventory(EmissionsInventory):
 
 @define
 class TestInventory(EmissionsInventory):
-    """
-    Test inventory using decimated Vic inventory data
-    """
+    """Test inventory using decimated Vic inventory data."""
 
     @classmethod
     def load_from_directory(cls, **kwargs) -> "TestInventory":
         """
-        Load test inventory data
+        Load test inventory data.
 
         For testing we use a decimated version of the vic inventory generated using
         ``scripts/downsample_inventory.py``
@@ -278,7 +266,7 @@ def load_inventory(
     inventory: str, year: Optional[int] = None, data_directory: Optional[str] = None
 ) -> EmissionsInventory:
     """
-    Load an emissions inventory
+    Load an emissions inventory.
 
     Parameters
     ----------
@@ -313,14 +301,14 @@ def load_inventory(
     try:
         loader = mapping[(inventory, year)]
     except KeyError:
-        raise ValueError(f"No inventory matching {inventory}|{year}")
+        raise ValueError(f"No inventory matching {inventory}|{year}") from None
 
     return loader.load_from_directory(data_directory=data_directory, year=year)
 
 
-def write_inventory_csvs(ds: xr.Dataset, output_dir: str):
+def write_inventory_csvs(ds: xr.Dataset, output_dir: str) -> None:
     """
-    Serialize a Dataset to CSV files with the same  format as the input inventory data
+    Serialize a Dataset to CSV files with the same  format as the input inventory data.
 
     Each sector is written into a different file. The CSV file contains rows of data for
     each datapoint on a lat, lon grid. Each variable will be written as a separate column.

@@ -1,4 +1,3 @@
-from typing import Dict
 
 import scmdata
 import xarray as xr
@@ -17,8 +16,7 @@ def load_source(
     weighted_temporal_mean: bool = False,
 ) -> xr.DataArray:
     """
-    Load and preprocess the appropriate input4MIPs data
-
+    Load and preprocess the appropriate input4MIPs data.
 
     Parameters
     ----------
@@ -54,7 +52,7 @@ def load_source(
 
 class BaseScaler:
     """
-    Scaling calculator
+    Scaling calculator.
 
     Used to modify a dataset using a scaling method
     """
@@ -65,10 +63,10 @@ class BaseScaler:
         data: xr.DataArray,
         inventory: EmissionsInventory,
         target_year: int,
-        timeseries: Dict[str, scmdata.ScmRun],
+        timeseries: dict[str, scmdata.ScmRun],
     ) -> xr.DataArray:
         """
-        Run a scaler
+        Run a scaler.
 
         Parameters
         ----------
@@ -90,7 +88,7 @@ class BaseScaler:
     @classmethod
     def create_from_config(cls, method: ScalerMethod) -> "BaseScaler":
         """
-        Factory for creating a new scaler
+        Factory for creating a new scaler.
 
         Parameters
         ----------

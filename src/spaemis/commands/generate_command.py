@@ -1,9 +1,7 @@
-"""
-generate CLI command
-"""
+"""generate CLI command."""
 import io
 import logging
-from typing import Dict
+from typing import Any
 
 import click
 import pandas as pd
@@ -23,16 +21,16 @@ logger = logging.getLogger(__name__)
     type=click.File(),
     required=True,
 )
-def run_generate_command(scaler, scaler_source, mappings):
+def run_generate_command(scaler: str, scaler_source: str, mappings: Any) -> None:
     """
-    Generate a scenario configuration file from a set of defaults
+    Generate a scenario configuration file from a set of defaults.
 
     This is helpful for setting up a CSV of scaling options for later tweaking
     """
     mappings = safe_load(mappings)
 
-    sector_mapping: Dict[str, str] = mappings["sectors"]
-    variable_mapping: Dict[str, str] = mappings["variables"]
+    sector_mapping: dict[str, str] = mappings["sectors"]
+    variable_mapping: dict[str, str] = mappings["variables"]
 
     scaler_information = []
     for source_variable, target_variable in variable_mapping.items():

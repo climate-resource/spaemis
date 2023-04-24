@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 @define
 class RelativeChangeScaler(BaseScaler):
     """
-    Apply the relative change from one timeseries
+    Apply the relative change from one timeseries.
 
     Uses input4MIPs data to perform the scaling
     """

@@ -1,5 +1,5 @@
 """
-Unit Registry
+Unit Registry.
 
 Adds H2 related units if they haven't been previously registered
 """
@@ -21,7 +21,7 @@ def convert_to_target_unit(
     target_unit: Union[str, pint.Unit],
 ) -> pint.Quantity:
     """
-    Calculate the scale factor required to convert between units
+    Calculate the scale factor required to convert between units.
 
     This function supports converting a subset of the input units dimensions which
     is helpful in situations where arbitary dimensions can be provided i.e. Mt X/yr

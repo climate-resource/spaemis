@@ -1,5 +1,5 @@
 """
-Scalers
+Scalers.
 
 A scaler is an object that performs some kind of scaling upon a dataset (typically inventory
 data). This scaling operation is generally to update data for a variable/sector
@@ -8,7 +8,6 @@ to some future time-base.
 A number of different scalers exist with the most simple of all being a :class:`ConstantScaler`.
 This constant scaler is will apply some static scale factor to the underlying data.
 """
-from typing import Type
 
 from spaemis.config import ScalerMethod
 
@@ -30,9 +29,9 @@ _scalers = {
 }
 
 
-def get_scaler(name: str) -> Type[BaseScaler]:
+def get_scaler(name: str) -> type[BaseScaler]:
     """
-    Get a scaler by name
+    Get a scaler by name.
 
     Parameters
     ----------
@@ -66,7 +65,7 @@ def get_scaler(name: str) -> Type[BaseScaler]:
 
 def get_scaler_by_config(method: ScalerMethod) -> BaseScaler:
     """
-    Create a scaler from configuration
+    Create a scaler from configuration.
 
     Parameters
     ----------

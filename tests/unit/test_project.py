@@ -103,7 +103,8 @@ def test_calculate_projections(config, inventory, loaded_timeseries):
 
     assert res["year"].isin(config.timeslices).all()
 
-    # CO|motor_vehicles should be all nans as it wasn't included in the downscaling config
+    # CO|motor_vehicles should be all nans as it wasn't included in the
+    # downscaling config
     assert res["CO"].sel(sector="motor_vehicles").isnull().all()
     # but CO|industry should have data
     assert not res["CO"].sel(sector="industry").isnull().all()

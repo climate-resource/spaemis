@@ -28,11 +28,12 @@ dotenv.load_dotenv()
 # %%
 import logging
 import os
+from collections.abc import Iterable
 
 import xarray as xr
 
 from spaemis.config import get_default_results_dir, get_path, load_config
-from spaemis.constants import OUTPUT_VERSION, RAW_DATA_DIR, TEST_DATA_DIR
+from spaemis.constants import OUTPUT_VERSION, RAW_DATA_DIR
 from spaemis.input_data import load_timeseries
 from spaemis.inventory import clip_region, load_inventory, write_inventory_csvs
 from spaemis.project import calculate_point_sources, calculate_projections
@@ -66,7 +67,9 @@ inventory
 
 
 # %%
-def show_variable_sums(df, agg_over=("sector", "lat", "lon")):
+def show_variable_sums(
+    df: xr.Dataset, agg_over: Iterable[str] = ("sector", "lat", "lon")
+) -> float:
     # Results are all in kg/cell/yr so can be summed like this
     totals = df.sum(dim=agg_over).to_dataframe() / 1000 / 1000
 

@@ -1,5 +1,5 @@
 """
-Download script for EDGAR v6.1
+Download script for EDGAR v6.1.
 
 Data saved to data/raw/EDGARv6.1. Total disk size=~4GB
 """
@@ -36,7 +36,7 @@ logging.basicConfig(level=logging.INFO)
 # PRO_OIL - Fuel exploitation OIL: 1B2a1+1B2a2+1B2a3+1B2a4 / 1B2aiii2+1B2aiii3
 # PRU_SOL - Solvents and products use: 3 / 2D3+2E+2F+2G
 # RCO - Energy for buildings: 1A4 / 1A4+1A5
-# REF_TRF - Oil refineries and Transformation industry: 1A1b+1A1c+1A5b1+1B1b+1B2a5+1B2a6+1B2b5+2C1b / 1A1b+1A1ci+1A1cii+1A5biii+1B1b+1B2aiii6+1B2biii3+1B1c
+# REF_TRF - Oil refineries and Transformation industry: 1A1b+1A1c+1A5b1+1B1b+1B2a5+1B2a6+1B2b5+2C1b / 1A1b+1A1ci+1A1cii+1A5biii+1B1b+1B2aiii6+1B2biii3+1B1c # noqa
 # SWD_INC - Solid waste incineration: 6C+6Dhaz / 4C
 # SWD_LDF - Solid waste landfills: 6A+6Dcom / 4A+4B
 # TNR_Aviation_CDS - Aviation climbing&descent: 1A3a_CDS / 1A3a_CDS
@@ -88,7 +88,7 @@ YEAR = 2016
 EDGAR_URL = "http://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/EDGAR/datasets/v61_AP"
 
 
-def download_file(gas, sector, year):
+def download_file(gas: str, sector: str, year: int) -> None:
     exp_filename = f"EDGARv6.1_{gas}_{year}_{sector}.0.1x0.1.nc"
     out_dir = os.path.join(RAW_DATA_DIR, "EDGARv6.1", gas, sector)
 

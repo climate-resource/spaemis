@@ -1,6 +1,4 @@
-"""
-Common CLI functionality
-"""
+"""Common CLI functionality."""
 import logging
 
 import click
@@ -10,9 +8,7 @@ LOGFORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 
 def setup_logging() -> None:
-    """
-    Early setup for logging.
-    """
+    """Early setup for logging."""
     logging.basicConfig(
         level=logging.INFO,
         format=LOGFORMAT,
@@ -20,9 +16,9 @@ def setup_logging() -> None:
 
 
 @click.group()
-def cli():
+def cli() -> None:
     """
-    Spatial emissions CLI
+    Spatial emissions CLI.
 
     Utilities for preparing emissions inventories under a range of different climate
     futures.
