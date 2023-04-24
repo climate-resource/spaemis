@@ -74,9 +74,8 @@ class PointSourceScaler(BaseScaler):
         )
 
         scaled = data.copy()
-        scaled[:, :] = 0
         scaled = clip_region(scaled, inventory.border_mask)
-        print(scaled)
+        scaled[:, :] = 0
 
         num_points = len(self.point_sources)
         num_valid_points = 0
@@ -96,12 +95,12 @@ class PointSourceScaler(BaseScaler):
                 # Value not in domain
                 pass
 
-        if num_valid_points == 0:
-            raise ValueError("No point sources are present in domain")
-        portion_in_domain = scaled.sum().values.squeeze() / num_points
-        logger.info(
-            f"{scaled.sum().values.squeeze()} / {num_points} points sources are in domain. {num_valid_points}"
-        )
+        if num_points == 0:
+            raise ValueError("No point sources are available")
+        if scaled.sum().values.squeeze() != num_valid_points:
+            raise AssertionError(f"Something went wrong with proxy field: {scaled}")
+        portion_in_domain = num_valid_points / float(num_points)
+        logger.info(f"{num_valid_points} / {num_points} points sources are in domain.")
 
         amount = ts.values.squeeze() * portion_in_domain
         unit = ts.get_unique_meta("unit", True)
