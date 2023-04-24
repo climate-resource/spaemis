@@ -26,14 +26,12 @@ jobs:
       run: |
         pip install --upgrade pip wheel
         pip install -e .[dev]
-    # TODO: add `pylint src`
     - name: Formatting and linters
       run: |
-        black --check src tests setup.py
-        isort --check-only --quiet src tests setup.py
-        #  pydocstyle src
+        black --check .
+        isort --check-only --quiet .
         bandit -r src
-        flake8 src tests setup.py
+        ruff check .
 #     - name: Build docs
 #       # treat warnings as errors (-W)...
 #       # ...but not when being nitpicky (-n)
