@@ -73,14 +73,13 @@ class PointSourceScaler(BaseScaler):
             target_year=target_year,
         )
 
-        print(ts)
-        print(data)
-
         scaled = data.copy()
         scaled[:, :] = 0
         scaled = clip_region(scaled, inventory.border_mask)
+        print(scaled)
 
         num_points = len(self.point_sources)
+        num_valid_points = 0
         d_lat = scaled.lat[1] - scaled.lat[0]
         for source in self.point_sources:
             try:
@@ -92,14 +91,17 @@ class PointSourceScaler(BaseScaler):
                 )
 
                 scaled.loc[field_location.lat, field_location.lon] += 1
+                num_valid_points += 1
             except KeyError:
                 # Value not in domain
                 pass
 
-        if num_points == 0:
+        if num_valid_points == 0:
             raise ValueError("No point sources are present in domain")
         portion_in_domain = scaled.sum().values.squeeze() / num_points
-        logger.info(f"{portion_in_domain * 100 }% of points sources are in domain")
+        logger.info(
+            f"{scaled.sum().values.squeeze()} / {num_points} points sources are in domain. {num_valid_points}"
+        )
 
         amount = ts.values.squeeze() * portion_in_domain
         unit = ts.get_unique_meta("unit", True)
