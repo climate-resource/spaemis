@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.1.0]
+
 ### Added
 
 - Add PointSourceScaler  [#24](https://github.com/climate-resource/spaemis/pull/24)
