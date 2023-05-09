@@ -1,16 +1,11 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: -pycharm
 #     text_representation:
 #       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
 #       jupytext_version: 1.14.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
 # ---
 
 # %% [md]
@@ -38,7 +33,7 @@ output_dir = os.path.join(RAW_DATA_DIR, "inventories", "australia", str(target_y
 # %%
 
 
-def parse_fname(fname):
+def _parse_fname(fname):
     suffix = ".0.1x0.1.nc"
     toks = os.path.basename(fname[: -len(suffix)]).split("_")
     return {
@@ -52,7 +47,7 @@ def parse_fname(fname):
 fnames = sorted(
     glob.glob(os.path.join(input_dir, "*", "*", f"*_{target_year}_*.0.1x0.1.nc"))
 )
-available_data = pd.DataFrame([parse_fname(fname) for fname in fnames])
+available_data = pd.DataFrame([_parse_fname(fname) for fname in fnames])
 len(available_data)
 
 
@@ -61,7 +56,7 @@ len(available_data)
 grid = AustraliaGrid()
 
 
-def extract_aus_subset(data):
+def _extract_aus_subset(data):
     ds_trimmed = (
         xr.load_dataset(data["filename"])
         .sel(lat=grid.lats, lon=grid.lons)
@@ -75,7 +70,7 @@ os.makedirs(output_dir, exist_ok=True)
 
 for variable, variable_data in available_data.groupby("gas"):
     ds = xr.concat(
-        [extract_aus_subset(row) for _, row in variable_data.iterrows()],
+        [_extract_aus_subset(row) for _, row in variable_data.iterrows()],
         dim="sector",
     )
 

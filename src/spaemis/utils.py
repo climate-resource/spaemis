@@ -3,7 +3,6 @@ General utility functions
 """
 import os
 from contextlib import contextmanager
-from typing import Union
 
 import geopandas
 import numpy as np
@@ -61,7 +60,8 @@ def area_grid(lat, lon):  # pragma: no cover
 def earth_radius(lat: np.ndarray) -> np.ndarray:  # pragma: no cover
     """
     Calculate radius of Earth assuming oblate spheroid
-    defined by WGS84
+
+    Defined by WGS84
 
     Parameters
     ----------
@@ -93,8 +93,8 @@ def earth_radius(lat: np.ndarray) -> np.ndarray:  # pragma: no cover
 
 
 def clip_region(
-    da: Union[xr.DataArray, xr.Dataset], boundary: geopandas.GeoDataFrame
-) -> Union[xr.DataArray, xr.Dataset]:
+    da: xr.DataArray | xr.Dataset, boundary: geopandas.GeoDataFrame
+) -> xr.DataArray | xr.Dataset:
     """
     Clip a region out of a larger DS
 
@@ -178,7 +178,6 @@ def chdir(current_directory: str) -> None:
 def load_australia_boundary() -> geopandas.GeoDataFrame:
     """
     Load Australia boundary shapefile
-
 
     Returns
     -------

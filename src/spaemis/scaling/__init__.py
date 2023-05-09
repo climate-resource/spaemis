@@ -8,7 +8,6 @@ to some future time-base.
 A number of different scalers exist with the most simple of all being a :class:`ConstantScaler`.
 This constant scaler is will apply some static scale factor to the underlying data.
 """
-from typing import Type
 
 from spaemis.config import ScalerMethod
 
@@ -30,7 +29,7 @@ _scalers = {
 }
 
 
-def get_scaler(name: str) -> Type[BaseScaler]:
+def get_scaler(name: str) -> type[BaseScaler]:
     """
     Get a scaler by name
 

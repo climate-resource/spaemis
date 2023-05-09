@@ -25,7 +25,6 @@ def run_point_source_command(filename, variable, sector, quantity, unit):
     The output from this command can be written to file and included using the
     ``point_sources.source_files`` configuration attribute.
     """
-
     point_sources = pd.read_csv(filename)
     if point_sources.columns.isin(["lat", "lon"]).all():
         raise click.ClickException("Input file did not contain lat/lon coordinates")

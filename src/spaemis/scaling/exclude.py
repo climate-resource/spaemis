@@ -1,3 +1,7 @@
+"""
+Exclude scaler
+"""
+
 import numpy as np
 import xarray as xr
 from attrs import define
@@ -18,6 +22,20 @@ class ExcludedScaler(BaseScaler):
     def __call__(
         self, *, data: xr.DataArray, target_year: int, **kwargs
     ) -> xr.DataArray:
+        """
+        Run a scaler
+
+        Parameters
+        ----------
+        data
+            Data to scale
+        target_year
+            Year to scale to
+
+        Returns
+        -------
+            Scaled data
+        """
         scaled = data.copy()
 
         scaled[:, :] = np.nan
@@ -26,4 +44,16 @@ class ExcludedScaler(BaseScaler):
 
     @classmethod
     def create_from_config(cls, method: ExcludeScaleMethod) -> "ExcludedScaler":
+        """
+        Create a new scaler from configuration
+
+        Parameters
+        ----------
+        method
+            Configuration to create the scaler
+
+        Returns
+        -------
+            New scaler instance configured according to the configuration
+        """
         return ExcludedScaler()

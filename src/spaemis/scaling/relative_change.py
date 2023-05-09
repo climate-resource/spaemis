@@ -1,3 +1,7 @@
+"""
+Scale using the relative change seen in input4MIPs
+"""
+
 import logging
 
 import xarray as xr
@@ -33,6 +37,22 @@ class RelativeChangeScaler(BaseScaler):
         target_year: int,
         **kwargs,
     ) -> xr.DataArray:
+        """
+        Run a scaler
+
+        Parameters
+        ----------
+        data
+            Data to scale
+        inventory
+            Emissions inventory
+        target_year
+            Year to scale to
+
+        Returns
+        -------
+            Scaled data
+        """
         source = load_source(
             self.source_id,
             self.variable_id,
@@ -75,6 +95,9 @@ class RelativeChangeScaler(BaseScaler):
 
     @classmethod
     def create_from_config(cls, method: RelativeChangeMethod) -> "RelativeChangeScaler":
+        """
+        Create a scaler from configuration
+        """
         if method.sector not in SECTOR_MAP:
             raise ValueError(f"Unknown input4MIPs sector: {method.sector}")
 

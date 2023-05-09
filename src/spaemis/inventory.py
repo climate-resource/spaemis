@@ -5,7 +5,8 @@ import functools
 import glob
 import logging
 import os
-from typing import Any, Callable, Optional, Union
+from collections.abc import Callable
+from typing import Any
 
 import geopandas
 import pandas as pd
@@ -19,8 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 def has_dimensions(
-    dimensions: Union[str, list[str]]
-) -> Callable[[Any, Attribute, Union[xr.Dataset, xr.DataArray]], None]:
+    dimensions: str | list[str],
+) -> Callable[[Any, Attribute, xr.Dataset | xr.DataArray], None]:
     """
     Check if a xarray Dataset or DataArray has the expected dimensions
 
@@ -36,7 +37,7 @@ def has_dimensions(
     """
     dims: list[str] = [dimensions] if isinstance(dimensions, str) else dimensions
 
-    def _check(instance, attribute, value: Union[xr.Dataset, xr.DataArray]) -> None:
+    def _check(instance, attribute, value: xr.Dataset | xr.DataArray) -> None:
         for exp_dim in dims:
             if exp_dim not in value.dims:
                 raise ValueError(f"Missing dimension: {exp_dim}")
@@ -69,6 +70,10 @@ class EmissionsInventory:
 
 
 class Grid:
+    """
+    Configuration for a regular lat/lon mesh
+    """
+
     nx: int
     ny: int
     x0: float
@@ -134,7 +139,7 @@ class VictoriaEPAInventory(EmissionsInventory):
         data_directory: str,
         year: int,
         file_suffix: str = "_tif_to_csv3.csv",
-        grid: Optional[Any] = None,
+        grid: Any | None = None,
     ) -> "VictoriaEPAInventory":
         """
         Load Victorian EPA inventory data
@@ -275,7 +280,7 @@ class TestInventory(EmissionsInventory):
 
 @functools.lru_cache(5)
 def load_inventory(
-    inventory: str, year: Optional[int] = None, data_directory: Optional[str] = None
+    inventory: str, year: int | None = None, data_directory: str | None = None
 ) -> EmissionsInventory:
     """
     Load an emissions inventory
@@ -312,8 +317,8 @@ def load_inventory(
 
     try:
         loader = mapping[(inventory, year)]
-    except KeyError:
-        raise ValueError(f"No inventory matching {inventory}|{year}")
+    except KeyError as exc:
+        raise ValueError(f"No inventory matching {inventory}|{year}") from exc
 
     return loader.load_from_directory(data_directory=data_directory, year=year)
 

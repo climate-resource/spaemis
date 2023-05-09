@@ -1,8 +1,11 @@
+"""
+Searching and loading of a local input4MIPs data archive
+"""
 import logging
 import os
 from functools import lru_cache
 from glob import glob
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import pandas as pd
 import scmdata
@@ -32,7 +35,7 @@ class InputEmissionsDatabase:
     Database of Input4MIPs emissions data
     """
 
-    def __init__(self, paths: Union[str, list[str]] = None):
+    def __init__(self, paths: str | list[str] = None):
         self.available_data = pd.DataFrame(
             columns=["variable_id", "institute_id" "source_id", "filename"]
         )
@@ -45,7 +48,18 @@ class InputEmissionsDatabase:
             for path in paths:
                 self.register_path(path)
 
-    def register_path(self, path: str):
+    def register_path(self, path: str) -> None:
+        """
+        Load data from a given path
+
+        Any data present in the given folder will be added to the set of available
+        files.
+
+        Parameters
+        ----------
+        path
+            Path that contains input4MIPs data
+        """
         extra_options = self._find_options(path)
 
         if not len(extra_options):
@@ -65,9 +79,9 @@ class InputEmissionsDatabase:
     def _find_options(self, root_dir) -> pd.DataFrame:
         files = glob(os.path.join(root_dir, "**", "*.nc"), recursive=True)
 
-        def parse_filename(dataset_fname) -> Optional[dict]:
+        def parse_filename(dataset_fname) -> dict | None:
             toks = os.path.basename(dataset_fname).split("_")
-            if len(toks) != 7:
+            if len(toks) != 7:  # noqa
                 return None
 
             return {
@@ -82,7 +96,20 @@ class InputEmissionsDatabase:
         return pd.DataFrame(filter(lambda item: item is not None, file_info))
 
     @lru_cache(maxsize=15)
-    def load(self, variable_id, source_id) -> Optional[xr.Dataset]:
+    def load(self, variable_id: str, source_id: str) -> xr.Dataset | None:
+        """
+        Load the input4MIPs data according to the variable and source name
+
+        Parameters
+        ----------
+        variable_id
+            Variable identifier
+        source_id
+            Source identifier
+        Returns
+        -------
+            All of the available data for the given variable and source identifiers
+        """
         subset = self.available_data
 
         if not len(self.available_data):
@@ -106,7 +133,7 @@ class InputEmissionsDatabase:
         return xr.concat(data, dim="time").sortby("time")
 
 
-def initialize_database(options: Optional[list[str]] = None) -> InputEmissionsDatabase:
+def initialize_database(options: list[str] | None = None) -> InputEmissionsDatabase:
     """
     Initialise the global database of input emissions
 
@@ -128,15 +155,35 @@ def initialize_database(options: Optional[list[str]] = None) -> InputEmissionsDa
     return InputEmissionsDatabase(options)
 
 
-def _apply_filters(ts: scmdata.ScmRun, filters: List[Dict[str, Any]]) -> scmdata.ScmRun:
+def _apply_filters(ts: scmdata.ScmRun, filters: list[dict[str, Any]]) -> scmdata.ScmRun:
     for filters in filters:
         ts = ts.filter(**filters)
     return ts
 
 
 def load_timeseries(
-    options: List[InputTimeseries], root_dir: Optional[str] = None
-) -> Dict[str, scmdata.ScmRun]:
+    options: list[InputTimeseries], root_dir: str | None = None
+) -> dict[str, scmdata.ScmRun]:
+    """
+    Load a set of input timeseries from disk
+
+    Optionally, some additional filtering can be performed on these input timeseries
+
+    Parameters
+    ----------
+    options
+        List of timeseries to load
+    root_dir
+        Root directory used for relative timeseries file paths
+
+        Defaults to the current directory if no path is provided
+
+    Returns
+    -------
+        Collection of loaded data
+
+        The keys are determined from the name of each ``InputTimeseries``
+    """
     data = {}
     for ts_config in options:
         if ts_config.name in data:

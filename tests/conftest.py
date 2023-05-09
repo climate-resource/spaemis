@@ -1,5 +1,4 @@
 import os
-from typing import Dict
 
 import pytest
 import scmdata
@@ -43,7 +42,7 @@ def setup_database():
 
 
 @pytest.fixture()
-def loaded_timeseries() -> Dict[str, scmdata.ScmRun]:
+def loaded_timeseries() -> dict[str, scmdata.ScmRun]:
     return {
         "emissions": scmdata.ScmRun(
             os.path.join(TEST_DATA_DIR, "config", "emissions_country.csv")

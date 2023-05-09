@@ -3,7 +3,6 @@ Unit Registry
 
 Adds H2 related units if they haven't been previously registered
 """
-from typing import Union
 
 import pint
 from openscm_units import unit_registry
@@ -17,8 +16,8 @@ unit_registry.define("cell = [cell]")
 
 
 def convert_to_target_unit(
-    initial_unit: Union[str, pint.Unit, pint.Quantity],
-    target_unit: Union[str, pint.Unit],
+    initial_unit: str | pint.Unit | pint.Quantity,
+    target_unit: str | pint.Unit,
 ) -> pint.Quantity:
     """
     Calculate the scale factor required to convert between units

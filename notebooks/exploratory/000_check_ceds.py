@@ -1,16 +1,11 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: -pycharm
 #     text_representation:
 #       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
 #       jupytext_version: 1.14.5
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
 # ---
 
 # %%
@@ -55,7 +50,7 @@ flattened_data = vic_inventory.data.sum() / 1e6
 
 # %%
 compare_data = [
-    ["CO", "inventory", float(flattened_data["CO"].values.squeeze())],
+    ["CO", "inventory", float(flattened_data["CO"].to_numpy().squeeze())],
     ["NOx", "inventory", float(flattened_data["NOx"].values.squeeze())],
     ["SO2", "inventory", float(flattened_data["SO2"].values.squeeze())],
     ["PM10", "inventory", float(flattened_data["PM10"].values.squeeze())],
@@ -65,7 +60,7 @@ compare_data
 
 
 # %%
-def process_edgar(variable, year):
+def _process_edgar(variable, year):
     nox_fname = os.path.join(
         RAW_DATA_DIR,
         "EDGARv6.1",
@@ -88,7 +83,7 @@ def process_edgar(variable, year):
 # %%
 for v in ["NOx", "SO2", "CO", "PM10", "NMVOC"]:
     plt.figure()
-    compare_data.append([v, "EDGAR", float(process_edgar(v, 2016).values.squeeze())])
+    compare_data.append([v, "EDGAR", float(_process_edgar(v, 2016).values.squeeze())])
 
 
 # %% [markdown]
@@ -97,7 +92,7 @@ for v in ["NOx", "SO2", "CO", "PM10", "NMVOC"]:
 # %%
 
 
-def process_ceds(variable):
+def _process_ceds(variable):
     ds = database.load(variable + "-em-anthro", "IAMC-IMAGE-ssp126-1-1")
 
     ceds_nox = (
@@ -120,7 +115,7 @@ def process_ceds(variable):
 
 for v in ["NOx", "SO2", "CO", "VOC"]:
     plt.figure()
-    compare_data.append([v, "CEDS", float(process_ceds(v).values.squeeze())])
+    compare_data.append([v, "CEDS", float(_process_ceds(v).values.squeeze())])
 
 
 # %%

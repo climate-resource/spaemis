@@ -1,16 +1,11 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: -pycharm
 #     text_representation:
 #       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
 #       jupytext_version: 1.14.5
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
 # ---
 
 # %% [markdown]
@@ -92,6 +87,7 @@ plt.savefig(os.path.join(out_dir, "country_growth_rate.png"))
 
 # %%
 def calc_growth_rate(variable, scenario, ds) -> scmdata.ScmRun:
+    """Calculate growth rates for a given location"""
     point = (-37, 145)
     source = (
         ds.sel(lat=point[0], lon=point[1], method="nearest")[variable.replace("-", "_")]
@@ -241,6 +237,9 @@ vic_inv = load_inventory("victoria", 2016)
 
 # %%
 def from_cell_totals(da):
+    """
+    Convert a dataset from cell totals into kg/m2/s
+    """
     areas = area_grid(da.lat, da.lon)
 
     return da / areas / (365 * 24 * 60 * 60)
@@ -298,6 +297,9 @@ aus_inv.data = aus_inv.data.rename({"NMVOC": "VOC"})
 
 # %%
 def aggregate_inventory(inventory, sectors):
+    """
+    Aggregate a set of sectors for the given inventory
+    """
     coords = (
         xr.IndexVariable(data=list(sectors.keys()), dims="sector"),
         inventory.data.lat,
@@ -349,6 +351,7 @@ for variable in vic_data.data_vars:
 
 # %%
 def load_result(scenario: str, grid: str) -> xr.Dataset:
+    """Load results from a run"""
     fname = os.path.join(
         RUNS_DIR,
         f"{scenario}_{grid}",
@@ -521,7 +524,7 @@ aus_results["NOx"].sel(scenario="ssp245", sector="IND", year=2020).plot(
 
 
 # %%
-def extract_point(results, point, location, threshold=0.2):
+def _extract_point(results, point, location, threshold=0.2):
     df = (
         results.sel(lat=slice(point[0] - threshold, point[0] + threshold))
         .sel(lon=slice(point[1] - threshold, point[1] + threshold))
@@ -539,14 +542,14 @@ def extract_point(results, point, location, threshold=0.2):
     return scmdata.ScmRun(df)
 
 
-melbourne_vic = extract_point(vic_results, melbourne, "Melbourne")
+melbourne_vic = _extract_point(vic_results, melbourne, "Melbourne")
 melbourne_vic["grid"] = "victoria"
-melbourne_aus = extract_point(aus_results, melbourne, "Melbourne")
+melbourne_aus = _extract_point(aus_results, melbourne, "Melbourne")
 melbourne_aus["grid"] = "australia"
 
-latrobe_vic = extract_point(vic_results, la_trobe, "La Trobe")
+latrobe_vic = _extract_point(vic_results, la_trobe, "La Trobe")
 latrobe_vic["grid"] = "victoria"
-latrobe_aus = extract_point(aus_results, la_trobe, "La Trobe")
+latrobe_aus = _extract_point(aus_results, la_trobe, "La Trobe")
 latrobe_aus["grid"] = "australia"
 
 point_timeseries = scmdata.run_append(
@@ -560,6 +563,7 @@ point_timeseries.meta[["grid", "scenario"]].drop_duplicates()
 
 # %%
 def get_largest(run, n):
+    """Get the largest n sectors"""
     values = run.timeseries().squeeze().sort_values()[-n:]
 
     return values.index.get_level_values("sector").to_list()
@@ -637,7 +641,7 @@ for by_variable in point_timeseries_ceds.groupby("variable"):
     fig, axs = plt.subplots(len(SECTOR_MAP) + 1, 2, figsize=(12, 24), sharex=True)
     fig.suptitle(by_variable.get_unique_meta("variable", True))
 
-    for i, sector in enumerate(["Total"] + SECTOR_MAP):
+    for i, sector in enumerate(["Total", *SECTOR_MAP]):
         by_sector = by_variable.filter(sector=sector, log_if_empty=False)
         if not len(by_sector):
             continue
@@ -674,7 +678,7 @@ for i, variable in enumerate(variables):
     axs[i, 1].set_title(variable + " - VIC")
 fig.tight_layout()
 os.makedirs(os.path.join(out_dir, "points_by_species"), exist_ok=True)
-plt.savefig(os.path.join(out_dir, "points_by_species", f"points_by_species.png"))
+plt.savefig(os.path.join(out_dir, "points_by_species", "points_by_species.png"))
 
 # %%
 
@@ -753,6 +757,7 @@ vic_results["NOx"].sel(scenario="ssp245", year=2060, sector="motor_vehicles").pl
     cmap=cmap_2,
     cbar_kwargs={"label": "NOx Anthropogenic Emissions\n[kg m-2 s-1]"},
 )
+
 
 axs[0, 0].set_title("a)", loc="left")
 axs[0, 0].set_title("")
@@ -848,7 +853,6 @@ fig = plt.figure(layout="constrained", figsize=(20, 8))
 subfigs = fig.subfigures(1, 4, wspace=0.07, width_ratios=[0.8, 1.5, 1.0, 0.05])
 
 
-# axs = subfigs[0].subplots(1, 2)
 ax = subfigs[0].subplots(1, 1)
 total_emms.line_plot(ax=ax, hue="region", time_axis="year")
 ax.set_title("Bulk emissions")
@@ -941,7 +945,6 @@ point_locations = pd.read_csv(
         RAW_DATA_DIR, "configuration", "point_sources", "hysupply_locations.csv"
     )
 )
-# point_locations = point_locations[point_locations.state == "VIC"]
 point_locations
 
 # %%
@@ -991,12 +994,10 @@ fig = plt.figure(layout="constrained", figsize=(20, 8))
 subfigs = fig.subfigures(1, 3, wspace=0.07, width_ratios=[1, 2, 0.05])
 
 
-# axs = subfigs[0].subplots(1, 2)
 axs = subfigs[0].subplots(2, 1, height_ratios=(1, 1.2))
 
 ax = axs[0]
 total_emms.line_plot(ax=ax, hue="region", time_axis="year")
-# ax.set_title("Bulk emissions")
 ax.set_title("a)", loc="left")
 ax.set_ylabel("H2 Anthropogenic Emissions \n[kt H2 / yr]")
 ax.set_xlabel("Year")
@@ -1005,7 +1006,6 @@ ax.set_xticks([2020, 2040, 2060, 2080, 2100])
 ax = axs[1]
 vic_inv.border_mask.plot(edgecolor="#a5a5a5", facecolor="white", ax=ax)
 points.plot.scatter(x="lon", y="lat", ax=ax, c="tab:red")
-# ax.set_title("Proxy")
 ax.set_title("b)", loc="left")
 ax.set_xlabel("longitude [degrees_east]")
 ax.set_ylabel("latitude [degrees_north]")
@@ -1044,12 +1044,13 @@ axs[1, 1].set_title("c4)", loc="left")
 axs[1, 1].get_yaxis().set_ticklabels([])
 axs[1, 1].get_xaxis().set_ticks([142, 144, 146, 148])
 
-# subfigs[2].subplots_adjust(bottom=0.08, left=0.08)
 subfigs[1].text(0.5, -0.03, "longitude [degrees_north]", ha="center")
 subfigs[1].text(-0.01, 0.5, "latitude [degrees_east]", va="center", rotation="vertical")
 
 
 cbar_ax = subfigs[2].add_axes([0.2, 0.1, 1, 0.8])
 fig.colorbar(im, cax=cbar_ax, label="Emissions of H2 [kg m-2 s-1]")
+
+# %%
 
 # %%

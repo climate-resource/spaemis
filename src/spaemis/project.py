@@ -1,7 +1,9 @@
+"""
+Project a set of emissions into the future according to a set of scaling methods
+"""
 import itertools
 import logging
 from itertools import product
-from typing import Dict, Tuple
 
 import numpy as np
 import scmdata
@@ -18,7 +20,7 @@ def scale_inventory(
     cfg: VariableScalerConfig,
     inventory: EmissionsInventory,
     target_year: int,
-    timeseries: Dict[str, scmdata.ScmRun],
+    timeseries: dict[str, scmdata.ScmRun],
 ) -> xr.Dataset:
     """
     Scale a given variable/sector
@@ -113,7 +115,7 @@ def _process_slice(output_ds, inventory, timeseries, variable_config, year):
 def calculate_projections(
     config: DownscalingScenarioConfig,
     inventory: EmissionsInventory,
-    timeseries: Dict[str, scmdata.ScmRun],
+    timeseries: dict[str, scmdata.ScmRun],
 ) -> xr.Dataset:
     """
     Calculate a projected set of emissions according to some configuration
@@ -132,7 +134,7 @@ def calculate_projections(
         The dimensionality of the output variables is (sector, year, lat, lon)
     """
     scalers = config.scalers
-    scaling_configs: Dict[Tuple[str, str], VariableScalerConfig] = {
+    scaling_configs: dict[tuple[str, str], VariableScalerConfig] = {
         (cfg.variable, cfg.sector): cfg for cfg in scalers.scalers
     }
 

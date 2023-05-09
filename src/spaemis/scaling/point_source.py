@@ -6,7 +6,7 @@ Split a timeseries of emissions across a number of points
 """
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -20,13 +20,17 @@ from spaemis.inventory import EmissionsInventory
 from spaemis.utils import clip_region
 
 from .base import BaseScaler
-from .timeseries import apply_amount, get_timeseries
+from .timeseries import apply_amount, get_timeseries_point
 
 logger = logging.getLogger(__name__)
 
 
 @define
 class Point:
+    """
+    Single spatial point
+    """
+
     lat: float
     lon: float
 
@@ -37,9 +41,9 @@ class PointSourceScaler(BaseScaler):
     Split emissions across some point sources
     """
 
-    point_sources: List[Point]
+    point_sources: list[Point]
     source_timeseries: str
-    source_filters: List[Dict[str, Any]]
+    source_filters: list[dict[str, Any]]
 
     def __call__(
         self,
@@ -47,7 +51,7 @@ class PointSourceScaler(BaseScaler):
         data: xr.DataArray,
         inventory: EmissionsInventory,
         target_year: int,
-        timeseries: Dict[str, scmdata.ScmRun],
+        timeseries: dict[str, scmdata.ScmRun],
         **kwargs,
     ) -> xr.DataArray:
         """
@@ -66,7 +70,7 @@ class PointSourceScaler(BaseScaler):
         -------
         Scaled data
         """
-        ts = get_timeseries(
+        ts = get_timeseries_point(
             timeseries,
             self.source_timeseries,
             self.source_filters,
@@ -108,6 +112,9 @@ class PointSourceScaler(BaseScaler):
 
     @classmethod
     def create_from_config(cls, method: PointSourceMethod) -> "PointSourceScaler":
+        """
+        Create a scaler from configuration
+        """
         point_info = pd.read_csv(
             os.path.join(RAW_DATA_DIR, "configuration", method.point_sources)
         )

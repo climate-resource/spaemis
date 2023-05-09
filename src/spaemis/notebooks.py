@@ -1,6 +1,11 @@
+"""
+Run notebooks in an isolated fashion
+"""
+
 import logging
 import os.path
-from typing import Any, Dict, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 import jupytext
 import papermill as pm
@@ -15,7 +20,7 @@ logger = logging.getLogger(__name__)
 def run_notebooks(
     notebooks: Iterable[str],
     output_dir,
-    parameters: Dict[str, Any],
+    parameters: dict[str, Any],
     notebook_dir=os.path.join(ROOT_DIR, "notebooks"),
 ) -> None:
     """
@@ -67,6 +72,10 @@ def run_notebooks(
 
 
 class NotebookException(Exception):
+    """
+    An exception occurred when running a notebook
+    """
+
     def __init__(self, exc, filename):
         self.exc = exc
         self.filename = filename
@@ -77,6 +86,12 @@ class NotebookException(Exception):
 
 
 class NotebookRunner:
+    """
+    Manage the running of a set of notebooks
+
+    This creates the require directories and passing configuration ot the notebook
+    """
+
     def __init__(self, config_path: str, output_path: str) -> None:
         logger.info(f"Starting spaemis {__version__}")
 
@@ -87,7 +102,20 @@ class NotebookRunner:
         if not output_path:
             raise ValueError("No value for output_dir specified")
 
-    def create_output_directory(self):
+    def create_output_directory(self) -> None:
+        """
+        Create output directories for the current run
+
+        This creates the following directories under the targeted output directory:
+
+        * inputs
+        * notebooks
+        * outputs
+        * plots
+
+        Additionally, the configuration for the current run is written to ``inputs``
+        directory.
+        """
         if os.path.exists(self.output_path):
             raise ValueError(
                 f"Output directory {self.output_path} already exists. "
@@ -110,7 +138,10 @@ class NotebookRunner:
         # Update the config path to use the new one
         self.config_path = updated_config_fname
 
-    def run(self, notebooks):
+    def run(self, notebooks: Iterable[str]) -> None:
+        """
+        Run a set of notebooks
+        """
         # Run the various notebooks
         run_notebooks(
             notebooks,

@@ -23,7 +23,7 @@ from spaemis.scaling import (
     get_scaler,
     get_scaler_by_config,
 )
-from spaemis.scaling.timeseries import get_timeseries
+from spaemis.scaling.timeseries import get_timeseries_point
 from spaemis.unit_registry import unit_registry as ur
 
 
@@ -193,7 +193,7 @@ class TestTimeseriesScaler:
 
     def test_run_failed_too_many(self, loaded_timeseries):
         with pytest.raises(ValueError, match="More than one match was found for"):
-            get_timeseries(
+            get_timeseries_point(
                 loaded_timeseries,
                 "emissions",
                 [{"variable": "Emissions|H2|*"}],
@@ -210,7 +210,7 @@ class TestTimeseriesScaler:
                 f"No data matching {filters} was found in emissions input data"
             ),
         ):
-            get_timeseries(
+            get_timeseries_point(
                 loaded_timeseries,
                 "emissions",
                 filters,
@@ -222,7 +222,7 @@ class TestTimeseriesScaler:
             ValueError,
             match="Source dataset is not loaded: other",
         ):
-            get_timeseries(
+            get_timeseries_point(
                 loaded_timeseries,
                 "other",
                 [],
@@ -236,7 +236,7 @@ class TestTimeseriesScaler:
             loaded_timeseries["emissions"] = loaded_timeseries["emissions"].filter(
                 year=range(2030, 2100)
             )
-            get_timeseries(
+            get_timeseries_point(
                 loaded_timeseries,
                 "emissions",
                 [

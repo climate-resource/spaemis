@@ -24,6 +24,34 @@ logger = logging.getLogger(__name__)
 
 
 def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.DataArray:
+    """
+    Retrieve a proxy given a name
+
+    The prefix of the proxy species the type of proxy used. The options for proxies
+    are:
+
+    * population - Spatial population from SEDACS
+    * residential_density - Map of residential density over Australia
+    * inventory|X - Data for a sector X from the current inventory. The NOx variable is used
+    * australian_inventory|X - Data for a sector X from the Australian inventory. The NOx
+        variable is used
+
+    Parameters
+    ----------
+    proxy_name
+        Name of proxy
+
+        Can include a "|" to denote hierarchy
+    inventory
+        An emission inventory in the case the "inventory" proxy is used
+    kwargs
+
+    Returns
+    -------
+        Selected proxy field with dimensions lat and lon
+
+        The latitude/longitude grid of the proxy may differ depending on the choice
+    """
     root_dir = os.path.join(PROCESSED_DATA_DIR, "proxies")
 
     proxy_toks = proxy_name.split("|")
@@ -88,7 +116,7 @@ class ProxyScaler(BaseScaler):
 
         Returns
         -------
-
+            Scaled data
         """
         source = load_source(
             self.source_id,
@@ -134,6 +162,9 @@ class ProxyScaler(BaseScaler):
 
     @classmethod
     def create_from_config(cls, method: ProxyMethod) -> "ProxyScaler":
+        """
+        Create a scaler from configuration
+        """
         if method.sector not in SECTOR_MAP:
             raise ValueError(f"Unknown input4MIPs sector: {method.sector}")
 

@@ -1,30 +1,23 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: -pycharm
 #     text_representation:
 #       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
 #       jupytext_version: 1.14.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
 # ---
 
 # %% [markdown]
 # # Proxies
 #
-# For some species (e.g. H2) we use proxies to supply the spatial pattern of emissions. The quantity comes from other studies such as `h2-adjust`.
+# For some species (e.g. H2) we use proxies to supply the spatial pattern of emissions.
+# The quantity comes from other studies such as `h2-adjust`.
 
 # %%
-import os
 
 import geopandas
 import matplotlib.pyplot as plt
-import pooch
-import xarray as xr
 
 from spaemis.inventory import load_inventory
 from spaemis.scaling.proxy import get_proxy
