@@ -2,7 +2,6 @@
 Constants
 """
 import os
-import typing
 
 OUTPUT_VERSION = "v20230421_1"
 
@@ -20,13 +19,9 @@ RUNS_DIR = os.path.join(DATA_DIR, "runs", OUTPUT_VERSION)
 
 # Define the root variables that we support in this tool
 # Any variables should be renamed to these names
-EmissionVariable = typing.Literal[
-    "Emissions|CO2",
-    "Emissions|VOC",
-    "Emissions|NOx",
-    "Emissions|Sulfur",
-    "Emissions|PM10",
-]
-COVERED_VARIABLES: tuple[EmissionVariable, ...] = typing.get_args(
-    EmissionVariable
-)
+
+#     "Emissions|CO2",
+#     "Emissions|VOC",
+#     "Emissions|NOx",
+#     "Emissions|Sulfur",
+#     "Emissions|PM10",

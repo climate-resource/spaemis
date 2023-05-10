@@ -3,6 +3,7 @@ Project a set of emissions into the future according to a set of scaling methods
 """
 import itertools
 import logging
+from collections.abc import Iterable
 from itertools import product
 
 import numpy as np
@@ -63,7 +64,11 @@ def scale_inventory(
     return scaled_field.expand_dims(["sector", "year"]).to_dataset(name=cfg.variable)
 
 
-def _create_output_data(options, config, template: xr.Dataset):
+def _create_output_data(
+    options: Iterable[tuple[str, str]],
+    config: DownscalingScenarioConfig,
+    template: xr.Dataset,
+) -> xr.Dataset:
     unique_variables = sorted(set([variable for variable, _ in options]))
     unique_sectors = sorted(set([sector for _, sector in options]))
     unique_years = sorted(config.timeslices)
@@ -86,7 +91,13 @@ def _create_output_data(options, config, template: xr.Dataset):
     )
 
 
-def _process_slice(output_ds, inventory, timeseries, variable_config, year):
+def _process_slice(
+    output_ds: xr.Dataset,
+    inventory: EmissionsInventory,
+    timeseries: scmdata.ScmRun,
+    variable_config: VariableScalerConfig,
+    year: int,
+) -> None:
     logger.info(
         "Processing variable=%s sector=%s year=%i",
         variable_config.variable,

@@ -4,9 +4,10 @@ Configuration
 The configuration is stored as YAML files and can be loaded and validated using
 :func:`load_config`.
 """
+
 import os.path
 from os import PathLike
-from typing import Any, ClassVar, Literal, Union, get_args
+from typing import Any, ClassVar, Literal, TypeVar, Union, get_args
 
 import pandas as pd
 from attrs import define, field
@@ -126,16 +127,19 @@ ScalerMethod = Union[  # noqa: UP007
 
 
 def _unstructure_scaler(value: ScalerMethod) -> dict[str, Any]:
-    res = converter.unstructure(value)
+    res: dict[str, Any] = converter.unstructure(value)
     res["name"] = value.name
     return res
 
 
-def _discriminate_scaler(value: Any, _klass: type) -> ScalerMethod:
+T = TypeVar("T", bound=ScalerMethod)
+
+
+def _discriminate_scaler(value: Any, _klass: type[T]) -> T:
     name = value.pop("name")
     for Klass in get_args(_klass):
         if Klass.name == name:
-            return converter.structure(value, Klass)
+            return converter.structure(value, Klass)  # type: ignore
     raise ValueError(f"Could not determine scaler for {name}")
 
 
@@ -167,30 +171,31 @@ class VariableScalerConfig:
     allow_missing: bool = False
 
 
-def _convert_filename_to_scalers(value: dict | str) -> list[VariableScalerConfig]:
-    if isinstance(value, str):
-        if value.endswith(".csv"):
-            # load_config updates the current working directory to match the
-            # directory of a loaded config files otherwise a absolute filename is required
-            data = pd.read_csv(value).to_dict(orient="records")
+def _convert_filename_to_scalers(
+    value: str,
+) -> list[VariableScalerConfig]:
+    if value.endswith(".csv"):
+        # load_config updates the current working directory to match the
+        # directory of a loaded config files otherwise an absolute filename is required
+        data: list[dict[str, Any]] = pd.read_csv(value).to_dict(orient="records")  # type: ignore
 
-            def extract_scaler_info(data_item):
-                sector_info = {}
-                for key, value in data_item.copy().items():
-                    if key.startswith("scaler_"):
-                        sector_info[key[7:]] = value
-                        data_item.pop(key)
-                return {**data_item, "method": sector_info}
+        def extract_scaler_info(data_item: dict[str, Any]) -> dict[str, Any]:
+            sector_info = {}
+            for key, value in data_item.copy().items():
+                if key.startswith("scaler_"):
+                    sector_info[key[7:]] = value
+                    data_item.pop(key)
+            return {**data_item, "method": sector_info}
 
-            value = [extract_scaler_info(item) for item in data]
-            value = converter.structure(value, list[VariableScalerConfig])
-        elif value.endswith(".yaml") or value.endswith(".yml"):
-            with open(value) as fh:
-                value = converter.loads(fh.read(), list[VariableScalerConfig])
-        else:
-            raise ValueError(f"Cannot load scalers from {value}")
-
-    return value
+        extracted = converter.structure(
+            [extract_scaler_info(item) for item in data], list[VariableScalerConfig]
+        )
+    elif value.endswith(".yaml") or value.endswith(".yml"):
+        with open(value) as fh:
+            extracted = converter.loads(fh.read(), list[VariableScalerConfig])
+    else:
+        raise ValueError(f"Cannot load scalers from {value}")
+    return extracted
 
 
 @define
@@ -228,8 +233,8 @@ class PointSourceDefinition:
     sources: list[PointSource] = field(factory=list)
     source_files: list[str] | None = None
 
-    def __attrs_post_init__(self):
-        def read_point_source(fname) -> list[PointSource]:
+    def __attrs_post_init__(self) -> None:
+        def read_point_source(fname: str) -> list[PointSource]:
             with open(fname) as handle:
                 return converter.loads(handle.read(), list[PointSource])
 
@@ -253,7 +258,7 @@ class ScalerDefinition:
     scalers: list[VariableScalerConfig] = field(factory=list)
     source_files: list[str] | None = None
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         if self.source_files:
             for fname in self.source_files:
                 self.scalers.extend(_convert_filename_to_scalers(fname))
@@ -308,7 +313,7 @@ def load_config(config_file: str) -> DownscalingScenarioConfig:
 
 
 def get_path(
-    output_dir: str | PathLike[str], rel_path: str | PathLike[str] = None
+    output_dir: str | PathLike[str], rel_path: str | PathLike[str] | None = None
 ) -> str:
     """
     Get a path from the directory

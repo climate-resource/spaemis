@@ -3,11 +3,12 @@ Scale using the relative change seen in input4MIPs
 """
 
 import logging
+from typing import Any
 
 import xarray as xr
 from attrs import define
 
-from spaemis.config import RelativeChangeMethod
+from spaemis.config import RelativeChangeMethod, ScalerMethod
 from spaemis.input_data import SECTOR_MAP
 from spaemis.inventory import EmissionsInventory
 from spaemis.utils import covers
@@ -35,7 +36,7 @@ class RelativeChangeScaler(BaseScaler):
         data: xr.DataArray,
         inventory: EmissionsInventory,
         target_year: int,
-        **kwargs,
+        **kwargs: Any,
     ) -> xr.DataArray:
         """
         Run a scaler
@@ -59,7 +60,7 @@ class RelativeChangeScaler(BaseScaler):
             self.sector,
             inventory,
         )
-        if tuple(sorted(source.dims)) != ("lat", "lon", "year"):
+        if tuple(sorted(source.dims)) != ("lat", "lon", "year"):  # type: ignore
             raise AssertionError(
                 f"Excepted only lat, lon and year dims. Got: {source.dims}"
             )
@@ -94,10 +95,13 @@ class RelativeChangeScaler(BaseScaler):
         return scaled
 
     @classmethod
-    def create_from_config(cls, method: RelativeChangeMethod) -> "RelativeChangeScaler":
+    def create_from_config(cls, method: ScalerMethod) -> "RelativeChangeScaler":
         """
         Create a scaler from configuration
         """
+        if not isinstance(method, RelativeChangeMethod):
+            raise TypeError("Incompatible configuration")
+
         if method.sector not in SECTOR_MAP:
             raise ValueError(f"Unknown input4MIPs sector: {method.sector}")
 

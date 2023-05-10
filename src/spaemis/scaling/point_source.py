@@ -14,7 +14,7 @@ import scmdata
 import xarray as xr
 from attrs import define
 
-from spaemis.config import PointSourceMethod
+from spaemis.config import PointSourceMethod, ScalerMethod
 from spaemis.constants import RAW_DATA_DIR
 from spaemis.inventory import EmissionsInventory
 from spaemis.utils import clip_region
@@ -52,7 +52,7 @@ class PointSourceScaler(BaseScaler):
         inventory: EmissionsInventory,
         target_year: int,
         timeseries: dict[str, scmdata.ScmRun],
-        **kwargs,
+        **kwargs: Any,
     ) -> xr.DataArray:
         """
         Apply scaling
@@ -111,10 +111,13 @@ class PointSourceScaler(BaseScaler):
         return apply_amount(amount, unit, scaled)
 
     @classmethod
-    def create_from_config(cls, method: PointSourceMethod) -> "PointSourceScaler":
+    def create_from_config(cls, method: ScalerMethod) -> "PointSourceScaler":
         """
         Create a scaler from configuration
         """
+        if not isinstance(method, PointSourceMethod):
+            raise TypeError("Incompatible configuration")
+
         point_info = pd.read_csv(
             os.path.join(RAW_DATA_DIR, "configuration", method.point_sources)
         )

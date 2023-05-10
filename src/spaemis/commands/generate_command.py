@@ -3,6 +3,7 @@ generate CLI command
 """
 import io
 import logging
+from typing import Any
 
 import click
 import pandas as pd
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
     type=click.File(),
     required=True,
 )
-def run_generate_command(scaler, scaler_source, mappings):
+def run_generate_command(scaler: str, scaler_source: str, mappings: Any) -> None:
     """
     Generate a scenario configuration file from a set of defaults
 
@@ -49,9 +50,9 @@ def run_generate_command(scaler, scaler_source, mappings):
 
     if not scaler_information:
         raise click.ClickException("No scaler information generated")
-    scaler_information = pd.DataFrame(scaler_information)
+    scaler_df = pd.DataFrame(scaler_information)
 
     buff = io.StringIO()
-    scaler_information.to_csv(buff, index=False)
+    scaler_df.to_csv(buff, index=False)
 
     click.echo(buff.getvalue())

@@ -33,7 +33,7 @@ def config(config_file) -> DownscalingScenarioConfig:
 def inventory() -> EmissionsInventory:
     # For testing we use a decimated version of the vic inventory generated using
     # scripts/downsample_inventory.py
-    return TestInventory.load_from_directory()
+    return TestInventory.load_from_directory("", 1)
 
 
 @pytest.fixture(autouse=True, scope="session")

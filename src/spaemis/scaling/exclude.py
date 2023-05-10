@@ -2,11 +2,13 @@
 Exclude scaler
 """
 
+from typing import Any
+
 import numpy as np
 import xarray as xr
 from attrs import define
 
-from spaemis.config import ExcludeScaleMethod
+from spaemis.config import ScalerMethod
 
 from .base import BaseScaler
 
@@ -20,7 +22,7 @@ class ExcludedScaler(BaseScaler):
     """
 
     def __call__(
-        self, *, data: xr.DataArray, target_year: int, **kwargs
+        self, *, data: xr.DataArray, target_year: int, **kwargs: Any
     ) -> xr.DataArray:
         """
         Run a scaler
@@ -43,7 +45,7 @@ class ExcludedScaler(BaseScaler):
         return scaled
 
     @classmethod
-    def create_from_config(cls, method: ExcludeScaleMethod) -> "ExcludedScaler":
+    def create_from_config(cls, method: ScalerMethod) -> "ExcludedScaler":
         """
         Create a new scaler from configuration
 

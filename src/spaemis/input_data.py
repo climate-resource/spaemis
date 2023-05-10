@@ -1,10 +1,12 @@
 """
 Searching and loading of a local input4MIPs data archive
 """
+
 import logging
 import os
 from functools import lru_cache
 from glob import glob
+from os import PathLike
 from typing import Any
 
 import pandas as pd
@@ -35,11 +37,11 @@ class InputEmissionsDatabase:
     Database of Input4MIPs emissions data
     """
 
-    def __init__(self, paths: str | list[str] = None):
+    def __init__(self, paths: str | list[str] | None = None):
         self.available_data = pd.DataFrame(
             columns=["variable_id", "institute_id" "source_id", "filename"]
         )
-        self.paths = []
+        self.paths: list[str] = []
 
         if paths:
             if isinstance(paths, str):
@@ -76,10 +78,10 @@ class InputEmissionsDatabase:
             ).sort_values(["variable_id", "institute_id" "source_id"])
             self.paths.append(path)
 
-    def _find_options(self, root_dir) -> pd.DataFrame:
+    def _find_options(self, root_dir: str | PathLike[str]) -> pd.DataFrame:
         files = glob(os.path.join(root_dir, "**", "*.nc"), recursive=True)
 
-        def parse_filename(dataset_fname) -> dict | None:
+        def parse_filename(dataset_fname: str) -> dict[str, str] | None:
             toks = os.path.basename(dataset_fname).split("_")
             if len(toks) != 7:  # noqa
                 return None
@@ -93,10 +95,10 @@ class InputEmissionsDatabase:
 
         file_info = [parse_filename(fname) for fname in files]
 
-        return pd.DataFrame(filter(lambda item: item is not None, file_info))
+        return pd.DataFrame(filter(lambda item: item is not None, file_info))  # type: ignore
 
     @lru_cache(maxsize=15)
-    def load(self, variable_id: str, source_id: str) -> xr.Dataset | None:
+    def load(self, variable_id: str, source_id: str) -> xr.Dataset:
         """
         Load the input4MIPs data according to the variable and source name
 
@@ -147,7 +149,7 @@ def initialize_database(options: list[str] | None = None) -> InputEmissionsDatab
 
     """
     if not options:
-        options_from_env: str = os.environ.get("SPAEMIS_INPUT_PATHS")
+        options_from_env: str = os.environ.get("SPAEMIS_INPUT_PATHS")  # type: ignore
         if options_from_env:
             options = [s.strip() for s in options_from_env.split(",")]
         else:
@@ -156,8 +158,8 @@ def initialize_database(options: list[str] | None = None) -> InputEmissionsDatab
 
 
 def _apply_filters(ts: scmdata.ScmRun, filters: list[dict[str, Any]]) -> scmdata.ScmRun:
-    for filters in filters:
-        ts = ts.filter(**filters)
+    for f in filters:
+        ts = ts.filter(**f)
     return ts
 
 

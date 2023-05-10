@@ -12,7 +12,7 @@ import scmdata
 import xarray as xr
 from attrs import define
 
-from spaemis.config import TimeseriesMethod
+from spaemis.config import ScalerMethod, TimeseriesMethod
 from spaemis.input_data import _apply_filters
 from spaemis.inventory import EmissionsInventory
 from spaemis.unit_registry import convert_to_target_unit, unit_registry
@@ -84,16 +84,16 @@ def get_timeseries_point(
     return ts
 
 
-def _check_unit(unit: str):
-    unit = unit_registry(unit)
+def _check_unit(unit: str) -> None:
+    pint_unit = unit_registry(unit)
 
     msg = "Expected unit of the form [X] * [mass] / [time]"
 
     if (
-        len(unit.dimensionality) != 3  # noqa
-        and unit.dimensionality["[mass]"] != 1
-        and unit.dimensionality["[time]"] != -1
-        and "[length]" not in unit.dimensionality
+        len(pint_unit.dimensionality) != 3  # noqa
+        and pint_unit.dimensionality["[mass]"] != 1
+        and pint_unit.dimensionality["[time]"] != -1
+        and "[length]" not in pint_unit.dimensionality
     ):
         raise ValueError(msg)
 
@@ -158,7 +158,7 @@ class TimeseriesScaler(BaseScaler):
         inventory: EmissionsInventory,
         timeseries: dict[str, scmdata.ScmRun],
         target_year: int,
-        **kwargs,
+        **kwargs: Any,
     ) -> xr.DataArray:
         """
         Apply scaling
@@ -197,10 +197,13 @@ class TimeseriesScaler(BaseScaler):
         return apply_amount(amount, unit, proxy_interp)
 
     @classmethod
-    def create_from_config(cls, method: TimeseriesMethod) -> "TimeseriesScaler":
+    def create_from_config(cls, method: ScalerMethod) -> "TimeseriesScaler":
         """
         Create Scaler from configuration
         """
+        if not isinstance(method, TimeseriesMethod):
+            raise TypeError("Incompatible configuration")
+
         return TimeseriesScaler(
             proxy=method.proxy,
             proxy_region=method.proxy_region or method.proxy,

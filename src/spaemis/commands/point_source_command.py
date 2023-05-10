@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
 @click.option("--quantity", default=1)
 @click.option("--unit", default="kg")
 @click.argument("filename", type=click.Path(exists=True, dir_okay=False))
-def run_point_source_command(filename, variable, sector, quantity, unit):
+def run_point_source_command(
+    filename: str, variable: str, sector: str, quantity: int, unit: str
+) -> None:
     """
     Generate a point source configuration file from a set of locations
 

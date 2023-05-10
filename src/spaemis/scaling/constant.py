@@ -3,10 +3,12 @@ Constant scaler
 
 Apply a constant scale factor to the base inventory
 """
+from typing import Any
+
 import xarray as xr
 from attrs import define
 
-from spaemis.config import ConstantScaleMethod
+from spaemis.config import ConstantScaleMethod, ScalerMethod
 
 from .base import BaseScaler
 
@@ -20,7 +22,7 @@ class ConstantScaler(BaseScaler):
     scaling_factor: float
 
     def __call__(
-        self, *, data: xr.DataArray, target_year: int, **kwargs
+        self, *, data: xr.DataArray, target_year: int, **kwargs: Any
     ) -> xr.DataArray:
         """
         Run a scaler
@@ -41,7 +43,7 @@ class ConstantScaler(BaseScaler):
         return scaled
 
     @classmethod
-    def create_from_config(cls, method: ConstantScaleMethod) -> "ConstantScaler":
+    def create_from_config(cls, method: ScalerMethod) -> "ConstantScaler":
         """
         Create a new scaler from configuration
 
@@ -54,4 +56,7 @@ class ConstantScaler(BaseScaler):
         -------
             New scaler instance configured according to the configuration
         """
+        if not isinstance(method, ConstantScaleMethod):
+            raise TypeError("Incompatible configuration")
+
         return ConstantScaler(method.scale_factor)

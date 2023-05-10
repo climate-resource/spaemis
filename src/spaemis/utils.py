@@ -2,16 +2,21 @@
 General utility functions
 """
 import os
+from collections.abc import Generator
 from contextlib import contextmanager
+from typing import TypeVar, cast
 
-import geopandas
+import geopandas  # type: ignore
 import numpy as np
-import pooch
+import pooch  # type: ignore
 import rioxarray  # noqa
 import xarray as xr
+from numpy.typing import ArrayLike, NDArray
+
+T = TypeVar("T", xr.DataArray, xr.Dataset)
 
 
-def area_grid(lat, lon):  # pragma: no cover
+def area_grid(lat: ArrayLike, lon: ArrayLike) -> xr.DataArray:
     """
     Calculate the area of each grid cell
 
@@ -57,7 +62,7 @@ def area_grid(lat, lon):  # pragma: no cover
     return xda
 
 
-def earth_radius(lat: np.ndarray) -> np.ndarray:  # pragma: no cover
+def earth_radius(lat: NDArray[np.float_]) -> NDArray[np.float_]:
     """
     Calculate radius of Earth assuming oblate spheroid
 
@@ -87,14 +92,14 @@ def earth_radius(lat: np.ndarray) -> np.ndarray:  # pragma: no cover
 
     # radius equation
     # see equation 3-107 in WGS84
-    r = (a * (1 - e2) ** 0.5) / (1 - (e2 * np.cos(lat_gc) ** 2)) ** 0.5
+    r: NDArray[np.float_] = (a * (1 - e2) ** 0.5) / (
+        1 - (e2 * np.cos(lat_gc) ** 2)
+    ) ** 0.5
 
     return r
 
 
-def clip_region(
-    da: xr.DataArray | xr.Dataset, boundary: geopandas.GeoDataFrame
-) -> xr.DataArray | xr.Dataset:
+def clip_region(da: T, boundary: geopandas.GeoDataFrame) -> T:
     """
     Clip a region out of a larger DS
 
@@ -110,11 +115,12 @@ def clip_region(
     -------
         Dataset which only includes the selected area
     """
-    return (
+    return cast(
+        T,
         da.rio.set_spatial_dims("lon", "lat")
         .rio.write_crs("WGS84")
         .rio.clip(boundary.geometry.values, all_touched=True)
-        .drop_vars("spatial_ref")
+        .drop_vars("spatial_ref"),
     )
 
 
@@ -148,15 +154,15 @@ def weighted_annual_mean(
     target = ds[variable]
 
     # Mask out any nan values
-    ones = xr.where(target.isnull(), 0.0, 1.0)
+    ones: xr.DataArray = xr.where(target.isnull(), 0.0, 1.0)  # type: ignore
 
     obs_sum = (target * weights).resample(time="AS").sum(dim="time")
     ones_out = (ones * weights).resample(time="AS").sum(dim="time")
-    return obs_sum / ones_out
+    return cast(xr.DataArray, obs_sum / ones_out)
 
 
 @contextmanager
-def chdir(current_directory: str) -> None:
+def chdir(current_directory: str) -> Generator[None, None, None]:
     """
     Context manager to temporarily change the current working directory
 

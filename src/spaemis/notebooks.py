@@ -1,14 +1,14 @@
 """
 Run notebooks in an isolated fashion
 """
-
 import logging
 import os.path
 from collections.abc import Iterable
+from os import PathLike
 from typing import Any
 
-import jupytext
-import papermill as pm
+import jupytext  # type: ignore
+import papermill as pm  # type: ignore
 
 from spaemis import __version__
 from spaemis.config import DownscalingScenarioConfig, converter, get_path, load_config
@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 
 def run_notebooks(
     notebooks: Iterable[str],
-    output_dir,
+    output_dir: str | PathLike[str],
     parameters: dict[str, Any],
-    notebook_dir=os.path.join(ROOT_DIR, "notebooks"),
+    notebook_dir: str = os.path.join(ROOT_DIR, "notebooks"),
 ) -> None:
     """
     Run a set of notebooks
@@ -76,12 +76,12 @@ class NotebookException(Exception):
     An exception occurred when running a notebook
     """
 
-    def __init__(self, exc, filename):
+    def __init__(self, exc: Exception, filename: str):
         self.exc = exc
         self.filename = filename
         super().__init__(self.exc)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.filename} failed to execute: {self.exc}"
 
 

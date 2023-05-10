@@ -6,7 +6,7 @@ import os
 import numpy as np
 
 
-def run_gse(year: int, month: int, day: int, datapath: str, out_dir: str):
+def run_gse(year: int, month: int, day: int, datapath: str, out_dir: str) -> None:
     dayw = datetime.datetime(year, month, day).weekday()
 
     srcList = [

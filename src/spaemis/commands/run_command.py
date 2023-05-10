@@ -1,6 +1,7 @@
 """
 Run CLI command
 """
+
 import logging
 import os.path
 import shutil
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help="Removes any existing results before running",
 )
-def run_command(config: str, output_dir: str, force: bool) -> None:
+def run_command(config: str, output_dir: str | None, force: bool) -> None:
     """
     Run the model using a selected configuration
     """

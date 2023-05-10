@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 @click.option("--day", default=1)
 @click.option("-i", "--in_dir", help="Directory containing a. CSV files", type=str)
 @click.option("-o", "--out_dir", help="Input datafiles. CSV files", type=str)
-def run_gse_command(year, month, day, in_dir, out_dir):
+def run_gse_command(year: int, month: int, day: int, in_dir: str, out_dir: str) -> None:
     """
     Create a set of .run files for use by `spaemis_glo`
     """

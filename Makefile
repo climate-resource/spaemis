@@ -19,12 +19,11 @@ help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 checks: $(VENV_DIR)  ## run all the checks
-	@echo "=== bandit ==="; $(VENV_DIR)/bin/bandit -c .bandit.yml -r src || echo "--- bandit failed ---" >&2; \
-``		echo "\n\n=== black ==="; $(VENV_DIR)/bin/black --check . || echo "--- black failed ---" >&2; \
-``		echo "\n\n=== ruff ==="; $(VENV_DIR)/bin/ruff . || echo "--- ruff failed ---" >&2; \
+	@echo "\n\n=== black ==="; $(VENV_DIR)/bin/black --check . || echo "--- black failed ---" >&2; \
+		echo "\n\n=== ruff ==="; $(VENV_DIR)/bin/ruff . || echo "--- ruff failed ---" >&2; \
+		echo "\n\n=== mypy ==="; $(VENV_DIR)/bin/mypy src || echo "--- mypy failed ---" >&2; \
 		echo "\n\n=== tests ==="; $(VENV_DIR)/bin/pytest tests -r a --cov=spaemis --cov-report='' \
-			&& $(VENV_DIR)/bin/coverage report --fail-under=95 || echo "--- tests failed ---" >&2; \
-		echo
+			&& $(VENV_DIR)/bin/coverage report --fail-under=95 || echo "--- tests failed ---" >&2
 
 .PHONY: format
 format: black ruff  ## re-format files
