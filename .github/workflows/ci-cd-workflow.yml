@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9]
+        python-version: ["3.10"]
 
     steps:
     - name: Checkout repository
@@ -26,14 +26,10 @@ jobs:
       run: |
         pip install --upgrade pip wheel
         pip install -e .[dev]
-    # TODO: add `pylint src`
     - name: Formatting and linters
       run: |
-        black --check src tests setup.py
-        isort --check-only --quiet src tests setup.py
-        #  pydocstyle src
-        bandit -r src
-        flake8 src tests setup.py
+        ruff .
+        mypy --install-types --non-interactive src
 #     - name: Build docs
 #       # treat warnings as errors (-W)...
 #       # ...but not when being nitpicky (-n)
@@ -54,7 +50,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.10", "3.11"]
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -90,7 +86,7 @@ jobs:
       run: |
           pytest tests -r a --cov=spaemis --cov-report=term-missing --cov-fail-under=$env:MIN_COVERAGE
     - name: Upload coverage to Codecov
-      if: startsWith(runner.os, 'Linux') && matrix.python-version == 3.9
+      if: startsWith(runner.os, 'Linux') && matrix.python-version == 3.10
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml
@@ -99,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9]
+        python-version: ["3.10"]
 
     steps:
     - name: Checkout repository
@@ -140,7 +136,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.9]
+        python-version: ["3.10"]
 
     steps:
     - uses: actions/download-artifact@v3

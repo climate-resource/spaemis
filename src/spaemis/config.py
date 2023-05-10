@@ -4,19 +4,10 @@ Configuration
 The configuration is stored as YAML files and can be loaded and validated using
 :func:`load_config`.
 """
+
 import os.path
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-    get_args,
-)
+from os import PathLike
+from typing import Any, ClassVar, Literal, TypeVar, Union, get_args
 
 import pandas as pd
 from attrs import define, field
@@ -31,11 +22,27 @@ converter.register_unstructure_hook(str, lambda u: str(u))
 
 @define
 class ExcludeScaleMethod:
+    """
+    Config for ExcludeScaler
+
+    See Also
+    --------
+    :class:`spaemis.scaling.ExcludeScaler`
+    """
+
     name: ClassVar[Literal["exclude"]] = "exclude"
 
 
 @define
 class ConstantScaleMethod:
+    """
+    Config for ConstantScaler
+
+    See Also
+    --------
+    :class:`spaemis.scaling.ConstantScaler`
+    """
+
     scale_factor: float = 1.0
 
     name: ClassVar[Literal["constant"]] = "constant"
@@ -43,6 +50,14 @@ class ConstantScaleMethod:
 
 @define
 class RelativeChangeMethod:
+    """
+    Config for RelativeChangeScaler
+
+    See Also
+    --------
+    :class:`spaemis.scaling.RelativeChangeScaler`
+    """
+
     source_id: str
     variable_id: str
     sector: str
@@ -52,6 +67,14 @@ class RelativeChangeMethod:
 
 @define
 class ProxyMethod:
+    """
+    Config for ProxyScaler
+
+    See Also
+    --------
+    :class:`spaemis.scaling.ProxyScaler`
+    """
+
     source_id: str
     variable_id: str
     sector: str
@@ -62,22 +85,38 @@ class ProxyMethod:
 
 @define
 class TimeseriesMethod:
+    """
+    Config for TimeseriesScaler
+
+    See Also
+    --------
+    :class:`spaemis.scaling.TimeseriesScaler`
+    """
+
     proxy: str
     source_timeseries: str
-    source_filters: List[Dict[str, Any]]
-    proxy_region: Optional[str] = None
+    source_filters: list[dict[str, Any]]
+    proxy_region: str | None = None
     name: ClassVar[Literal["timeseries"]] = "timeseries"
 
 
 @define
 class PointSourceMethod:
+    """
+    Config for PointSourceScaler
+
+    See Also
+    --------
+    :class:`spaemis.scaling.PointSourceScaler`
+    """
+
     point_sources: str
     source_timeseries: str
-    source_filters: List[Dict[str, Any]]
+    source_filters: list[dict[str, Any]]
     name: ClassVar[Literal["point_source"]] = "point_source"
 
 
-ScalerMethod = Union[
+ScalerMethod = Union[  # noqa: UP007
     ExcludeScaleMethod,
     ProxyMethod,
     RelativeChangeMethod,
@@ -87,17 +126,20 @@ ScalerMethod = Union[
 ]
 
 
-def _unstructure_scaler(value: ScalerMethod) -> Dict[str, Any]:
-    res = converter.unstructure(value)
+def _unstructure_scaler(value: ScalerMethod) -> dict[str, Any]:
+    res: dict[str, Any] = converter.unstructure(value)
     res["name"] = value.name
     return res
 
 
-def _discriminate_scaler(value: Any, _klass: Type) -> ScalerMethod:
+T = TypeVar("T", bound=ScalerMethod)
+
+
+def _discriminate_scaler(value: Any, _klass: type[T]) -> T:
     name = value.pop("name")
     for Klass in get_args(_klass):
         if Klass.name == name:
-            return converter.structure(value, Klass)
+            return converter.structure(value, Klass)  # type: ignore
     raise ValueError(f"Could not determine scaler for {name}")
 
 
@@ -129,57 +171,72 @@ class VariableScalerConfig:
     allow_missing: bool = False
 
 
-def _convert_filename_to_scalers(value: Union[dict, str]) -> List[VariableScalerConfig]:
-    if isinstance(value, str):
-        if value.endswith(".csv"):
-            # load_config updates the current working directory to match the
-            # directory of a loaded config files otherwise a absolute filename is required
-            data = pd.read_csv(value).to_dict(orient="records")
+def _convert_filename_to_scalers(
+    value: str,
+) -> list[VariableScalerConfig]:
+    if value.endswith(".csv"):
+        # load_config updates the current working directory to match the
+        # directory of a loaded config files otherwise an absolute filename is required
+        data: list[dict[str, Any]] = pd.read_csv(value).to_dict(orient="records")  # type: ignore
 
-            def extract_scaler_info(data_item):
-                sector_info = {}
-                for key, value in data_item.copy().items():
-                    if key.startswith("scaler_"):
-                        sector_info[key[7:]] = value
-                        data_item.pop(key)
-                return {**data_item, "method": sector_info}
+        def extract_scaler_info(data_item: dict[str, Any]) -> dict[str, Any]:
+            sector_info = {}
+            for key, value in data_item.copy().items():
+                if key.startswith("scaler_"):
+                    sector_info[key[7:]] = value
+                    data_item.pop(key)
+            return {**data_item, "method": sector_info}
 
-            value = [extract_scaler_info(item) for item in data]
-            value = converter.structure(value, List[VariableScalerConfig])
-        elif value.endswith(".yaml") or value.endswith(".yml"):
-            with open(value) as fh:
-                value = converter.loads(fh.read(), List[VariableScalerConfig])
-        else:
-            raise ValueError(f"Cannot load scalers from {value}")
-
-    return value
+        extracted = converter.structure(
+            [extract_scaler_info(item) for item in data], list[VariableScalerConfig]
+        )
+    elif value.endswith(".yaml") or value.endswith(".yml"):
+        with open(value) as fh:
+            extracted = converter.loads(fh.read(), list[VariableScalerConfig])
+    else:
+        raise ValueError(f"Cannot load scalers from {value}")
+    return extracted
 
 
 @define
 class InputTimeseries:
+    """
+    Timeseries declaration
+    """
+
     name: str
     path: str
-    filters: List[Dict[str, Any]]
+    filters: list[dict[str, Any]]
 
 
 @define
 class PointSource:
+    """
+    Configuration for a single point source
+    """
+
     variable: str
     sector: str
-    location: List[Tuple[float, float]]  # Lat, lon
+    location: list[tuple[float, float]]  # Lat, lon
     quantity: float  # Total annual emissions spread evenly over sources
     unit: str = "kg"
 
 
 @define
 class PointSourceDefinition:
-    sources: List[PointSource] = field(factory=list)
-    source_files: Optional[List[str]] = None
+    """
+    Set of point sources to apply
 
-    def __attrs_post_init__(self):
-        def read_point_source(fname) -> List[PointSource]:
+    Loads other point sources from file if specified
+    """
+
+    sources: list[PointSource] = field(factory=list)
+    source_files: list[str] | None = None
+
+    def __attrs_post_init__(self) -> None:
+        def read_point_source(fname: str) -> list[PointSource]:
             with open(fname) as handle:
-                return converter.loads(handle.read(), List[PointSource])
+                return converter.loads(handle.read(), list[PointSource])
 
         if self.source_files:
             for fname in self.source_files:
@@ -191,11 +248,17 @@ class PointSourceDefinition:
 
 @define
 class ScalerDefinition:
-    default_scaler: ScalerMethod = ExcludeScaleMethod()
-    scalers: List[VariableScalerConfig] = field(factory=list)
-    source_files: Optional[List[str]] = None
+    """
+    Set of scalers to apply
 
-    def __attrs_post_init__(self):
+    Loads other scalers from file if specified
+    """
+
+    default_scaler: ScalerMethod = ExcludeScaleMethod()
+    scalers: list[VariableScalerConfig] = field(factory=list)
+    source_files: list[str] | None = None
+
+    def __attrs_post_init__(self) -> None:
         if self.source_files:
             for fname in self.source_files:
                 self.scalers.extend(_convert_filename_to_scalers(fname))
@@ -222,10 +285,10 @@ class DownscalingScenarioConfig:
 
     name: str
     inventory: Inventory
-    timeslices: List[int]
+    timeslices: list[int]
     scalers: ScalerDefinition
-    input_timeseries: Optional[List[InputTimeseries]] = None
-    point_sources: Optional[PointSourceDefinition] = None
+    input_timeseries: list[InputTimeseries] | None = None
+    point_sources: PointSourceDefinition | None = None
 
 
 def load_config(config_file: str) -> DownscalingScenarioConfig:
@@ -249,14 +312,31 @@ def load_config(config_file: str) -> DownscalingScenarioConfig:
             return converter.loads(handle.read(), DownscalingScenarioConfig)
 
 
-def get_path(output_dir: str, rel_path=None) -> str:
+def get_path(
+    output_dir: str | PathLike[str], rel_path: str | PathLike[str] | None = None
+) -> str:
+    """
+    Get a path from the directory
+
+    If the directory doesn't already exist, it is created
+
+    Parameters
+    ----------
+    output_dir
+        target directory
+    rel_path
+        Path within ``output_dir``
+    Returns
+    -------
+        Path of the output file
+    """
     data_dir = output_dir
 
     if rel_path:
         data_dir = os.path.join(data_dir, rel_path)
 
     os.makedirs(data_dir, exist_ok=True)
-    return data_dir
+    return str(data_dir)
 
 
 def get_default_results_dir(config_path: str) -> str:

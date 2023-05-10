@@ -14,7 +14,9 @@ def downsample_file(fname, out_path):
     out_fname = os.path.join(out_path, *fname_toks[-11:])
     # Downsample spatial resolution by 10x
     ds = xr.load_dataset(fname)
-    ds = ds.isel(lat=ds.lat < 0, lon=ds.lon > 100).coarsen({"lat": 2, "lon": 2}).mean()
+
+    ds = ds.isel(lat=ds.lat < 0, lon=ds.lon > 100)  # noqa
+    ds = ds.coarsen({"lat": 2, "lon": 2}).mean()
 
     os.makedirs(os.path.dirname(out_fname), exist_ok=True)
     ds.to_netcdf(out_fname)

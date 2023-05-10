@@ -3,10 +3,8 @@ Unit Registry
 
 Adds H2 related units if they haven't been previously registered
 """
-from typing import Union
-
 import pint
-from openscm_units import unit_registry
+from openscm_units import unit_registry  # type: ignore
 
 if not hasattr(unit_registry, "hydrogen"):  # pragma: no branch
     unit_registry.define("H = [hydrogen] = H2")
@@ -17,9 +15,9 @@ unit_registry.define("cell = [cell]")
 
 
 def convert_to_target_unit(
-    initial_unit: Union[str, pint.Unit, pint.Quantity],
-    target_unit: Union[str, pint.Unit],
-) -> pint.Quantity:
+    initial_unit: str | pint.Unit | pint.Quantity[float],
+    target_unit: str | pint.Unit,
+) -> pint.Quantity[float]:
     """
     Calculate the scale factor required to convert between units
 
@@ -58,5 +56,10 @@ def convert_to_target_unit(
     ).to_reduced_units()
 
     # Put the intended units back in
-    correct_units = start_in_target * unit_registry.Quantity(1, target_unit)
+    correct_units: pint.Quantity[float] = start_in_target * unit_registry.Quantity(
+        1.0, target_unit
+    )
     return correct_units
+
+
+__all__ = ["convert_to_target_unit", "unit_registry"]

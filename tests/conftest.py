@@ -1,5 +1,4 @@
 import os
-from typing import Dict
 
 import pytest
 import scmdata
@@ -34,7 +33,7 @@ def config(config_file) -> DownscalingScenarioConfig:
 def inventory() -> EmissionsInventory:
     # For testing we use a decimated version of the vic inventory generated using
     # scripts/downsample_inventory.py
-    return TestInventory.load_from_directory()
+    return TestInventory.load_from_directory("", 1)
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -43,7 +42,7 @@ def setup_database():
 
 
 @pytest.fixture()
-def loaded_timeseries() -> Dict[str, scmdata.ScmRun]:
+def loaded_timeseries() -> dict[str, scmdata.ScmRun]:
     return {
         "emissions": scmdata.ScmRun(
             os.path.join(TEST_DATA_DIR, "config", "emissions_country.csv")

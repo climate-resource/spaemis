@@ -7,12 +7,14 @@ The proxy must cover the area of interest of the emissions timeseries
 """
 import logging
 import os
+from typing import Any
 
+import numpy as np
 import numpy.testing as npt
 import xarray as xr
 from attrs import define
 
-from spaemis.config import ProxyMethod
+from spaemis.config import ProxyMethod, ScalerMethod
 from spaemis.constants import PROCESSED_DATA_DIR
 from spaemis.input_data import SECTOR_MAP
 from spaemis.inventory import EmissionsInventory, load_inventory
@@ -23,7 +25,37 @@ from .base import BaseScaler, load_source
 logger = logging.getLogger(__name__)
 
 
-def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.DataArray:
+def get_proxy(
+    proxy_name: str, inventory: EmissionsInventory, **kwargs: Any
+) -> xr.DataArray:
+    """
+    Retrieve a proxy given a name
+
+    The prefix of the proxy species the type of proxy used. The options for proxies
+    are:
+
+    * population - Spatial population from SEDACS
+    * residential_density - Map of residential density over Australia
+    * inventory|X - Data for a sector X from the current inventory. The NOx variable is used
+    * australian_inventory|X - Data for a sector X from the Australian inventory. The NOx
+        variable is used
+
+    Parameters
+    ----------
+    proxy_name
+        Name of proxy
+
+        Can include a "|" to denote hierarchy
+    inventory
+        An emission inventory in the case the "inventory" proxy is used
+    kwargs
+
+    Returns
+    -------
+        Selected proxy field with dimensions lat and lon
+
+        The latitude/longitude grid of the proxy may differ depending on the choice
+    """
     root_dir = os.path.join(PROCESSED_DATA_DIR, "proxies")
 
     proxy_toks = proxy_name.split("|")
@@ -51,6 +83,8 @@ def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.Da
         sector = proxy_toks[1]
         return aus_inv.data["NOx"].sel(sector=sector)
 
+    raise ValueError("Unknown proxy")
+
 
 @define
 class ProxyScaler(BaseScaler):
@@ -72,7 +106,7 @@ class ProxyScaler(BaseScaler):
         data: xr.DataArray,
         inventory: EmissionsInventory,
         target_year: int,
-        **kwargs,
+        **kwargs: Any,
     ) -> xr.DataArray:
         """
         Apply scaling
@@ -88,7 +122,7 @@ class ProxyScaler(BaseScaler):
 
         Returns
         -------
-
+            Scaled data
         """
         source = load_source(
             self.source_id,
@@ -96,7 +130,7 @@ class ProxyScaler(BaseScaler):
             self.sector,
             inventory,
         )
-        if tuple(sorted(source.dims)) != ("lat", "lon", "year"):
+        if tuple(sorted(source.dims)) != ("lat", "lon", "year"):  # type: ignore
             raise AssertionError(
                 f"Excepted only lat, lon and year dims. Got: {source.dims}"
             )
@@ -125,15 +159,20 @@ class ProxyScaler(BaseScaler):
             proxy.interp(lat=lat, lon=lon), inventory.border_mask
         ).interp(lat=lat, lon=lon)
         proxy_density = proxy_interp / proxy_interp.sum()
-        npt.assert_allclose(proxy_density.sum().values, 1)
+        npt.assert_allclose(proxy_density.sum().values, np.asarray(1))
 
-        scaled = total_emms * proxy_density
+        scaled: xr.DataArray = total_emms * proxy_density  # type: ignore
         scaled.attrs["units"] = "kg / cell / yr"
 
         return scaled
 
     @classmethod
-    def create_from_config(cls, method: ProxyMethod) -> "ProxyScaler":
+    def create_from_config(cls, method: ScalerMethod) -> "ProxyScaler":
+        """
+        Create a scaler from configuration
+        """
+        if not isinstance(method, ProxyMethod):
+            raise TypeError("Incompatible configuration")
         if method.sector not in SECTOR_MAP:
             raise ValueError(f"Unknown input4MIPs sector: {method.sector}")
 

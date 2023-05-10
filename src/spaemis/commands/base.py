@@ -20,7 +20,7 @@ def setup_logging() -> None:
 
 
 @click.group()
-def cli():
+def cli() -> None:
     """
     Spatial emissions CLI
 

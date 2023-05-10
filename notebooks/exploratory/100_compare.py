@@ -1,16 +1,11 @@
 # ---
 # jupyter:
 #   jupytext:
-#     cell_metadata_filter: -pycharm
 #     text_representation:
 #       extension: .py
-#       format_name: percent
-#       format_version: '1.3'
 #       jupytext_version: 1.14.4
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
-#     language: python
-#     name: python3
 # ---
 
 # %%
@@ -27,14 +22,14 @@ scenarios = ["ssp119", "ssp126", "ssp245"]
 
 
 # %%
-def load_scenario(scenario: str) -> xr.Dataset:
+def _load_scenario(scenario: str) -> xr.Dataset:
     ds = xr.load_dataset(os.path.join(DATA_DIR, scenario, "projections.nc"))
     ds["scenario"] = scenario
 
     return ds
 
 
-data = xr.concat([load_scenario(sce) for sce in scenarios], dim="scenario")
+data = xr.concat([_load_scenario(sce) for sce in scenarios], dim="scenario")
 data = data.where(data > 0)
 data
 

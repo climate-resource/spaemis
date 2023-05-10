@@ -17,7 +17,7 @@ def extract():
         ),
         engine="rasterio",
     ).sel(band=1)
-    da = da.where(da < 1e9)
+    da = da.where(da < 1e9)  # noqa: PLR2004
     da.name = "residential_density"
 
     aus_boundary = load_australia_boundary()

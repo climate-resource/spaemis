@@ -6,53 +6,58 @@ A proxy scaler uses a proxy (a 2d pattern) to disaggregate an emissions timeseri
 The proxy must cover the area of interest of the emissions timeseries
 """
 import logging
-import os
-from typing import Any, Dict, List
+from typing import Any
 
 import scmdata
 import xarray as xr
 from attrs import define
 
-from spaemis.config import TimeseriesMethod
-from spaemis.constants import PROCESSED_DATA_DIR
+from spaemis.config import ScalerMethod, TimeseriesMethod
 from spaemis.input_data import _apply_filters
-from spaemis.inventory import EmissionsInventory, load_inventory
+from spaemis.inventory import EmissionsInventory
 from spaemis.unit_registry import convert_to_target_unit, unit_registry
 from spaemis.utils import clip_region
 
 from .base import BaseScaler
+from .proxy import get_proxy
 
 
-def get_proxy(proxy_name: str, inventory: EmissionsInventory, **kwargs) -> xr.DataArray:
-    root_dir = os.path.join(PROCESSED_DATA_DIR, "proxies")
+def get_timeseries_point(
+    timeseries: dict[str, scmdata.ScmRun],
+    source: str,
+    filters: list[dict[str, str]],
+    target_year: int,
+) -> scmdata.ScmRun:
+    """
+    Extract a single value according to some filters
 
-    proxy_toks = proxy_name.split("|")
+    Parameters
+    ----------
+    timeseries
+        Collection of loaded timeseries
+    source
+        Timeseries name
+    filters
+        Filter to apply to the selected timeseries
 
-    proxies = {
-        "population": os.path.join(
-            root_dir,
-            "sedacs",
-            "popdynamics-base_year-2000-rev01-byr.nc",
-        ),
-        "residential_density": os.path.join(
-            root_dir,
-            "ga",
-            "NEXIS_Residential_Dwelling_Density.nc",
-        ),
-    }
+        These filters if applied must result in a single remaining timeseries otherwise
+        a ``ValueError`` will be raised.
+    target_year
+        Year to extract
 
-    if proxy_toks[0] in proxies:
-        return xr.load_dataset(proxies[proxy_toks[0]])[proxy_toks[0]]
-    elif proxy_toks[0] == "inventory":
-        sector = proxy_toks[1]
-        return inventory.data["NOx"].sel(sector=sector)
-    elif proxy_toks[0] == "australian_inventory":
-        aus_inv = load_inventory("australia", 2016)
-        sector = proxy_toks[1]
-        return aus_inv.data["NOx"].sel(sector=sector)
+        Must be contained in the targeted timeseries
 
+    Raises
+    ------
+    ValueError
+        If the selected data cannot be retrieved
 
-def get_timeseries(timeseries, source, filters, target_year) -> scmdata.ScmRun:
+    Returns
+    -------
+        ScmRun with a containing a single timeseries and year.
+
+        This object will retain the metadata of the filtered timeseries
+    """
     try:
         ts = timeseries[source]
     except KeyError as exc:
@@ -79,21 +84,44 @@ def get_timeseries(timeseries, source, filters, target_year) -> scmdata.ScmRun:
     return ts
 
 
-def _check_unit(unit: str):
-    unit = unit_registry(unit)
+def _check_unit(unit: str) -> None:
+    pint_unit = unit_registry(unit)
 
     msg = "Expected unit of the form [X] * [mass] / [time]"
 
     if (
-        len(unit.dimensionality) != 3
-        and unit.dimensionality["[mass]"] != 1
-        and unit.dimensionality["[time]"] != -1
-        and "[length]" not in unit.dimensionality
+        len(pint_unit.dimensionality) != 3  # noqa
+        and pint_unit.dimensionality["[mass]"] != 1
+        and pint_unit.dimensionality["[time]"] != -1
+        and "[length]" not in pint_unit.dimensionality
     ):
         raise ValueError(msg)
 
 
 def apply_amount(amount: float, unit: str, proxy: xr.DataArray) -> xr.DataArray:
+    """
+    Scale a known amount of emissions across a proxy
+
+    Parameters
+    ----------
+    amount
+        Amount of stuff to allocate across the proxy
+
+        The stuff is usually annual emissions of a given species and currently
+    unit
+        Unit of the stuff
+
+        Must be able to be converted to a Pint unit with dimensions [X] * [mass] / [time]
+        where X can be any dimension (typically CO2 or other species in the case of emissions)
+    proxy
+        Proxy array
+
+        Can include nans and missing data
+
+    Returns
+    -------
+        DataArray with the same dimensions of ``proxy`` where the sum matches ``amount``
+    """
     # Verify units are [X] * [mass] / [time]
     _check_unit(unit)
 
@@ -121,16 +149,16 @@ class TimeseriesScaler(BaseScaler):
     proxy: str
     proxy_region: str
     source_timeseries: str
-    source_filters: List[Dict[str, Any]]
+    source_filters: list[dict[str, Any]]
 
     def __call__(
         self,
         *,
         data: xr.DataArray,
         inventory: EmissionsInventory,
-        timeseries: Dict[str, scmdata.ScmRun],
+        timeseries: dict[str, scmdata.ScmRun],
         target_year: int,
-        **kwargs,
+        **kwargs: Any,
     ) -> xr.DataArray:
         """
         Apply scaling
@@ -146,9 +174,9 @@ class TimeseriesScaler(BaseScaler):
 
         Returns
         -------
-
+            Scaled data
         """
-        ts = get_timeseries(
+        ts = get_timeseries_point(
             timeseries,
             self.source_timeseries,
             self.source_filters,
@@ -169,7 +197,13 @@ class TimeseriesScaler(BaseScaler):
         return apply_amount(amount, unit, proxy_interp)
 
     @classmethod
-    def create_from_config(cls, method: TimeseriesMethod) -> "TimeseriesScaler":
+    def create_from_config(cls, method: ScalerMethod) -> "TimeseriesScaler":
+        """
+        Create Scaler from configuration
+        """
+        if not isinstance(method, TimeseriesMethod):
+            raise TypeError("Incompatible configuration")
+
         return TimeseriesScaler(
             proxy=method.proxy,
             proxy_region=method.proxy_region or method.proxy,

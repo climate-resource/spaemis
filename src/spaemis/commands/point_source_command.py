@@ -18,14 +18,15 @@ logger = logging.getLogger(__name__)
 @click.option("--quantity", default=1)
 @click.option("--unit", default="kg")
 @click.argument("filename", type=click.Path(exists=True, dir_okay=False))
-def run_point_source_command(filename, variable, sector, quantity, unit):
+def run_point_source_command(
+    filename: str, variable: str, sector: str, quantity: int, unit: str
+) -> None:
     """
     Generate a point source configuration file from a set of locations
 
     The output from this command can be written to file and included using the
     ``point_sources.source_files`` configuration attribute.
     """
-
     point_sources = pd.read_csv(filename)
     if point_sources.columns.isin(["lat", "lon"]).all():
         raise click.ClickException("Input file did not contain lat/lon coordinates")

@@ -1,4 +1,6 @@
-from typing import Dict
+"""
+Base class for scaling emissions
+"""
 
 import scmdata
 import xarray as xr
@@ -18,7 +20,6 @@ def load_source(
 ) -> xr.DataArray:
     """
     Load and preprocess the appropriate input4MIPs data
-
 
     Parameters
     ----------
@@ -65,7 +66,7 @@ class BaseScaler:
         data: xr.DataArray,
         inventory: EmissionsInventory,
         target_year: int,
-        timeseries: Dict[str, scmdata.ScmRun],
+        timeseries: dict[str, scmdata.ScmRun],
     ) -> xr.DataArray:
         """
         Run a scaler
@@ -90,7 +91,7 @@ class BaseScaler:
     @classmethod
     def create_from_config(cls, method: ScalerMethod) -> "BaseScaler":
         """
-        Factory for creating a new scaler
+        Create a new scaler from configuration
 
         Parameters
         ----------

@@ -6,7 +6,7 @@ Split a timeseries of emissions across a number of points
 """
 import logging
 import os
-from typing import Any, Dict, List
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -14,19 +14,23 @@ import scmdata
 import xarray as xr
 from attrs import define
 
-from spaemis.config import PointSourceMethod
+from spaemis.config import PointSourceMethod, ScalerMethod
 from spaemis.constants import RAW_DATA_DIR
 from spaemis.inventory import EmissionsInventory
 from spaemis.utils import clip_region
 
 from .base import BaseScaler
-from .timeseries import apply_amount, get_timeseries
+from .timeseries import apply_amount, get_timeseries_point
 
 logger = logging.getLogger(__name__)
 
 
 @define
 class Point:
+    """
+    Single spatial point
+    """
+
     lat: float
     lon: float
 
@@ -37,9 +41,9 @@ class PointSourceScaler(BaseScaler):
     Split emissions across some point sources
     """
 
-    point_sources: List[Point]
+    point_sources: list[Point]
     source_timeseries: str
-    source_filters: List[Dict[str, Any]]
+    source_filters: list[dict[str, Any]]
 
     def __call__(
         self,
@@ -47,8 +51,8 @@ class PointSourceScaler(BaseScaler):
         data: xr.DataArray,
         inventory: EmissionsInventory,
         target_year: int,
-        timeseries: Dict[str, scmdata.ScmRun],
-        **kwargs,
+        timeseries: dict[str, scmdata.ScmRun],
+        **kwargs: Any,
     ) -> xr.DataArray:
         """
         Apply scaling
@@ -66,7 +70,7 @@ class PointSourceScaler(BaseScaler):
         -------
         Scaled data
         """
-        ts = get_timeseries(
+        ts = get_timeseries_point(
             timeseries,
             self.source_timeseries,
             self.source_filters,
@@ -107,7 +111,13 @@ class PointSourceScaler(BaseScaler):
         return apply_amount(amount, unit, scaled)
 
     @classmethod
-    def create_from_config(cls, method: PointSourceMethod) -> "PointSourceScaler":
+    def create_from_config(cls, method: ScalerMethod) -> "PointSourceScaler":
+        """
+        Create a scaler from configuration
+        """
+        if not isinstance(method, PointSourceMethod):
+            raise TypeError("Incompatible configuration")
+
         point_info = pd.read_csv(
             os.path.join(RAW_DATA_DIR, "configuration", method.point_sources)
         )

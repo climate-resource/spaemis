@@ -1,16 +1,19 @@
 """
 Loading emissions inventories
 """
+
 import functools
 import glob
 import logging
 import os
-from typing import Any, Callable, Optional, Union
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, TypeVar
 
-import geopandas
+import geopandas  # type: ignore
 import pandas as pd
 import xarray as xr
-from attrs import Attribute, define, field
+from attrs import define, field
+from typing_extensions import Self
 
 from spaemis.constants import RAW_DATA_DIR, TEST_DATA_DIR
 from spaemis.utils import clip_region, load_australia_boundary
@@ -18,9 +21,17 @@ from spaemis.utils import clip_region, load_australia_boundary
 logger = logging.getLogger(__name__)
 
 
+T = TypeVar("T", xr.Dataset, xr.DataArray)
+
+if TYPE_CHECKING:
+    import attr
+
+    ValidatorType = Callable[[Any, attr.Attribute[T], Any], Any]
+
+
 def has_dimensions(
-    dimensions: Union[str, list[str]]
-) -> Callable[[Any, Attribute, Union[xr.Dataset, xr.DataArray]], None]:
+    dimensions: str | list[str],
+) -> "ValidatorType[T]":
     """
     Check if a xarray Dataset or DataArray has the expected dimensions
 
@@ -36,7 +47,7 @@ def has_dimensions(
     """
     dims: list[str] = [dimensions] if isinstance(dimensions, str) else dimensions
 
-    def _check(instance, attribute, value: Union[xr.Dataset, xr.DataArray]) -> None:
+    def _check(instance: Any, attribute: "attr.Attribute[T]", value: Any) -> None:
         for exp_dim in dims:
             if exp_dim not in value.dims:
                 raise ValueError(f"Missing dimension: {exp_dim}")
@@ -59,16 +70,18 @@ class EmissionsInventory:
     year: int
 
     @classmethod
-    def load_from_directory(
-        cls, data_directory: str, year: int, **kwargs
-    ) -> "EmissionsInventory":
+    def load_from_directory(cls, data_directory: str, year: int, **kwargs: Any) -> Self:
         """
         Load an emissions inventory from a directory
         """
-        pass
+        raise NotImplementedError()
 
 
 class Grid:
+    """
+    Configuration for a regular lat/lon mesh
+    """
+
     nx: int
     ny: int
     x0: float
@@ -134,8 +147,9 @@ class VictoriaEPAInventory(EmissionsInventory):
         data_directory: str,
         year: int,
         file_suffix: str = "_tif_to_csv3.csv",
-        grid: Optional[Any] = None,
-    ) -> "VictoriaEPAInventory":
+        grid: Grid | None = None,
+        **kwargs: Any,
+    ) -> Self:
         """
         Load Victorian EPA inventory data
 
@@ -158,11 +172,14 @@ class VictoriaEPAInventory(EmissionsInventory):
         if grid is None:
             grid = VictoriaGrid()
 
-        def read_file(fname):
+        # Explicitly cast to grid
+        _grid: Grid = grid
+
+        def read_file(fname: str) -> xr.Dataset:
             dataframe = pd.read_csv(fname).set_index(["lat", "lon"])
             dataset = xr.Dataset.from_dataframe(dataframe)
-            dataset["lat_new"] = grid.lats
-            dataset["lon_new"] = grid.lons
+            dataset["lat_new"] = _grid.lats
+            dataset["lon_new"] = _grid.lons
 
             del dataset["lat"]
             del dataset["lon"]
@@ -177,7 +194,7 @@ class VictoriaEPAInventory(EmissionsInventory):
 
         vic_border = load_australia_boundary()
         vic_border = vic_border[vic_border.shapeName == "Victoria"]
-        return VictoriaEPAInventory(
+        return cls(
             data=clip_region(merged_data, vic_border), border_mask=vic_border, year=year
         )
 
@@ -197,7 +214,8 @@ class AustraliaInventory(EmissionsInventory):
         data_directory: str,
         year: int,
         file_suffix: str = ".nc",
-    ) -> "AustraliaInventory":
+        **kwargs: Any,
+    ) -> Self:
         """
         Load Australian EDGAR data
 
@@ -226,7 +244,7 @@ class AustraliaInventory(EmissionsInventory):
 
         clipped_data = clip_region(merged_data, australia_boundary)
 
-        return AustraliaInventory(
+        return cls(
             data=clipped_data,
             border_mask=australia_boundary,
             year=year,
@@ -240,7 +258,7 @@ class TestInventory(EmissionsInventory):
     """
 
     @classmethod
-    def load_from_directory(cls, **kwargs) -> "TestInventory":
+    def load_from_directory(cls, data_directory: str, year: int, **kwargs: Any) -> Self:
         """
         Load test inventory data
 
@@ -270,12 +288,12 @@ class TestInventory(EmissionsInventory):
             )
         ).drop_vars("spatial_ref")
 
-        return TestInventory(data, border_mask=vic_border, year=2016)
+        return cls(data, border_mask=vic_border, year=2016)
 
 
 @functools.lru_cache(5)
 def load_inventory(
-    inventory: str, year: Optional[int] = None, data_directory: Optional[str] = None
+    inventory: str, year: int, data_directory: str | None = None
 ) -> EmissionsInventory:
     """
     Load an emissions inventory
@@ -312,13 +330,13 @@ def load_inventory(
 
     try:
         loader = mapping[(inventory, year)]
-    except KeyError:
-        raise ValueError(f"No inventory matching {inventory}|{year}")
+    except KeyError as exc:
+        raise ValueError(f"No inventory matching {inventory}|{year}") from exc
 
     return loader.load_from_directory(data_directory=data_directory, year=year)
 
 
-def write_inventory_csvs(ds: xr.Dataset, output_dir: str):
+def write_inventory_csvs(ds: xr.Dataset, output_dir: str) -> None:
     """
     Serialize a Dataset to CSV files with the same  format as the input inventory data
 
