@@ -6,12 +6,12 @@ import functools
 import glob
 import logging
 import os
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import geopandas  # type: ignore
 import pandas as pd
 import xarray as xr
-from attr import Attribute
 from attrs import define, field
 from typing_extensions import Self
 
@@ -22,7 +22,11 @@ logger = logging.getLogger(__name__)
 
 
 T = TypeVar("T", xr.Dataset, xr.DataArray)
-ValidatorType = Callable[[Any, Attribute[T], Any], Any]
+
+if TYPE_CHECKING:
+    import attr
+
+    ValidatorType = Callable[[Any, attr.Attribute[T], Any], Any]
 
 
 def has_dimensions(
@@ -43,7 +47,7 @@ def has_dimensions(
     """
     dims: list[str] = [dimensions] if isinstance(dimensions, str) else dimensions
 
-    def _check(instance: Any, attribute: Attribute[T], value: Any) -> None:
+    def _check(instance: Any, attribute: "attr.Attribute[T]", value: Any) -> None:
         for exp_dim in dims:
             if exp_dim not in value.dims:
                 raise ValueError(f"Missing dimension: {exp_dim}")
