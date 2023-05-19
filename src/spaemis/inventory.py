@@ -1,6 +1,7 @@
 """
 Loading emissions inventories
 """
+from __future__ import annotations
 
 import functools
 import glob
@@ -31,7 +32,7 @@ if TYPE_CHECKING:
 
 def has_dimensions(
     dimensions: str | list[str],
-) -> "ValidatorType[T]":
+) -> ValidatorType[T]:
     """
     Check if a xarray Dataset or DataArray has the expected dimensions
 
@@ -47,7 +48,7 @@ def has_dimensions(
     """
     dims: list[str] = [dimensions] if isinstance(dimensions, str) else dimensions
 
-    def _check(instance: Any, attribute: "attr.Attribute[T]", value: Any) -> None:
+    def _check(instance: Any, attribute: attr.Attribute[T], value: Any) -> None:
         for exp_dim in dims:
             if exp_dim not in value.dims:
                 raise ValueError(f"Missing dimension: {exp_dim}")

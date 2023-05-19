@@ -1,0 +1,40 @@
+# Inspired by https://github.com/LaurenceRawlings/python-poetry-cicd/blob/main/.github/workflows/release.yml
+name: Release
+
+on:
+  release:
+    types: [published]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Install dependencies and package
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+          poetry install --no-interaction --all-extras
+      - name: Run tests
+        run: |
+          poetry run pytest -r a --doctest-modules
+      - name: Publish to PyPI
+        env:
+          PYPI_TOKEN: "${{ secrets.PYPI_TOKEN }}"
+        run: |
+          poetry config pypi-token.pypi $PYPI_TOKEN
+          poetry publish --build --no-interaction

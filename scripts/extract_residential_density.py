@@ -1,3 +1,7 @@
+"""
+Extract the residential density proxy
+"""
+
 import os
 
 import rioxarray  # noqa
@@ -7,7 +11,7 @@ from spaemis.constants import PROCESSED_DATA_DIR, RAW_DATA_DIR
 from spaemis.utils import load_australia_boundary
 
 
-def extract():
+def _extract():
     # This files has to be downloaded manually
     da = xr.open_dataarray(
         os.path.join(
@@ -26,7 +30,7 @@ def extract():
 
 
 if __name__ == "__main__":
-    da = extract()
+    da = _extract()
     da.attrs = {}
 
     out_name = os.path.join(

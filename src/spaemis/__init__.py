@@ -1,15 +1,8 @@
 """
-spaemis a tool for generating future emissions for local air quality modelling
-
-See README and docs for more info.
+Produce a coherent set of emissions for regional air quality modelling
 """
-from importlib.metadata import version as _version
+import importlib.metadata
 
-try:
-    __version__ = _version("spaemis")
-except Exception:  # pylint: disable=broad-except pragma: no cover
-    # Local copy, not installed with setuptools
-    __version__ = "unknown"
-
+__version__ = importlib.metadata.version("spaemis")
 
 import spaemis.unit_registry  # noqa

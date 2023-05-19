@@ -1,56 +1,55 @@
+# Makefile to help automate key steps
+
 .DEFAULT_GOAL := help
 
-VENV_DIR ?= venv
 
-
+# A helper script to get short descriptions of each target in the Makefile
 define PRINT_HELP_PYSCRIPT
 import re, sys
 
 for line in sys.stdin:
-	match = re.match(r'^([a-zA-Z_-]+):.*?## (.*)$$', line)
+	match = re.match(r'^([\$$\(\)a-zA-Z_-]+):.*?## (.*)$$', line)
 	if match:
 		target, help = match.groups()
-		print("%-20s %s" % (target, help))
+		print("%-30s %s" % (target, help))
 endef
 export PRINT_HELP_PYSCRIPT
 
-.PHONY: help
-help:
-	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-checks: $(VENV_DIR)  ## run all the checks
-	@echo "\n\n=== black ==="; $(VENV_DIR)/bin/black --check . || echo "--- black failed ---" >&2; \
-		echo "\n\n=== ruff ==="; $(VENV_DIR)/bin/ruff . || echo "--- ruff failed ---" >&2; \
-		echo "\n\n=== mypy ==="; $(VENV_DIR)/bin/mypy src || echo "--- mypy failed ---" >&2; \
-		echo "\n\n=== tests ==="; $(VENV_DIR)/bin/pytest tests -r a --cov=spaemis --cov-report='' \
-			&& $(VENV_DIR)/bin/coverage report --fail-under=95 || echo "--- tests failed ---" >&2
+help:  ## print short description of each target
+	@python3 -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-.PHONY: format
-format: black ruff  ## re-format files
+.PHONY: checks
+checks:  ## run all the linting checks of the codebase
+	@echo "=== pre-commit ==="; poetry run pre-commit run --all-files || echo "--- pre-commit failed ---" >&2; \
+		echo "=== mypy ==="; poetry run mypy src || echo "--- mypy failed ---" >&2; \
+		echo "======"
 
 .PHONY: black
-black: $(VENV_DIR)  ## apply black formatter to source and tests
-	$(VENV_DIR)/bin/black .
+black:  ## format the code using black
+	poetry run black src tests docs/source/conf.py scripts docs/source/notebooks/*.py
+	poetry run blackdoc src
 
-.PHONY: ruff
-ruff: $(VENV_DIR)  ## apply ruff fixes
-	$(VENV_DIR)/bin/ruff --fix .
+.PHONY: ruff-fixes
+ruff-fixes:  ## fix the code using ruff
+	poetry run ruff src tests scripts docs/source/conf.py docs/source/notebooks/*.py --fix
 
 .PHONY: test
-test:  $(VENV_DIR) ## run the full testsuite
-	$(VENV_DIR)/bin/pytest tests --cov -rfsxEX --cov-report term-missing
+test:  ## run the tests
+	poetry run pytest -r a -v --doctest-modules --cov
+
+.PHONY: docs
+docs:  ## build the docs
+	poetry run sphinx-build -b html docs/source docs/build/html
+
+.PHONY: check-commit-messages
+check-commit-messages:  ## check commit messages
+	poetry run cz check --rev-range 8d68d2..HEAD
 
 .PHONY: virtual-environment
-virtual-environment: $(VENV_DIR) ## update venv, create a new venv if it doesn't exist
-
-$(VENV_DIR): setup.py setup.cfg pyproject.toml
-	[ -d $(VENV_DIR) ] || python3 -m venv $(VENV_DIR)
-
-	$(VENV_DIR)/bin/pip install --upgrade pip wheel
-	$(VENV_DIR)/bin/pip install -e .[dev]
-	$(VENV_DIR)/bin/jupyter nbextension enable --py widgetsnbextension
-
-	touch $(VENV_DIR)
-
-build: src/spaemis_glo
-	$(MAKE) -c src/spaemis_glo build
+virtual-environment:  ## update virtual environment, create a new one if it doesn't already exist
+	poetry lock
+	# Put virtual environments in the project
+	poetry config virtualenvs.in-project true
+	poetry install --all-extras
+	poetry run pre-commit install

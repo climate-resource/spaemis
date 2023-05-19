@@ -1,0 +1,15 @@
+# Changes here will be overwritten by Copier
+_commit: 09d768e
+_src_path: ../copier-core-python-repository
+email: jared.lewis@climate-resource.com
+first_commit_sha: 8d68d2
+initial_setup: true
+name: Jared Lewis
+notebook_dependencies: true
+plot_dependencies: true
+project_description_short: Produce a coherent set of emissions for regional air quality
+    modelling
+project_name_human: Spaemis
+project_name_pip: spaemis
+project_name_python: spaemis
+project_url: https://github.com/climate-resource/spaemis

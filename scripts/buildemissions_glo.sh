@@ -4,9 +4,9 @@
 # Modifications
 #-------------------------------------------------------------------------------------------
 # who   when    what
-# srv 15/02/21  preliminary version 0.1 
-# srv 15/02/21  setup bash script for each emission source and link to nsw species mappings 
-# srv 15/05/21  revised to map species to GMR 2013; tidy-up steps applied; all gse sources merged and naming conventions applied 
+# srv 15/02/21  preliminary version 0.1
+# srv 15/02/21  setup bash script for each emission source and link to nsw species mappings
+# srv 15/05/21  revised to map species to GMR 2013; tidy-up steps applied; all gse sources merged and naming conventions applied
 #
 
 #module load python/3.6.1
@@ -57,7 +57,7 @@ while [ $src -lt $num_src ]; do
   echo "Running spaemis_glo for ${srcList[src]}"
   cp ${srcList[src]}.run spaemis_glo.run
   ${spaemis_exe}/spaemis_glo >& ${srcList[src]}.trace
-  
+
 #cat <<eof >gse_check.run
 #  Output emission totals and spatial plot for a .gse
 #  CTM fileName of file to be checked
@@ -71,7 +71,7 @@ while [ $src -lt $num_src ]; do
 #  mkdir -p  ${srcList[src]}
 #  mv gse_totals.csv  ${srcList[src]}/
 #  mv gse_check.trace ${srcList[src]}/
-#  mv *CO_kgPerDay* ${srcList[src]}/  
+#  mv *CO_kgPerDay* ${srcList[src]}/
 
   let src=$((src + 1))
 

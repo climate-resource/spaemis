@@ -5,6 +5,8 @@ The configuration is stored as YAML files and can be loaded and validated using
 :func:`load_config`.
 """
 
+from __future__ import annotations
+
 import os.path
 from os import PathLike
 from typing import Any, ClassVar, Literal, TypeVar, Union, get_args
@@ -116,7 +118,7 @@ class PointSourceMethod:
     name: ClassVar[Literal["point_source"]] = "point_source"
 
 
-ScalerMethod = Union[  # noqa: UP007
+ScalerMethod = Union[
     ExcludeScaleMethod,
     ProxyMethod,
     RelativeChangeMethod,

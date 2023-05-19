@@ -37,7 +37,7 @@ CHARACTER(LEN=256) :: gse_filename
 
 !-----------------------------------------------------------------------------|
 ! Currently one source group
-! Src group 1 = gse 
+! Src group 1 = gse
 !-----------------------------------------------------------------------------|
 INTEGER, PARAMETER :: nSrc=1
 INTEGER, PARAMETER :: iSRC=nSrc !source indice
@@ -48,19 +48,19 @@ INTEGER, PARAMETER :: gse=1
 !    (generally kg/yr/cell -> kkg/day/cell)
 ! Mapping to spatial factor columns
 !-----------------------------------------------------------------------------|
-REAL :: NOx_f 
+REAL :: NOx_f
 REAL :: VOC_f
-REAL :: PM_f 
-REAL :: CO_f 
+REAL :: PM_f
+REAL :: CO_f
 REAL :: SO2_f
-REAL :: NH3_f 
+REAL :: NH3_f
 !
-INTEGER :: NOx_c 
+INTEGER :: NOx_c
 INTEGER :: VOC_c
-INTEGER :: PM_c 
-INTEGER :: CO_c 
+INTEGER :: PM_c
+INTEGER :: CO_c
 INTEGER :: SO2_c
-INTEGER :: NH3_c 
+INTEGER :: NH3_c
 
 !-----------------------------------------------------------------------------|
 ! Speciation and diurnal profiles have been derived from the NSW EPA inventory
@@ -71,26 +71,26 @@ REAL, DIMENSION(nNOx,nSrc) :: NOx_splt
 INTEGER, DIMENSION(nNOx) :: mapNOx = (/1,2/)
 
 !-----------------------------------------------------------------------------|
-! Emission factors- VOC 
+! Emission factors- VOC
 !-----------------------------------------------------------------------------|
-INTEGER, PARAMETER :: nVOC=13 
+INTEGER, PARAMETER :: nVOC=13
 REAL, DIMENSION(nVOC,nSrc) :: VOC_splt
-INTEGER, DIMENSION(nVOC) :: mapVOC = (/8,19,6,10,11,12,13,20,9,7,18,14,15/)                               
-!INTEGER, DIMENSION(nVOC) :: mapVOC = (/10,19,11,12,13,8,6,20,9,7,18,15,14/)                               
+INTEGER, DIMENSION(nVOC) :: mapVOC = (/8,19,6,10,11,12,13,20,9,7,18,14,15/)
+!INTEGER, DIMENSION(nVOC) :: mapVOC = (/10,19,11,12,13,8,6,20,9,7,18,15,14/)
 
 !-----------------------------------------------------------------------------|
 ! Emission factors- PM
 !-----------------------------------------------------------------------------|
-INTEGER, PARAMETER :: nPM=8 
+INTEGER, PARAMETER :: nPM=8
 REAL, DIMENSION(nPM,nSrc) :: PM_splt
-INTEGER, DIMENSION(nPM)  :: mapPM =  (/21,22,23,24,25,26,27,28/)                               
+INTEGER, DIMENSION(nPM)  :: mapPM =  (/21,22,23,24,25,26,27,28/)
 
 !-----------------------------------------------------------------------------|
 ! Emission factors- TOX and levo
 !-----------------------------------------------------------------------------|
 INTEGER, PARAMETER :: nTOX=4
 REAL, DIMENSION(nTOX,nSrc) :: TOX_splt
-INTEGER, DIMENSION(nTOX) :: mapTOX = (/38,39,40,41/)                                
+INTEGER, DIMENSION(nTOX) :: mapTOX = (/38,39,40,41/)
 
 !-----------------------------------------------------------------------------|
 ! Additional mapping from to standard output species
@@ -102,7 +102,7 @@ INTEGER, PARAMETER :: mapNH3 = 17
 !-----------------------------------------------------------------------------|
 ! Temporal emissions profile (in LST)
 !-----------------------------------------------------------------------------|
-REAL, DIMENSION(0:23,nSrc) :: temporal                                 
+REAL, DIMENSION(0:23,nSrc) :: temporal
 
 !-----------------------------------------------------------------------------|
 ! Species and molecular weights for output to the gse file
@@ -113,7 +113,7 @@ INTEGER, PARAMETER :: nems=41
 CHARACTER(LEN=4), DIMENSION(nems) :: name_ems=(/&
         'NO  ','NO2 ','CO  ','SO2 ','PART',     &
         'PAR ','ETH ','OLE ','ISOP','TOL ',     &
-        'XYL ','HCHO','ALD2','MEOH','ETOH','NR  ',& 
+        'XYL ','HCHO','ALD2','MEOH','ETOH','NR  ',&
         'NH3 ','ETHA','IOLE','ALDX','OC25',    &
         'OC10','EC25','EC10','OT25','OT10',    &
         'ASO4','AS10','APA1','APA2','APA3',    &
@@ -137,25 +137,25 @@ INTEGER, PARAMETER :: nglo=24
 CHARACTER(LEN=4), DIMENSION(nglo), PARAMETER :: name_glo  =(/  &
         'SU1 ','SU2 ','SU3 ','SU4 ',           &
         'BC5 ','PO5 ',                         &
-        'DU6 ','DU7 ',                         &      
+        'DU6 ','DU7 ',                         &
         'APG1','APG2','APG3','APG4','APG5',    &
         'APG6','APG7','APG8','APG9',           &
         'NUCS','AITS','ACCS','COAS','AITI','ACCI','COAI'  /)
 
 !-----------------------------------------------------------------------------|
 ! MWs (g/mole) of SOA precursors and relevant GLOMAP ptcl components and modes
-!-----------------------------------------------------------------------------|      
-REAL, DIMENSION(nGLO), PARAMETER :: mw_glo =(/ & 
+!-----------------------------------------------------------------------------|
+REAL, DIMENSION(nGLO), PARAMETER :: mw_glo =(/ &
        98.0,98.0,98.0,98.0,        &
        12.0,16.8,   &                  !BC5 + PO5
        100.,100.,   &                  !DU6 + DU7
        250.,250.,250.,250.,250.,   &   !APG species
        250.,250.,250.,250.,        &   !APG species
-       1.0,1.0,1.0,1.0,1.0,1.0,1.0 &   !number density 
+       1.0,1.0,1.0,1.0,1.0,1.0,1.0 &   !number density
           /)
 
 !-----------------------------------------------------------------------------|
-! Indices pointing to modes for a 7-mode GLOMAP configuration 
+! Indices pointing to modes for a 7-mode GLOMAP configuration
 !-----------------------------------------------------------------------------|
 INTEGER, PARAMETER :: modes=7
 INTEGER, PARAMETER :: NUCS=1  !nucln. soluble
@@ -169,7 +169,7 @@ CHARACTER(LEN=4), DIMENSION(modes) :: mode_nm=(/'nucs','aits','accs','coas',  &
                                                        'aiti','acci','coai'/)
 INTEGER, DIMENSION(modes)  :: l_nd = (/18,19,20,21,22,23,24/) !mode number density pointer
 INTEGER, PARAMETER :: nInv = 3 !VBS categories treated as involatile
-REAL :: modevol      
+REAL :: modevol
 REAL :: lgsd
 REAL, PARAMETER :: ppi=3.141592654
 
@@ -188,7 +188,7 @@ INTEGER, PARAMETER :: du_p=5
 INTEGER, PARAMETER :: so_p=6
 
 !-----------------------------------------------------------------------------|
-! Size distribution particle definitions 
+! Size distribution particle definitions
 ! -Sulfate (nucl, aits, accs, coas)
 !-----------------------------------------------------------------------------|
    INTEGER :: n_su                                !number of modes
@@ -208,7 +208,7 @@ INTEGER, PARAMETER :: so_p=6
    REAL, ALLOCATABLE, DIMENSION(:) :: gsig_ecoc !geometric standard deviation
    REAL, ALLOCATABLE, DIMENSION(:) :: f_ecoc    !fraction in each mode
    REAL, DIMENSION(modes) :: oc !oc emissions (g/s)
-   INTEGER, DIMENSION(modes) :: l_bc = (/-1,-1,-1,-1,5,-1,-1/) !bc component pointers 
+   INTEGER, DIMENSION(modes) :: l_bc = (/-1,-1,-1,-1,5,-1,-1/) !bc component pointers
    INTEGER, DIMENSION(modes) :: l_oc = (/-1,-1,-1,-1,6,-1,-1/) !oc component pointers
 
 !-----------------------------------------------------------------------------|
@@ -507,5 +507,5 @@ qsum1 = 0.0
 DO s=qm1,qm2
   qsum1 = qsum1 + SUM(q(s,:,:),qmask)
 END DO
-END FUNCTION qsum1  
+END FUNCTION qsum1
 END MODULE utilities
