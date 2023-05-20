@@ -1,3 +1,9 @@
+"""
+Downsample input4MIPS data
+
+These downsampled values are used for testing because they are small and fast
+to run
+"""
 import os
 from glob import glob
 
@@ -9,7 +15,7 @@ from spaemis.constants import ROOT_DIR
 TEST_DATA_DIR = os.path.join(ROOT_DIR, "tests", "test-data")
 
 
-def downsample_file(fname, out_path):
+def _downsample_file(fname, out_path):
     fname_toks = fname.split(os.sep)
     out_fname = os.path.join(out_path, *fname_toks[-11:])
     # Downsample spatial resolution by 10x
@@ -31,7 +37,7 @@ def downsample_input4MIPs(root_dir):
     The selected files must be in the same file structure as
     """
     for f in glob(os.path.join(root_dir, "**", "*.nc"), recursive=True):
-        downsample_file(f, TEST_DATA_DIR)
+        _downsample_file(f, TEST_DATA_DIR)
 
 
 if __name__ == "__main__":

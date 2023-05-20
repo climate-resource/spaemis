@@ -1,3 +1,6 @@
+"""
+Extract the SEDACS population proxy
+"""
 import os
 
 import rioxarray  # noqa
@@ -8,7 +11,12 @@ from spaemis.utils import load_australia_boundary
 
 
 def extract_sedac():
-    # This files has to be downloaded manually
+    """
+    Extract a SEDACS population file into an xarray object
+
+    The SEDACS file should be downloaded manually from https://sedac.ciesin.columbia.edu/
+    """
+    #
     da = xr.open_dataset(
         os.path.join(
             RAW_DATA_DIR,
@@ -18,9 +26,7 @@ def extract_sedac():
     )["Band1"]
     da.name = "population"
     da.attrs["long_name"] = "Population"
-    del da.attrs[
-        "grid_mapping"
-    ]  # There is a 'grid_mapping' attribute which causes info
+    del da.attrs["grid_mapping"]
 
     aus_boundary = load_australia_boundary()
     da_clipped = da.rio.write_crs("EPSG:4326").rio.clip(aus_boundary.geometry)

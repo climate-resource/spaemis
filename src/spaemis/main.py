@@ -1,11 +1,15 @@
 """
 CLI
 """
-import dotenv
+try:
+    import dotenv
+
+    dotenv.load_dotenv()
+except ImportError:
+    pass
+
 
 from spaemis.commands import cli
-
-dotenv.load_dotenv()
 
 if __name__ == "__main__":
     # Run the CLI tool

@@ -4,7 +4,7 @@
 !> mec CSIRO May 2016
 ! Modifications
 ! When        Who    What
-!28/04/2021   mec  Added masking capability 
+!28/04/2021   mec  Added masking capability
 !31/03/2021   mec  Fixed broken free format read of name,number
 !26/03/2021   mec  Fix bug in writing GLOMAP data to .gse file
 !23/06/2020   mec  Read in an arbitrary multi-column grid of spatial factors
@@ -48,7 +48,7 @@ REAL :: lat,lon !deg
 REAL, ALLOCATABLE, DIMENSION(:) :: spaf_data !generally kg/cell/hr
 
 !-----------------------------------------------------------------------------|
-! Emission fields 
+! Emission fields
 !-----------------------------------------------------------------------------|
 REAL, ALLOCATABLE, DIMENSION(:,:,:) :: emsn         !(g/cell/s)
 REAL, ALLOCATABLE, DIMENSION(:,:,:) :: emsn_glo     !(ptcl;g/cell/s)
@@ -113,7 +113,7 @@ READ(iUnit,1)header
 READ(iUnit,'(l1)')asciiYes
 
 !-------------------------------------------------------------------------------
-! Read in indices to map from internal emission table to 
+! Read in indices to map from internal emission table to
 !  user defined emission species
 !-------------------------------------------------------------------------------
 DO i=1,13
@@ -131,7 +131,7 @@ READ(iUnit,*)(name_ems_ot(s),map_ems(s),s=1,nems_ot)
 !
 WHERE(map_ems(:) == -1)
   map_ems(:)=nems
-END WHERE 
+END WHERE
 mpped_mw=mw(map_ems(:))
 
 !-----------------------------------------------------------------------------|
@@ -155,12 +155,12 @@ DO
   READ(sUnit,*,IOSTAT=ios)lon,lat,spaf_data(:)    !factors per cell
   IF(ios /= 0)EXIT
     !spaf_data(:)=MAX(0.,spaf_data(:))
-    iu=NINT((lon-x0_usr)/dx_usr+1.0)  
-    ju=NINT((lat-y0_usr)/dy_usr+1.0)  
+    iu=NINT((lon-x0_usr)/dx_usr+1.0)
+    ju=NINT((lat-y0_usr)/dy_usr+1.0)
     IF(ju >=1 .AND. ju <= ny_usr .AND.    &
        iu >=1 .AND. iu <= nx_usr )THEN
       IF(.NOT.MAXVAL(spaf_data(:)) < 0.0)THEN
-        spaf_usrM(iu,ju) = .TRUE. 
+        spaf_usrM(iu,ju) = .TRUE.
         spaf_usr(:,iu,ju)=spaf_usr(:,iu,ju)+spaf_data(:)
       END IF !mask check
     END IF  !x,y check
@@ -183,7 +183,7 @@ DO l=1,n_f
  !ELSEWHERE
  !   temp=-1.0
  !ENDWHERE
- !temp(1:nx_usr,1:ny_usr)=spaf_usr(l,1:nx_usr,1:ny_usr) 
+ !temp(1:nx_usr,1:ny_usr)=spaf_usr(l,1:nx_usr,1:ny_usr)
  temp(1:nx_usr,1:ny_usr)=-1.0
  DO y=1,ny_usr
   DO x=1,nx_usr
@@ -241,7 +241,7 @@ READ(iUnit,1)header
 READ(iUnit,*)(TOX_splt(s,iSrc),s=1,nTOx)
 
 !-----------------------------------------------------------------------------|
-! Read in the volatility basis set speciation (9 bins) 
+! Read in the volatility basis set speciation (9 bins)
 !-----------------------------------------------------------------------------|
 READ(iUnit,1)header
 READ(iUnit,1)header
@@ -249,12 +249,12 @@ READ(iUnit,*)(vbs(s,iSrc),s=1,nvbs)
 
 !-------------------------------------------------------------------------------
 ! GLOMAP parameters
-! Sulfate; 
+! Sulfate;
 !-------------------------------------------------------------------------------
 READ(iUnit,1)
 READ(iUnit,1)
 READ(iUnit,1)
-READ(iUnit,1)line 
+READ(iUnit,1)line
 READ(line,*)n_su              !number of modes
 ALLOCATE(m_su(MAX(n_su,1)))   !mode numbers
 ALLOCATE(d_su(MAX(n_su,1)))   !mode diameter (nm)
@@ -275,11 +275,11 @@ ELSE
 END IF !sulphate
 
 !-------------------------------------------------------------------------------
-! ec/oc; 
+! ec/oc;
 !-------------------------------------------------------------------------------
 READ(iUnit,1)
 READ(iUnit,1)
-READ(iUnit,1)line       
+READ(iUnit,1)line
 READ(line,*)n_ecoc                !number of modes
 ALLOCATE(m_ecoc(MAX(n_ecoc,1)))   !mode numbers
 ALLOCATE(d_ecoc(MAX(n_ecoc,1)))   !mode diameter (nm)
@@ -300,11 +300,11 @@ ELSE
 END IF !carbon
 
 !-------------------------------------------------------------------------------
-! du; 
+! du;
 !-------------------------------------------------------------------------------
 READ(iUnit,1)
 READ(iUnit,1)
-READ(iUnit,1)line       
+READ(iUnit,1)line
 READ(line,*)n_du              !number of modes
 ALLOCATE(m_du(MAX(n_du,1)))   !mode numbers
 ALLOCATE(d_du(MAX(n_du,1)))   !mode diameter (nm)
@@ -374,9 +374,9 @@ DO y=1,ny_usr
 ! Oxides of nitrogen (kg/day/cell)
 !-------------------------------------------------------------------------------
     DO s=1,nNOx
-      emsn(mapNOx(s),x,y)=spaf_usr(NOx_c,x,y)*NOx_splt(s,gse)*NOx_f  
+      emsn(mapNOx(s),x,y)=spaf_usr(NOx_c,x,y)*NOx_splt(s,gse)*NOx_f
       !write(*,*)'temporarilly check values of mapnox',s,x,y, emsn(mapNOx(s),x,y)
-    END DO 
+    END DO
 
 !-------------------------------------------------------------------------------
 ! VOCs - kg/day/cell
@@ -385,7 +385,7 @@ DO y=1,ny_usr
       emsn(mapVOC(s),x,y)=spaf_usr(VOC_c,x,y)*VOC_splt(s,gse)*VOC_f
       !write(*,*)'temporarilly check values of mapvoc',s,x,y, VOC_c,VOC_f,emsn(mapVOC(s),x,y)
     END DO
- 
+
 !-------------------------------------------------------------------------------
 ! PM (kg/day/cell)
 !-------------------------------------------------------------------------------
@@ -415,7 +415,7 @@ DO y=1,ny_usr
 ! Air toxics, tol, xyl, bnz, levo (kg/day/cell)
 !-------------------------------------------------------------------------------
     DO s=1,nTOX
-      emsn(mapTOX(s),x,y)=emsn(lVOC,x,y)*TOX_splt(s,gse)  
+      emsn(mapTOX(s),x,y)=emsn(lVOC,x,y)*TOX_splt(s,gse)
     END DO
 
 !-------------------------------------------------------------------------------
@@ -427,12 +427,12 @@ DO y=1,ny_usr
 !-------------------------------------------------------------------------------
     DO l=1,n_su
       emsn_glo(l_su(m_su(l)),x,y)=f_su(l)*(emsn(lso4,x,y)+emsn(ls10,x,y)) !kg/cell/day
-      modevol=emsn_glo(l_su(m_su(l)),x,y)/rhocomp(su_p)!*1.0E-03   !m^3/cell/day     
+      modevol=emsn_glo(l_su(m_su(l)),x,y)/rhocomp(su_p)!*1.0E-03   !m^3/cell/day
       lgsd=LOG(gsig_su(l))
       emsn_glo(l_nd(m_su(l)),x,y)=1.0E27*modevol/((ppi/6.0)*(d_su(l)**3.0)*    &
                                EXP(4.5*lgsd*lgsd))+emsn_glo(l_nd(m_su(l)),x,y) !ptcl/cell/day
     END DO !sulfate
-      
+
 !-------------------------------------------------------------------------------
 !   EC and OC (involatile and volatile) kg/cell/day
 !   InSoluble Aitken mode; ptcl/cell/day
@@ -447,7 +447,7 @@ DO y=1,ny_usr
       emsn_glo(l_oc(m_ecoc(l)),x,y)=oc(m_ecoc(l))
 !
       modevol=(emsn_glo(l_bc(m_ecoc(l)),x,y)/rhocomp(bc_p)+    &
-              emsn_glo(l_oc(m_ecoc(l)),x,y)/rhocomp(oc_p))!*1.0E-03       
+              emsn_glo(l_oc(m_ecoc(l)),x,y)/rhocomp(oc_p))!*1.0E-03
       lgsd=LOG(gsig_ecoc(l))
       emsn_glo(l_nd(m_ecoc(l)),x,y)=1.0E27*modevol/((ppi/6.0)*(d_ecoc(l)**3.0)*      &
                                     EXP(4.5*lgsd*lgsd))+emsn_glo(l_nd(m_ecoc(l)),x,y)
@@ -455,14 +455,14 @@ DO y=1,ny_usr
 
     DO s=nInv+1,nvbs
       emsn_glo(lapg+s-1,x,y)=apg(s)
-    END DO         
+    END DO
 
 !-------------------------------------------------------------------------------
 !   Other/Dust
 !-------------------------------------------------------------------------------
     DO l=1,n_du
       emsn_glo(l_du(m_du(l)),x,y)=f_du(l)*(emsn(lot25,x,y)+emsn(lot10,x,y))
-      modevol=emsn_glo(l_du(m_du(l)),x,y)/rhocomp(du_p)!*1.0E-03        
+      modevol=emsn_glo(l_du(m_du(l)),x,y)/rhocomp(du_p)!*1.0E-03
       lgsd=LOG(gsig_du(l))
       emsn_glo(l_nd(m_du(l)),x,y)=1.0E27*modevol/((ppi/6.0)*(d_du(l)**3.0)*  &
                                   EXP(4.5*lgsd*lgsd))+emsn_glo(l_nd(m_du(l)),x,y)
@@ -498,7 +498,7 @@ WRITE(*,*)'Total ACCI number (ptcl/day) : ',SUM(emsn_glo(lacci,:,:),spaf_usrM)
 WRITE(*,*)'Total COAI number (ptcl/day) : ',SUM(emsn_glo(lcoai,:,:),spaf_usrM)
 
 !-----------------------------------------------------------------------------|
-! Write out a single day file in model time (UTC). Temporal profile is in LST. 
+! Write out a single day file in model time (UTC). Temporal profile is in LST.
 ! Calculate difference between model time and LST based on longitude
 ! Map from the internal emissions table to the user defined emissions table
 ! Also check for data masking before the conversions
@@ -508,7 +508,7 @@ DO t=0,23
   IF(asciiYes)THEN
     DO y=1,ny_usr
       DO x=1,nx_usr
-        h=MOD(24+t+INT(lon_usr(x)/15.),24)             
+        h=MOD(24+t+INT(lon_usr(x)/15.),24)
         IF(spaf_usrM(x,y))THEN
           WRITE(oUnit(gse),2,ERR=90)(emsn(map_ems(k),x,y)*temporal(h,gse)*kgPhrTogPsec,k=1,nems_ot),    &
                                    (emsn_glo(k,x,y)*temporal(h,gse)*kgPhrTogPsec,k=1,l_nd(1)-1),       &
@@ -524,8 +524,8 @@ DO t=0,23
   ELSE
     DO y=1,ny_usr
       DO x=1,nx_usr
-        h=MOD(24+t+INT(lon_usr(x)/15.),24)  
-        IF(spaf_usrM(x,y))THEN         
+        h=MOD(24+t+INT(lon_usr(x)/15.),24)
+        IF(spaf_usrM(x,y))THEN
           WRITE(oUnit(gse),ERR=90)(emsn(map_ems(k),x,y)*temporal(h,gse)*kgPhrTogPsec,k=1,nems_ot),    &
                                   (emsn_glo(k,x,y)*temporal(h,gse)*kgPhrTogPsec,k=1,l_nd(1)-1),          &
                                   (emsn_glo(k,x,y)*temporal(h,gse)*hrTosec,k=l_nd(1),l_nd(modes)) !no kg->g conversion for number density

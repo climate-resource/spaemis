@@ -1,0 +1,32 @@
+name: Commits
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+jobs:
+  check-commit-messages:
+    if: "${{ !github.event.pull_request.draft }}"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Load pip cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-check-commits-pip
+          restore-keys: ${{ runner.os }}-check-commits-pip
+      - name: Install commitizen
+        run: pip install commitizen
+      - name: Check commits
+        run: cz check --rev-range 8d68d2..HEAD

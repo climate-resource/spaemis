@@ -1,0 +1,57 @@
+# Inspired by https://github.com/LaurenceRawlings/python-poetry-cicd/blob/main/.github/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    tags: ['v*']
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Install dependencies and package
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+          poetry install --no-interaction --all-extras
+      - name: Add version to environment
+        run: |
+          PROJECT_VERSION=$(poetry version --short)
+          echo "PROJECT_VERSION=$PROJECT_VERSION" >> $GITHUB_ENV
+      - name: Run tests
+        run: |
+          poetry run pytest -r a --doctest-modules
+      - name: Build package
+        run: |
+          poetry build --no-interaction
+      - name: Check build
+        run: |
+          tar -tvf dist/spaemis-*.tar.gz --wildcards '*spaemis/py.typed'
+      - name: Generate Release Notes
+        run: |
+          git log $(git describe --tags --abbrev=0 HEAD^)..HEAD --pretty='format:* %h %s' --no-merges >> ".github/release_template.md"
+      - name: Create Release Draft
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: ".github/release_template.md"
+          draft: true
+          files: |
+            dist/spaemis-${{env.PROJECT_VERSION}}-py3-none-any.whl
+            dist/spaemis-${{env.PROJECT_VERSION}}.tar.gz
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

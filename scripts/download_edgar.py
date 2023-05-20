@@ -90,7 +90,7 @@ YEAR = 2016
 EDGAR_URL = "http://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/EDGAR/datasets/v61_AP"
 
 
-def download_file(gas, sector, year):
+def _download_file(gas, sector, year):
     exp_filename = f"EDGARv6.1_{gas}_{year}_{sector}.0.1x0.1.nc"
     out_dir = os.path.join(RAW_DATA_DIR, "EDGARv6.1", gas, sector)
 
@@ -119,6 +119,8 @@ def download_file(gas, sector, year):
 
 
 options = itertools.product(SPECIES, SECTORS, [YEAR])
-download_file(SPECIES[0], SECTORS[1], YEAR)
 
-joblib.Parallel(n_jobs=20)(joblib.delayed(download_file)(*opts) for opts in options)
+# Try one for a start
+_download_file(SPECIES[0], SECTORS[1], YEAR)
+
+joblib.Parallel(n_jobs=20)(joblib.delayed(_download_file)(*opts) for opts in options)

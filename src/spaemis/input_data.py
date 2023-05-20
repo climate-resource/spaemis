@@ -1,6 +1,7 @@
 """
 Searching and loading of a local input4MIPs data archive
 """
+from __future__ import annotations
 
 import logging
 import os
@@ -95,7 +96,7 @@ class InputEmissionsDatabase:
 
         file_info = [parse_filename(fname) for fname in files]
 
-        return pd.DataFrame(filter(lambda item: item is not None, file_info))  # type: ignore
+        return pd.DataFrame(list(filter(lambda item: item is not None, file_info)))
 
     @lru_cache(maxsize=15)
     def load(self, variable_id: str, source_id: str) -> xr.Dataset:

@@ -1,0 +1,125 @@
+# Massive thanks to https://github.com/marketplace/actions/install-poetry-action
+# Some more inspo for workflows could come from here
+# https://github.com/LaurenceRawlings/python-poetry-cicd/tree/main/.github/workflows
+
+# #8: take a look at https://github.com/actions/cache/blob/main/caching-strategies.md#make-cache-read-only--reuse-cache-from-centralized-job
+# for caching
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+jobs:
+  linting-and-docs:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Set up python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Load cached Poetry installation
+        id: cached-poetry
+        uses: actions/cache@v3
+        with:
+          path: ~/.local  # the path depends on the OS
+          key: poetry-2  # increment to reset cache
+      - name: Install Poetry
+        if: steps.cached-poetry.outputs.cache-hit != 'true'
+        uses: snok/install-poetry@v1
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: "venv-linting-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}"
+      - name: Install dependencies
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+          poetry install --no-interaction --no-root --all-extras
+      - name: Install package
+        run: poetry install --no-interaction --all-extras
+      - name: black
+        run: poetry run black --check src tests docs/source/conf.py
+      - name: ruff
+        run: poetry run ruff check src tests scripts
+      - name: mypy
+        run: poetry run mypy src --install-types --non-interactive
+#      - name: docs-linting
+#        run: poetry run blacken-docs --check docs/source/notebooks/*.md
+      - name: docs
+        run: poetry run sphinx-build --keep-going -b html docs/source docs/build
+
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ "ubuntu-latest" ]
+        python-version: [ "3.10", "3.11" ]
+    runs-on: "${{ matrix.os }}"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Set up python "${{ matrix.python-version }}"
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "${{ matrix.python-version }}"
+      - name: Load cached Poetry installation
+        id: cached-poetry
+        uses: actions/cache@v3
+        with:
+          path: ~/.local  # the path depends on the OS
+          key: ${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-poetry-1  # increment to reset cache
+      - name: Install Poetry
+        if: steps.cached-poetry.outputs.cache-hit != 'true'
+        uses: snok/install-poetry@v1
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: "venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}"
+      - name: Install dependencies
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+          poetry install --no-interaction --no-root --only main
+      - name: Install package
+        run: poetry install --no-interaction --only main
+      - name: Check importable without extras
+        run: poetry run python scripts/test-install.py
+      - name: Load cached full venv
+        id: cached-poetry-dependencies-full
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: "venv-full-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}"
+      - name: Install full dependencies
+        run: |
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
+          poetry install --no-interaction --all-extras
+      - name: Decrypt inventory files
+        run: ./scripts/decrypt_secrets.sh
+        env:
+          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
+      - name: Run tests
+        run: |
+          poetry run pytest -r a -v --doctest-modules --cov --cov-report=term-missing --cov-report=xml
+          poetry run coverage report
+      - name: Build package
+        run: |
+          poetry build --no-interaction
+      - name: Check build
+        run: |
+          tar -tvf dist/spaemis-*.tar.gz --wildcards '*spaemis/py.typed'
+
+      # #9: Upload code coverage if ubuntu with Python python_min_version
