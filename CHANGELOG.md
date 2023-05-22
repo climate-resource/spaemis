@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.1 (2023-05-22)
+
+### Feat
+
+- **proxies**: Allow the proxy directory to be specified using the SPAEMIS_PROXY_DIRECTORY environment variable
+
 ## v0.2.0 (2023-05-22)
 
 ## v0.2.0a2 (2023-05-22)
