@@ -3,7 +3,7 @@ source = ["src"]
 
 [tool.poetry]
 name = "spaemis"
-version = "0.2.0a0"
+version = "0.2.0a1"
 description = "Produce a coherent set of emissions for regional air quality modelling"
 authors = ["Jared Lewis <jared.lewis@climate-resource.com>"]
 readme = "README.md"
@@ -46,7 +46,7 @@ typing-extensions = "^4.5.0"
 pyyaml = "^6.0"
 
 [tool.commitizen]
-version = "0.2.0a0"
+version = "0.2.0a1"
 version_files = ["pyproject.toml:^version"]
 tag_format = "v$version"
 major_version_zero = true
