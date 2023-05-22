@@ -1,8 +1,10 @@
 # Changelog
 
-## v0.2.0a1 (2023-05-22)
 
-## v0.2.0a0 (2023-05-22)
+### Refactor
+
+- clean up to decouple creation assumptions from run assumptions
+
 
 ## [v0.1.0]
 
