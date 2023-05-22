@@ -1,10 +1,6 @@
 # Changelog
 
-## [Unreleased]
-
-### Changed
-
-- Support updated ruff and mypy style guides [#26](https://github.com/climate-resource/spaemis/pull/26)
+## v0.2.0a0 (2023-05-22)
 
 ## [v0.1.0]
 
