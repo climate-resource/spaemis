@@ -33,6 +33,10 @@ jobs:
         run: |
           PROJECT_VERSION=$(poetry version --short)
           echo "PROJECT_VERSION=$PROJECT_VERSION" >> $GITHUB_ENV
+      - name: Decrypt inventory files
+        run: ./scripts/decrypt_secrets.sh
+        env:
+          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}
       - name: Run tests
         run: |
           poetry run pytest -r a --doctest-modules
