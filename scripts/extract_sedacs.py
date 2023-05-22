@@ -36,9 +36,12 @@ def extract_sedac():
 if __name__ == "__main__":
     da = extract_sedac()
 
+    root_dir = os.environ.get(
+        "SPAEMIS_PROXY_DIRECTORY", os.path.join(PROCESSED_DATA_DIR, "proxies")
+    )
+
     out_name = os.path.join(
-        PROCESSED_DATA_DIR,
-        "proxies",
+        root_dir,
         "sedacs",
         "popdynamics-base_year-2000-rev01-byr.nc",
     )

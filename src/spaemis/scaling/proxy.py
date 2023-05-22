@@ -25,9 +25,7 @@ from .base import BaseScaler, load_source
 logger = logging.getLogger(__name__)
 
 
-def get_proxy(
-    proxy_name: str, inventory: EmissionsInventory, **kwargs: Any
-) -> xr.DataArray:
+def get_proxy(proxy_name: str, inventory: EmissionsInventory) -> xr.DataArray:
     """
     Retrieve a proxy given a name
 
@@ -40,6 +38,11 @@ def get_proxy(
     * australian_inventory|X - Data for a sector X from the Australian inventory. The NOx
         variable is used
 
+    For the population and residential_density proxies, a precalculated file is used. The
+    scripts for generating these files are in `scripts/`. By default, the location for
+    these proxies is `data/processed/proxies`, but this can be overridden using the
+    `SPAEMIS_PROXY_DIRECTORY` environment variable.
+
     Parameters
     ----------
     proxy_name
@@ -48,7 +51,6 @@ def get_proxy(
         Can include a "|" to denote hierarchy
     inventory
         An emission inventory in the case the "inventory" proxy is used
-    kwargs
 
     Returns
     -------
@@ -56,7 +58,9 @@ def get_proxy(
 
         The latitude/longitude grid of the proxy may differ depending on the choice
     """
-    root_dir = os.path.join(PROCESSED_DATA_DIR, "proxies")
+    root_dir = os.environ.get(
+        "SPAEMIS_PROXY_DIRECTORY", os.path.join(PROCESSED_DATA_DIR, "proxies")
+    )
 
     proxy_toks = proxy_name.split("|")
 

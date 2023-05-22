@@ -33,9 +33,12 @@ if __name__ == "__main__":
     da = _extract()
     da.attrs = {}
 
+    root_dir = os.environ.get(
+        "SPAEMIS_PROXY_DIRECTORY", os.path.join(PROCESSED_DATA_DIR, "proxies")
+    )
+
     out_name = os.path.join(
-        PROCESSED_DATA_DIR,
-        "proxies",
+        root_dir,
         "ga",
         "NEXIS_Residential_Dwelling_Density.nc",
     )
