@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.2 (2023-05-26)
+
+### Feat
+
+- Allow the inventory directory to be specified using the SPAEMIS_INVENTORY_DIRECTORY environment variable (#30)
+
 ## v0.2.1 (2023-05-22)
 
 ### Feat
