@@ -309,6 +309,10 @@ def load_inventory(
     data_directory
         If provided, override the default directory to load data from
 
+        If not provided the data directory will be constructed from the
+        `SPAEMIS_INVENTORY_DIRECTORY` environment variable, the inventory name
+        and inventory year.
+
     Returns
     -------
         EmissionsInventory with loaded data
@@ -319,8 +323,11 @@ def load_inventory(
         Could not determine the appropriate inventory to load
 
     """
+    inventory_root_directory = os.environ.get(
+        "SPAEMIS_INVENTORY_DIRECTORY", os.path.join(RAW_DATA_DIR, "inventories")
+    )
     data_directory = data_directory or os.path.join(
-        RAW_DATA_DIR, "inventories", inventory, str(year)
+        inventory_root_directory, inventory, str(year)
     )
     mapping = {
         ("test", 2016): TestInventory,
