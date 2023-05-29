@@ -114,12 +114,22 @@ class PointSourceScaler(BaseScaler):
     def create_from_config(cls, method: ScalerMethod) -> "PointSourceScaler":
         """
         Create a scaler from configuration
+
+        Point source information will be loaded from a directory specified by the
+        environment variable `SPAEMIS_POINT_SOURCE_DIRECTORY`. This defaults to
+        `data/raw/configuration/point_sources` if no environment variable
+        is specified.
         """
         if not isinstance(method, PointSourceMethod):
             raise TypeError("Incompatible configuration")
 
+        point_source_directory = os.environ.get(
+            "SPAEMIS_POINT_SOURCE_DIRECTORY",
+            os.path.join(RAW_DATA_DIR, "configuration", "point_sources"),
+        )
+
         point_info = pd.read_csv(
-            os.path.join(RAW_DATA_DIR, "configuration", method.point_sources)
+            os.path.join(point_source_directory, method.point_sources)
         )
         points = [
             Point(lat=item["lat"], lon=item["lon"])
