@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.3 (2023-05-29)
+
+### Feat
+
+- Specify the point source directory using an environment variable (#31)
+
 ## v0.2.2 (2023-05-26)
 
 ### Feat
