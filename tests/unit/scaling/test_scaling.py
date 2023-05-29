@@ -275,7 +275,7 @@ class TestPointSourceScaler:
 
         scaler = PointSourceScaler.create_from_config(
             PointSourceMethod(
-                point_sources="point_sources/hysupply_locations.csv",
+                point_sources="hysupply_locations.csv",
                 source_timeseries="high_production",
                 source_filters=[{"product": "H2"}],
             )
