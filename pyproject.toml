@@ -23,6 +23,7 @@ classifiers = [
     "Topic :: Scientific/Engineering"
 ]
 homepage = "https://github.com/climate-resource/spaemis"
+documentation = "https://spaemis.readthedocs.io/en/latest/"
 
 [tool.poetry.scripts]
 spaemis = 'spaemis.main:cli'
