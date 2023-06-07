@@ -22,6 +22,7 @@
 :caption: Contents
 :maxdepth: 2
 
+input_data
 notebooks
 development
 api/spaemis

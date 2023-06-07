@@ -4,7 +4,6 @@
 
 Produce a coherent set of emissions for regional air quality modelling
 
-
 This model is a work in progress and is under active development. This work was undertaken
 by `Climate Resource <https://www.climate-resource.com>`_ and funded by `CSIRO <https://www.csiro.au/en/>`_
 <!--- sec-end-description -->
