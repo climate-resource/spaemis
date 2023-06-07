@@ -9,6 +9,7 @@ authors = ["Jared Lewis <jared.lewis@climate-resource.com>"]
 readme = "README.md"
 packages = [{include = "spaemis", from = "src"}]
 keywords = ["emissions", "climate", "air quality"]
+license = "BSD-3-Clause"
 classifiers = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: BSD License",
@@ -22,6 +23,7 @@ classifiers = [
     "Topic :: Scientific/Engineering"
 ]
 homepage = "https://github.com/climate-resource/spaemis"
+documentation = "https://spaemis.readthedocs.io/en/latest/"
 
 [tool.poetry.scripts]
 spaemis = 'spaemis.main:cli'
