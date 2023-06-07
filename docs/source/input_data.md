@@ -2,14 +2,14 @@
 
 A number of different input datasets are required to run `spaemis`. A basic set of
 input data have been included in this repository and are described below. `spaemis`
-was designed to be flexible and able to be extended so additional proxies can be
+was designed to be flexible and able to be extended, so additional proxies can be
 added depending on the use case.
 
 Some input4MIPs data is required to be downloaded before running.
 
 ## Emissions inventories
 
-This project bundles two emissions inventories with the repository, a Victorian
+This project bundles two emission inventories with the repository, a Victorian
 inventory for 2016 developed by the Victorian EPA, and an Australian-wide inventory
 that uses EDGAR data. These inventories are included in the repository in `data/raw/inventories`.
 
@@ -18,14 +18,15 @@ about the reading/processing of these inventories. For testing purposes, these
 inventories have been downsampled to much coarser resolutions and included in
 `tests/test-data/inventory`
 
-The location of the emissions inventory files can be specified using the
-`SPAEMIS_INVENTORY_DIRECTORY` environment variable.
+The location of the inventory files can be specified using the
+`SPAEMIS_INVENTORY_DIRECTORY` environment variable. This defaults to `data/raw/inventories`
+if no environment variable is provided.
 
 ### Victorian Inventory
 
-The licensing for this inventory is currently being finalised so while the
-data files for this invetory have been included in the repository, they are
-contained in an GPG encrypted file. Contact `@lewisjarednz` if you require
+The licensing for this inventory is currently being finalised, so while the
+data files for this inventory have been included in the repository, they are
+contained in a GPG encrypted file. Contact `@lewisjarednz` if you require
 access.
 
 
