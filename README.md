@@ -5,7 +5,7 @@
 Produce a coherent set of emissions for regional air quality modelling
 
 This model is a work in progress and is under active development. This work was undertaken
-by `Climate Resource <https://www.climate-resource.com>`_ and funded by `CSIRO <https://www.csiro.au/en/>`_
+by [Climate Resource](https://www.climate-resource.com) and funded by [CSIRO](https://www.csiro.au/en/)
 <!--- sec-end-description -->
 
 ## Installation
@@ -27,7 +27,7 @@ pip install spaemis[plots]
 pip install spaemis[notebooks]
 ```
 
-A set of `Input4MIPs <https://esgf-node.llnl.gov/projects/input4mips/>`_ emissions data
+A set of [Input4MIPs](https://esgf-node.llnl.gov/projects/input4mips/) emissions data
 is also required as it is a common proxy.
 
 <!--- sec-end-installation -->
