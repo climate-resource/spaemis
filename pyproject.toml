@@ -82,7 +82,7 @@ black = "23.3.0"
 blackdoc = "0.3.8"
 commitizen = "^3.1.1"
 mypy = "^1.2.0"
-ruff = "0.0.264"
+ruff = "0.0.286"
 pre-commit = "^3.3.1"
 joblib = "*"
 
