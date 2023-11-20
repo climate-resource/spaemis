@@ -94,7 +94,7 @@ def _create_output_data(
 def _process_slice(
     output_ds: xr.Dataset,
     inventory: EmissionsInventory,
-    timeseries: scmdata.ScmRun,
+    timeseries: dict[str, scmdata.ScmRun],
     variable_config: VariableScalerConfig,
     year: int,
 ) -> None:

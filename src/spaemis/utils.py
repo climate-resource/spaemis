@@ -206,6 +206,7 @@ def covers(dataarray: xr.DataArray, dim: str, value: float) -> bool:
     Check if a dimension of a DataArray can be interpolated for a given value
 
     If this check fails an extrapolation will be required
+
     Parameters
     ----------
     dataarray

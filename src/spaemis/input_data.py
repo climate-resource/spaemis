@@ -109,6 +109,7 @@ class InputEmissionsDatabase:
             Variable identifier
         source_id
             Source identifier
+
         Returns
         -------
             All of the available data for the given variable and source identifiers

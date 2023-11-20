@@ -74,7 +74,7 @@ for variable, variable_data in available_data.groupby("gas"):
         dim="sector",
     )
 
-    ds = ds.rename({list(ds.data_vars.keys())[0]: variable})
+    ds = ds.rename({list(ds.data_vars.keys())[0]: variable})  # noqa: RUF015
 
     assert ds[variable].attrs["units"] == "kg m-2 s-1"
     area = area_grid(ds.lat, ds.lon)

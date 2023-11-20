@@ -36,7 +36,7 @@ seaborn = { version = "*", optional = true }
 jupytext = { version = "1.14.5", optional = true }
 papermill = { version = "*", optional = true }
 python-dotenv = { version = "*", optional = true }
-scmdata = "^0.15.0"
+scmdata = "^0.16.1"
 cattrs = "^22.2.0"
 xarray = "^2023.5.0"
 rioxarray = "^0.14.1"
@@ -78,11 +78,11 @@ sphinx-copybutton = "^0.5.2"
 [tool.poetry.group.dev.dependencies]
 pytest-cov = "^4.0.0"
 coverage = "^7.2.0"
-black = "23.3.0"
+black = "23.11.0"
 blackdoc = "0.3.8"
 commitizen = "^3.1.1"
-mypy = "^1.2.0"
-ruff = "0.0.264"
+mypy = "^1.7.0"
+ruff = "0.1.6"
 pre-commit = "^3.3.1"
 joblib = "*"
 

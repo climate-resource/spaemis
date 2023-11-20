@@ -51,9 +51,9 @@ jobs:
       - name: ruff
         run: poetry run ruff check src tests scripts
       - name: mypy
-        run: poetry run mypy src --install-types --non-interactive
-#      - name: docs-linting
-#        run: poetry run blacken-docs --check docs/source/notebooks/*.md
+        run: |
+          poetry run mypy src --install-types --non-interactive || true
+          poetry run mypy src
       - name: docs
         run: poetry run sphinx-build --keep-going -b html docs/source docs/build
 

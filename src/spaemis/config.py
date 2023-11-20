@@ -118,7 +118,7 @@ class PointSourceMethod:
     name: ClassVar[Literal["point_source"]] = "point_source"
 
 
-ScalerMethod = Union[
+ScalerMethod = Union[  # noqa: UP007
     ExcludeScaleMethod,
     ProxyMethod,
     RelativeChangeMethod,
@@ -328,6 +328,7 @@ def get_path(
         target directory
     rel_path
         Path within ``output_dir``
+
     Returns
     -------
         Path of the output file
