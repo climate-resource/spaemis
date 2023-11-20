@@ -53,7 +53,7 @@ jobs:
       - name: mypy
         run: |
           poetry run mypy src --install-types --non-interactive || true
-          poetry run mypy src --non-interactive
+          poetry run mypy src
       - name: docs
         run: poetry run sphinx-build --keep-going -b html docs/source docs/build
 
