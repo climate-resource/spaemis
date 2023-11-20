@@ -6,7 +6,7 @@ A proxy scaler uses a proxy (a 2d pattern) to disaggregate an emissions timeseri
 The proxy must cover the area of interest of the emissions timeseries
 """
 import logging
-from typing import Any
+from typing import Any, cast
 
 import scmdata
 import xarray as xr
@@ -192,8 +192,8 @@ class TimeseriesScaler(BaseScaler):
         )
         proxy_interp = proxy.interp(lat=data.lat, lon=data.lon)
 
-        unit = ts.get_unique_meta("unit", True)
-        amount = ts.values.squeeze() * region_share
+        unit = cast(str, ts.get_unique_meta("unit", True))
+        amount = float(ts.values.squeeze() * region_share)
         return apply_amount(amount, unit, proxy_interp)
 
     @classmethod

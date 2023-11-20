@@ -6,7 +6,7 @@ Split a timeseries of emissions across a number of points
 """
 import logging
 import os
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
@@ -106,8 +106,8 @@ class PointSourceScaler(BaseScaler):
         portion_in_domain = num_valid_points / float(num_points)
         logger.info(f"{num_valid_points} / {num_points} points sources are in domain.")
 
-        amount = ts.values.squeeze() * portion_in_domain
-        unit = ts.get_unique_meta("unit", True)
+        amount = float(ts.values.squeeze() * portion_in_domain)
+        unit = cast(str, ts.get_unique_meta("unit", True))
         return apply_amount(amount, unit, scaled)
 
     @classmethod
