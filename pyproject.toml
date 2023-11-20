@@ -36,7 +36,7 @@ seaborn = { version = "*", optional = true }
 jupytext = { version = "1.14.5", optional = true }
 papermill = { version = "*", optional = true }
 python-dotenv = { version = "*", optional = true }
-scmdata = "^0.15.0"
+scmdata = "^0.16.1"
 cattrs = "^22.2.0"
 xarray = "^2023.5.0"
 rioxarray = "^0.14.1"

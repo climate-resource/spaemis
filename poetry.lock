@@ -3477,13 +3477,13 @@ test = ["asv", "gmpy2", "mpmath", "pooch", "pytest", "pytest-cov", "pytest-timeo
 
 [[package]]
 name = "scmdata"
-version = "0.15.3"
+version = "0.16.1"
 description = "scmdata provides some useful data handling routines for dealing with data related to simple climate models (SCMs aka reduced complexity climate models, RCMs)"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = ">=3.9,<4.0"
 files = [
-    {file = "scmdata-0.15.3-py3-none-any.whl", hash = "sha256:849807a2ede1defdaaeca73475c131cebd14b5f15b7f163383af1e7ed32272a4"},
-    {file = "scmdata-0.15.3.tar.gz", hash = "sha256:ed01160e72ca41b6fe83938ddf9542138d6822a12d5300646831090047fd297a"},
+    {file = "scmdata-0.16.1-py3-none-any.whl", hash = "sha256:e5b56cff8b7efaf0cfec2945fc3431bbf30712bc9b5a1b44092983da80e56ca1"},
+    {file = "scmdata-0.16.1.tar.gz", hash = "sha256:02038d4b1ce68abfecfe729eacde1444f78de58ec8a71bd2b721454a7bee9ec3"},
 ]
 
 [package.dependencies]
@@ -3492,17 +3492,17 @@ numpy = "*"
 openscm-units = "*"
 packaging = "*"
 pandas = ">=1.1"
-pint = "<0.20"
+pint = "*"
 pint-pandas = "*"
 python-dateutil = "*"
 six = "*"
 tqdm = "*"
-typing-extensions = "<5"
+typing-extensions = "*"
 xarray = "*"
 
 [package.extras]
 notebooks = ["notebook (>=7)"]
-optional = ["netCDF4", "openpyxl", "pyam-iamc (<2)", "scipy", "xlrd"]
+optional = ["joblib", "netCDF4", "openpyxl", "pyam-iamc", "scipy", "xlrd"]
 plots = ["matplotlib (>=3.7.1,<4.0.0)", "nc-time-axis (>=1.2.0)", "seaborn"]
 
 [[package]]
@@ -4353,4 +4353,4 @@ notebooks = ["jupytext", "matplotlib", "notebook", "papermill", "python-dotenv",
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10, <3.12"
-content-hash = "228aad920ff6c053d9204db181a348b75511ab66631b4f8c07bdf11c4194881c"
+content-hash = "c9cbfe9223b7f1ca41ef06503872016a3d7af29675590d5a90aa6361ee639a63"
