@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import os.path
 from os import PathLike
-from typing import Any, ClassVar, Literal, TypeVar, Union, get_args
+from typing import Any, ClassVar, Literal, TypeVar, get_args
 
 import pandas as pd
 from attrs import define, field
@@ -118,14 +118,14 @@ class PointSourceMethod:
     name: ClassVar[Literal["point_source"]] = "point_source"
 
 
-ScalerMethod = Union[
-    ExcludeScaleMethod,
-    ProxyMethod,
-    RelativeChangeMethod,
-    ConstantScaleMethod,
-    TimeseriesMethod,
-    PointSourceMethod,
-]
+ScalerMethod = (
+    ExcludeScaleMethod
+    | ProxyMethod
+    | RelativeChangeMethod
+    | ConstantScaleMethod
+    | TimeseriesMethod
+    | PointSourceMethod
+)
 
 
 def _unstructure_scaler(value: ScalerMethod) -> dict[str, Any]:
@@ -328,6 +328,7 @@ def get_path(
         target directory
     rel_path
         Path within ``output_dir``
+
     Returns
     -------
         Path of the output file
