@@ -1,6 +1,7 @@
 """
 Extract the SEDACS population proxy
 """
+
 import os
 
 import rioxarray  # noqa
