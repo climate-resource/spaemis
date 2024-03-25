@@ -1,6 +1,7 @@
 """
 CLI
 """
+
 try:
     import dotenv
 
