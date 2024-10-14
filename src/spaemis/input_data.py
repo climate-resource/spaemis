@@ -1,6 +1,7 @@
 """
 Searching and loading of a local input4MIPs data archive
 """
+
 from __future__ import annotations
 
 import logging
@@ -109,6 +110,7 @@ class InputEmissionsDatabase:
             Variable identifier
         source_id
             Source identifier
+
         Returns
         -------
             All of the available data for the given variable and source identifiers

@@ -1,6 +1,7 @@
 """
 point-sources CLI command
 """
+
 import logging
 
 import click

@@ -4,6 +4,7 @@ Downsample input4MIPS data
 These downsampled values are used for testing because they are small and fast
 to run
 """
+
 import os
 from glob import glob
 
