@@ -5,6 +5,7 @@ A proxy scaler uses a proxy (a 2d pattern) to disaggregate an emissions timeseri
 
 The proxy must cover the area of interest of the emissions timeseries
 """
+
 import logging
 import os
 from typing import Any
