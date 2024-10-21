@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: 'v4.4.0'
+    rev: 'v5.0.0'
     hooks:
       - id: check-added-large-files
       - id: check-ast
@@ -25,21 +25,21 @@ repos:
         entry: found Copier update rejection files; review them and remove them
         language: fail
         files: "\\.rej$"
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.0.263'
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: 'v0.7.0'
     hooks:
       - id: ruff
         args: [ --fix, --exit-non-zero-on-fix ]
   - repo: https://github.com/psf/black
-    rev: '23.3.0'
+    rev: '24.10.0'
     hooks:
       - id: black
   # additional to the above, apply black to doctests in source code
   - repo: https://github.com/keewis/blackdoc
-    rev: v0.3.8
+    rev: v0.3.9
     hooks:
       - id: blackdoc
   - repo: https://github.com/python-poetry/poetry
-    rev: '1.4.2'
+    rev: '1.8.0'
     hooks:
       - id: poetry-check
