@@ -1,6 +1,7 @@
 """
 General utility functions
 """
+
 import os
 from collections.abc import Generator
 from contextlib import contextmanager
@@ -62,7 +63,7 @@ def area_grid(lat: ArrayLike, lon: ArrayLike) -> xr.DataArray:
     return xda
 
 
-def earth_radius(lat: NDArray[np.float_]) -> NDArray[np.float_]:
+def earth_radius(lat: NDArray[np.float64]) -> NDArray[np.float64]:
     """
     Calculate radius of Earth assuming oblate spheroid
 
@@ -92,7 +93,7 @@ def earth_radius(lat: NDArray[np.float_]) -> NDArray[np.float_]:
 
     # radius equation
     # see equation 3-107 in WGS84
-    r: NDArray[np.float_] = (a * (1 - e2) ** 0.5) / (
+    r: NDArray[np.float64] = (a * (1 - e2) ** 0.5) / (
         1 - (e2 * np.cos(lat_gc) ** 2)
     ) ** 0.5
 
@@ -206,6 +207,7 @@ def covers(dataarray: xr.DataArray, dim: str, value: float) -> bool:
     Check if a dimension of a DataArray can be interpolated for a given value
 
     If this check fails an extrapolation will be required
+
     Parameters
     ----------
     dataarray
