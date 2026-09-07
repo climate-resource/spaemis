@@ -1,6 +1,7 @@
 """
 Project a set of emissions into the future according to a set of scaling methods
 """
+
 import itertools
 import logging
 from collections.abc import Iterable
