@@ -3,6 +3,7 @@ Constant scaler
 
 Apply a constant scale factor to the base inventory
 """
+
 from typing import Any
 
 import xarray as xr
