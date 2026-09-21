@@ -4,6 +4,7 @@ Point source scaler
 Split a timeseries of emissions across a number of points
 
 """
+
 import logging
 import os
 from typing import Any

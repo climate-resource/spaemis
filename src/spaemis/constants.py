@@ -1,6 +1,7 @@
 """
 Constants
 """
+
 import os
 
 OUTPUT_VERSION = "v20230421_1"
