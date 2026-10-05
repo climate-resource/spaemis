@@ -1,6 +1,7 @@
 """
 GSE emis CLI command
 """
+
 import logging
 import os
 
