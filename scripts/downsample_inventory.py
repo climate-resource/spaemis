@@ -3,6 +3,7 @@ Decimate an inventory
 
 This results in fewer grid cells and therefore faster execution
 """
+
 import os
 
 import click
