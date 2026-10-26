@@ -328,6 +328,7 @@ def get_path(
         target directory
     rel_path
         Path within ``output_dir``
+
     Returns
     -------
         Path of the output file
