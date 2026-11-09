@@ -1,6 +1,7 @@
 """
 Common CLI functionality
 """
+
 import logging
 
 import click
