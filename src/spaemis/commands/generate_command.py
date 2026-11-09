@@ -1,6 +1,7 @@
 """
 generate CLI command
 """
+
 import io
 import logging
 from typing import Any

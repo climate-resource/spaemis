@@ -1,6 +1,7 @@
 """
 Extract the SEDACS population proxy
 """
+
 import os
 
 import rioxarray  # noqa
@@ -16,7 +17,6 @@ def extract_sedac():
 
     The SEDACS file should be downloaded manually from https://sedac.ciesin.columbia.edu/
     """
-    #
     da = xr.open_dataset(
         os.path.join(
             RAW_DATA_DIR,
